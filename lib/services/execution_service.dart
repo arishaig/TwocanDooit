@@ -78,6 +78,15 @@ class ExecutionService {
     _sessionController.add(_currentSession!);
     _eventController.add('Routine started: ${routine.name}');
     
+    // Start background music if enabled
+    if (routine.musicEnabled && routine.musicTrack != null) {
+      await AudioService.startBackgroundMusic(
+        routine.musicTrack!,
+        isBuiltIn: routine.isBuiltInTrack,
+        volume: 0.3, // 30% volume so it doesn't interfere with other sounds
+      );
+    }
+    
     // Announce routine start
     if (_currentSettings != null && routine.voiceEnabled) {
       await TTSService.speak('Starting routine: ${routine.name}', _currentSettings!, routine: routine);
@@ -126,12 +135,20 @@ class ExecutionService {
     
     if (_currentSession!.isCompleted) {
       _eventController.add('Routine completed!');
+      
+      // Stop background music immediately (no fade) and play completion sound simultaneously
+      if (AudioService.isMusicPlaying) {
+        await AudioService.stopBackgroundMusic();
+      }
+      
+      // Start completion sound and voice announcement simultaneously
+      if (_currentSettings != null) {
+        AudioService.playCompletion(_currentSettings!); // Don't await - let it play async
+      }
       if (_currentSettings != null && _currentSession!.routine.voiceEnabled) {
         await TTSService.speak('Routine completed! Great job!', _currentSettings!, routine: _currentSession!.routine);
       }
-      if (_currentSettings != null) {
-        await AudioService.playCompletion(_currentSettings!);
-      }
+      
       await stopExecution();
     } else {
       _sessionController.add(_currentSession!);
@@ -159,6 +176,7 @@ class ExecutionService {
     _timer?.cancel();
     _timer = null;
     await AudioService.stopCountdown(); // Stop countdown sound if playing
+    await AudioService.stopBackgroundMusic(); // Stop background music if playing
     _currentSession = null;
     _remainingSeconds = 0;
     _eventController.add('Execution stopped');

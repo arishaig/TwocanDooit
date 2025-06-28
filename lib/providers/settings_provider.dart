@@ -66,6 +66,13 @@ class SettingsProvider with ChangeNotifier {
     await updateSettings(_settings.copyWith(ttsLanguage: language));
   }
 
+  Future<void> updateTTSVoice(String? voice, {String? voiceLocale}) async {
+    await updateSettings(_settings.copyWith(
+      ttsVoice: voice, 
+      ttsVoiceLocale: voiceLocale,
+    ));
+  }
+
   Future<void> updateNudgeEnabled(bool enabled) async {
     await updateSettings(_settings.copyWith(nudgeEnabled: enabled));
   }

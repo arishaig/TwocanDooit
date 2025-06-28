@@ -32,6 +32,9 @@ class RoutineProvider with ChangeNotifier {
     String description = '',
     String category = '',
     bool voiceEnabled = false,
+    bool musicEnabled = false,
+    String? musicTrack,
+    bool isBuiltInTrack = true,
   }) async {
     try {
       final routine = await RoutineService.createRoutine(
@@ -39,6 +42,9 @@ class RoutineProvider with ChangeNotifier {
         description: description,
         category: category,
         voiceEnabled: voiceEnabled,
+        musicEnabled: musicEnabled,
+        musicTrack: musicTrack,
+        isBuiltInTrack: isBuiltInTrack,
       );
       _routines = RoutineService.routines;
       _error = null;

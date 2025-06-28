@@ -4,6 +4,8 @@ class AppSettings {
   final double ttsPitch;
   final double ttsVolume;
   final String ttsLanguage;
+  final String? ttsVoice;
+  final String? ttsVoiceLocale;
   
   // Nudge notification settings
   final bool nudgeEnabled;
@@ -20,6 +22,8 @@ class AppSettings {
     this.ttsPitch = 1.0,
     this.ttsVolume = 1.0,
     this.ttsLanguage = 'en-US',
+    this.ttsVoice,
+    this.ttsVoiceLocale,
     this.nudgeEnabled = true,
     this.nudgeIntervalMinutes = 5,
     this.maxNudgeCount = 3,
@@ -33,6 +37,8 @@ class AppSettings {
     double? ttsPitch,
     double? ttsVolume,
     String? ttsLanguage,
+    String? ttsVoice,
+    String? ttsVoiceLocale,
     bool? nudgeEnabled,
     int? nudgeIntervalMinutes,
     int? maxNudgeCount,
@@ -45,6 +51,8 @@ class AppSettings {
       ttsPitch: ttsPitch ?? this.ttsPitch,
       ttsVolume: ttsVolume ?? this.ttsVolume,
       ttsLanguage: ttsLanguage ?? this.ttsLanguage,
+      ttsVoice: ttsVoice ?? this.ttsVoice,
+      ttsVoiceLocale: ttsVoiceLocale ?? this.ttsVoiceLocale,
       nudgeEnabled: nudgeEnabled ?? this.nudgeEnabled,
       nudgeIntervalMinutes: nudgeIntervalMinutes ?? this.nudgeIntervalMinutes,
       maxNudgeCount: maxNudgeCount ?? this.maxNudgeCount,
@@ -60,6 +68,8 @@ class AppSettings {
       'ttsPitch': ttsPitch,
       'ttsVolume': ttsVolume,
       'ttsLanguage': ttsLanguage,
+      'ttsVoice': ttsVoice,
+      'ttsVoiceLocale': ttsVoiceLocale,
       'nudgeEnabled': nudgeEnabled,
       'nudgeIntervalMinutes': nudgeIntervalMinutes,
       'maxNudgeCount': maxNudgeCount,
@@ -75,6 +85,8 @@ class AppSettings {
       ttsPitch: (json['ttsPitch'] ?? 1.0).toDouble(),
       ttsVolume: (json['ttsVolume'] ?? 1.0).toDouble(),
       ttsLanguage: json['ttsLanguage'] ?? 'en-US',
+      ttsVoice: json['ttsVoice'],
+      ttsVoiceLocale: json['ttsVoiceLocale'],
       nudgeEnabled: json['nudgeEnabled'] ?? true,
       nudgeIntervalMinutes: json['nudgeIntervalMinutes'] ?? 5,
       maxNudgeCount: json['maxNudgeCount'] ?? 3,

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:vibration/vibration.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -7,6 +8,7 @@ class AudioService {
   static bool _isInitialized = false;
   static AudioPlayer? _audioPlayer;
   static AudioPlayer? _countdownPlayer;
+  static AudioPlayer? _musicPlayer;
   static final Random _random = Random();
 
   // Audio file paths
@@ -22,14 +24,49 @@ class AudioService {
     'audio/dice/647924__bw2801__roll-dice-a.mp3',
   ];
 
+  // Built-in music tracks (note: Flutter assets don't include the 'assets/' prefix)
+  static const Map<String, String> _builtInMusicTracks = {
+    'Binaural Beats': 'music/binauralBeats/676878__wim__binaural-beats-alpha-to-delta-and-back-mp3.mp3',
+    'Calm Meditation': 'music/calm/655395__sergequadrado__meditation.wav',
+    'Focus Beats': 'music/focusBeats/593786__szegvari__edm-myst-soundscape-cinematic.wav',
+  };
+
   static Future<void> initialize() async {
     if (_isInitialized) return;
     
     try {
       _audioPlayer = AudioPlayer();
       _countdownPlayer = AudioPlayer();
+      _musicPlayer = AudioPlayer();
+      
+      // Configure sound effects players to use media channel but with transient focus (brief sounds)
+      await _audioPlayer!.setAudioContext(AudioContext(
+        android: AudioContextAndroid(
+          contentType: AndroidContentType.sonification,
+          usageType: AndroidUsageType.media,
+          audioFocus: AndroidAudioFocus.gainTransientMayDuck, // Brief focus, allow ducking
+        ),
+      ));
+      
+      await _countdownPlayer!.setAudioContext(AudioContext(
+        android: AudioContextAndroid(
+          contentType: AndroidContentType.sonification,
+          usageType: AndroidUsageType.media,
+          audioFocus: AndroidAudioFocus.gainTransientMayDuck, // Brief focus, allow ducking
+        ),
+      ));
+      
+      // Configure music player to use media channel with persistent focus
+      await _musicPlayer!.setAudioContext(AudioContext(
+        android: AudioContextAndroid(
+          contentType: AndroidContentType.music,
+          usageType: AndroidUsageType.media,
+          audioFocus: AndroidAudioFocus.gain, // Request and maintain audio focus for music
+        ),
+      ));
+      
       _isInitialized = true;
-      print('AudioService initialized with custom sounds');
+      print('AudioService initialized with ducking: transient focus (sounds) + persistent focus (music)');
     } catch (e) {
       print('Failed to initialize AudioService: $e');
     }
@@ -41,9 +78,15 @@ class AudioService {
     try {
       await initialize();
       final playerToUse = player ?? _audioPlayer!;
+      
+      // Don't interfere with background music - use a different player
+      if (playerToUse == _audioPlayer && _musicPlayer?.state == PlayerState.playing) {
+        print('Background music playing, using separate player for sound effects');
+      }
+      
       await playerToUse.setVolume(volume);
       await playerToUse.play(AssetSource(assetPath));
-      print('Played sound: $assetPath at volume: $volume');
+      print('Played sound: $assetPath at volume: $volume, music still playing: ${_musicPlayer?.state == PlayerState.playing}');
     } catch (e) {
       print('Failed to play sound $assetPath: $e');
     }
@@ -186,11 +229,106 @@ class AudioService {
     await playCountdown(settings);
   }
 
+  // Background music methods
+  static List<String> get builtInMusicTrackNames => _builtInMusicTracks.keys.toList();
+
+  static Future<void> startBackgroundMusic(String trackName, {bool isBuiltIn = true, double volume = 0.3}) async {
+    try {
+      await initialize();
+      await stopBackgroundMusic(); // Stop any current music
+      
+      if (isBuiltIn) {
+        final assetPath = _builtInMusicTracks[trackName] ?? _builtInMusicTracks.values.first;
+        print('Playing built-in track: $trackName -> $assetPath');
+        await _musicPlayer!.setVolume(volume);
+        await _musicPlayer!.setReleaseMode(ReleaseMode.loop);
+        await _musicPlayer!.play(AssetSource(assetPath));
+      } else {
+        // For user-added tracks, trackName would be the file path
+        print('Playing custom track: $trackName');
+        await _musicPlayer!.setVolume(volume);
+        await _musicPlayer!.setReleaseMode(ReleaseMode.loop);
+        await _musicPlayer!.play(DeviceFileSource(trackName));
+      }
+      
+      print('Started background music: $trackName at volume: $volume, state: ${_musicPlayer!.state}');
+    } catch (e) {
+      print('Failed to start background music: $e');
+    }
+  }
+
+  static Future<void> fadeOutBackgroundMusic({Duration fadeDuration = const Duration(seconds: 2)}) async {
+    try {
+      if (_musicPlayer == null) return;
+      
+      const steps = 20;
+      const stepDuration = Duration(milliseconds: 100);
+      const initialVolume = 0.3; // Use the volume we set when starting music
+      final volumeStep = initialVolume / steps;
+      
+      for (int i = steps; i > 0; i--) {
+        await _musicPlayer!.setVolume(volumeStep * i);
+        await Future.delayed(stepDuration);
+      }
+      
+      await _musicPlayer!.stop();
+      print('Background music faded out');
+    } catch (e) {
+      print('Failed to fade out background music: $e');
+    }
+  }
+
+  static Future<void> stopBackgroundMusic() async {
+    try {
+      await _musicPlayer?.stop();
+      print('Background music stopped');
+    } catch (e) {
+      print('Failed to stop background music: $e');
+    }
+  }
+
+  static Future<void> playMusicPreview(String trackName, {bool isBuiltIn = true, double volume = 0.5}) async {
+    try {
+      await initialize();
+      await stopBackgroundMusic(); // Stop any current music
+      
+      String assetPath;
+      if (isBuiltIn) {
+        assetPath = _builtInMusicTracks[trackName] ?? _builtInMusicTracks.values.first;
+        print('Previewing built-in track: $trackName -> $assetPath');
+        await _musicPlayer!.setSource(AssetSource(assetPath));
+      } else {
+        print('Previewing custom track: $trackName');
+        await _musicPlayer!.setSource(DeviceFileSource(trackName));
+      }
+      
+      await _musicPlayer!.setVolume(volume);
+      await _musicPlayer!.setReleaseMode(ReleaseMode.stop); // Don't loop for preview
+      await _musicPlayer!.resume();
+      
+      print('Started music preview: $trackName at volume: $volume');
+      
+      // Stop preview after 10 seconds
+      Timer(const Duration(seconds: 10), () async {
+        await stopBackgroundMusic();
+        print('Preview stopped after 10 seconds');
+      });
+    } catch (e) {
+      print('Failed to play music preview: $e');
+    }
+  }
+
+  static bool get isMusicPlaying {
+    return _musicPlayer?.state == PlayerState.playing;
+  }
+
   static void dispose() {
     _audioPlayer?.dispose();
     _countdownPlayer?.dispose();
+    _musicPlayer?.dispose();
     _audioPlayer = null;
     _countdownPlayer = null;
+    _musicPlayer = null;
     _isInitialized = false;
   }
 }

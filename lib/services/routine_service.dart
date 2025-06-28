@@ -24,12 +24,18 @@ class RoutineService {
     String description = '',
     String category = '',
     bool voiceEnabled = false,
+    bool musicEnabled = false,
+    String? musicTrack,
+    bool isBuiltInTrack = true,
   }) async {
     final routine = Routine(
       name: name,
       description: description,
       category: category,
       voiceEnabled: voiceEnabled,
+      musicEnabled: musicEnabled,
+      musicTrack: musicTrack,
+      isBuiltInTrack: isBuiltInTrack,
     );
     
     _routines.add(routine);

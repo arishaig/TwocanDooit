@@ -330,16 +330,10 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.primary,
                 ),
-              ).animate().fadeIn(
-                delay: currentStep.randomizeReps ? 1800.ms : 0.ms, // Fade in as the animation completes
-                duration: 400.ms,
               ),
               Text(
                 'of ${currentStep.repsTarget}${currentStep.randomizeReps ? ' (rolled)' : ''}',
                 style: Theme.of(context).textTheme.headlineSmall,
-              ).animate().fadeIn(
-                delay: currentStep.randomizeReps ? 1800.ms : 0.ms, // Fade in as the number arrives
-                duration: 400.ms,
               ),
               const SizedBox(height: 24),
               FilledButton.icon(

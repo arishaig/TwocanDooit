@@ -45,6 +45,12 @@ class TTSService {
       await _flutterTts.setPitch(settings.ttsPitch);
       await _flutterTts.setVolume(settings.ttsVolume);
       await _flutterTts.setLanguage(settings.ttsLanguage);
+      
+      // Set voice if specified
+      if (settings.ttsVoice != null && settings.ttsVoice!.isNotEmpty) {
+        final voiceLocale = settings.ttsVoiceLocale ?? settings.ttsLanguage;
+        await _flutterTts.setVoice({"name": settings.ttsVoice!, "locale": voiceLocale});
+      }
     } catch (e) {
       print('TTS configuration failed: $e');
     }

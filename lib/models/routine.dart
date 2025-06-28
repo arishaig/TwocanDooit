@@ -12,6 +12,11 @@ class Routine {
   
   // Voice announcements for this routine
   bool voiceEnabled; // Simple on/off toggle
+  
+  // Background music for this routine
+  bool musicEnabled; // Enable/disable music for this routine
+  String? musicTrack; // Path or name of the music track
+  bool isBuiltInTrack; // True for built-in tracks, false for user-added
 
   Routine({
     String? id,
@@ -22,6 +27,9 @@ class Routine {
     DateTime? createdAt,
     DateTime? updatedAt,
     this.voiceEnabled = false,
+    this.musicEnabled = false,
+    this.musicTrack,
+    this.isBuiltInTrack = true,
   })  : id = id ?? const Uuid().v4(),
         steps = steps ?? [],
         createdAt = createdAt ?? DateTime.now(),
@@ -34,6 +42,9 @@ class Routine {
     List<Step>? steps,
     DateTime? updatedAt,
     bool? voiceEnabled,
+    bool? musicEnabled,
+    String? musicTrack,
+    bool? isBuiltInTrack,
   }) {
     return Routine(
       id: id,
@@ -44,6 +55,9 @@ class Routine {
       createdAt: createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
       voiceEnabled: voiceEnabled ?? this.voiceEnabled,
+      musicEnabled: musicEnabled ?? this.musicEnabled,
+      musicTrack: musicTrack ?? this.musicTrack,
+      isBuiltInTrack: isBuiltInTrack ?? this.isBuiltInTrack,
     );
   }
 
@@ -102,6 +116,9 @@ class Routine {
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       'voiceEnabled': voiceEnabled,
+      'musicEnabled': musicEnabled,
+      'musicTrack': musicTrack,
+      'isBuiltInTrack': isBuiltInTrack,
     };
   }
 
@@ -118,6 +135,9 @@ class Routine {
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
       voiceEnabled: json['voiceEnabled'] ?? false,
+      musicEnabled: json['musicEnabled'] ?? false,
+      musicTrack: json['musicTrack'],
+      isBuiltInTrack: json['isBuiltInTrack'] ?? true,
     );
   }
 }

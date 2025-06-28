@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart';
 import '../../models/routine.dart';
 import '../../models/step.dart' as model_step;
 import '../../models/step_type.dart';
 import '../../providers/routine_provider.dart';
+import '../../services/audio_service.dart';
 
 class RoutineEditorScreen extends StatefulWidget {
   final Routine? routine;
@@ -21,6 +24,10 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
   late final TextEditingController _categoryController;
   late List<model_step.Step> _steps;
   late bool _voiceEnabled;
+  late bool _musicEnabled;
+  late String? _selectedMusicTrack;
+  late bool _isBuiltInTrack;
+  String? _currentlyPreviewing;
 
   bool get _isEditing => widget.routine != null;
 
@@ -33,6 +40,10 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
     _categoryController = TextEditingController(text: routine?.category ?? '');
     _steps = routine?.steps.map((s) => s.copyWith()).toList() ?? [];
     _voiceEnabled = routine?.voiceEnabled ?? false;
+    _musicEnabled = routine?.musicEnabled ?? false;
+    _selectedMusicTrack = routine?.musicTrack;
+    _isBuiltInTrack = routine?.isBuiltInTrack ?? true;
+    _currentlyPreviewing = null;
   }
 
   @override
@@ -40,6 +51,8 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
     _nameController.dispose();
     _descriptionController.dispose();
     _categoryController.dispose();
+    // Stop any playing preview
+    AudioService.stopBackgroundMusic();
     super.dispose();
   }
 
@@ -104,6 +117,120 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
                 });
               },
             ),
+            const SizedBox(height: 16),
+            SwitchListTile(
+              title: const Text('Background Music'),
+              subtitle: const Text('Play music during routine execution'),
+              value: _musicEnabled,
+              onChanged: (value) {
+                setState(() {
+                  _musicEnabled = value;
+                });
+              },
+            ),
+            if (_musicEnabled) ...[
+              const SizedBox(height: 16),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Music Selection',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Built-in Tracks',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ...AudioService.builtInMusicTrackNames.map((trackName) {
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: RadioListTile<String>(
+                                title: Text(trackName),
+                                value: trackName,
+                                groupValue: _isBuiltInTrack ? _selectedMusicTrack : null,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedMusicTrack = value;
+                                    _isBuiltInTrack = true;
+                                  });
+                                },
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () => _togglePreview(trackName),
+                              icon: Icon(_currentlyPreviewing == trackName ? Icons.stop : Icons.play_arrow),
+                              tooltip: _currentlyPreviewing == trackName ? 'Stop preview' : 'Preview $trackName',
+                            ),
+                          ],
+                        );
+                      }),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Text(
+                            'Custom Track',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const Spacer(),
+                          TextButton.icon(
+                            onPressed: _pickMusicFile,
+                            icon: const Icon(Icons.music_note),
+                            label: const Text('Choose File'),
+                          ),
+                        ],
+                      ),
+                      if (!_isBuiltInTrack && _selectedMusicTrack != null) ...[
+                        const SizedBox(height: 8),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surfaceVariant,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Selected:',
+                                      style: Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                    Text(
+                                      _selectedMusicTrack!.split('/').last,
+                                      style: Theme.of(context).textTheme.bodyMedium,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () => _togglePreview(_selectedMusicTrack!),
+                                icon: Icon(_currentlyPreviewing == _selectedMusicTrack ? Icons.stop : Icons.play_arrow),
+                                tooltip: _currentlyPreviewing == _selectedMusicTrack ? 'Stop preview' : 'Preview track',
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 24),
             Row(
               children: [
@@ -246,6 +373,56 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
     });
   }
 
+  Future<void> _pickMusicFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.audio,
+        allowMultiple: false,
+      );
+
+      if (result != null) {
+        setState(() {
+          _selectedMusicTrack = result.files.single.path;
+          _isBuiltInTrack = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to pick music file: $e'),
+          ),
+        );
+      }
+    }
+  }
+
+  void _togglePreview(String trackName) {
+    if (_currentlyPreviewing == trackName) {
+      // Stop current preview
+      AudioService.stopBackgroundMusic();
+      setState(() {
+        _currentlyPreviewing = null;
+      });
+    } else {
+      // Start new preview
+      final isBuiltIn = AudioService.builtInMusicTrackNames.contains(trackName);
+      AudioService.playMusicPreview(trackName, isBuiltIn: isBuiltIn);
+      setState(() {
+        _currentlyPreviewing = trackName;
+      });
+      
+      // Auto-stop preview after 10 seconds and update UI
+      Timer(const Duration(seconds: 10), () {
+        if (mounted && _currentlyPreviewing == trackName) {
+          setState(() {
+            _currentlyPreviewing = null;
+          });
+        }
+      });
+    }
+  }
+
   void _saveRoutine() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -267,6 +444,9 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
         category: _categoryController.text.trim(),
         steps: _steps,
         voiceEnabled: _voiceEnabled,
+        musicEnabled: _musicEnabled,
+        musicTrack: _selectedMusicTrack,
+        isBuiltInTrack: _isBuiltInTrack,
       );
       await routineProvider.updateRoutine(updatedRoutine);
     } else {
@@ -275,6 +455,9 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
         description: _descriptionController.text.trim(),
         category: _categoryController.text.trim(),
         voiceEnabled: _voiceEnabled,
+        musicEnabled: _musicEnabled,
+        musicTrack: _selectedMusicTrack,
+        isBuiltInTrack: _isBuiltInTrack,
       );
       
       // Get the created routine and add steps
