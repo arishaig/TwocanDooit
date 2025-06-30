@@ -23,6 +23,7 @@ class Step {
   
   // Random choice properties
   List<String> choices;
+  List<double>? choiceWeights; // null means equal weights, otherwise same length as choices
   String? selectedChoice;
   
   // Variable parameter properties
@@ -49,6 +50,7 @@ class Step {
     this.repsMin = 1,
     this.repsMax = 10,
     this.choices = const [],
+    this.choiceWeights,
     this.selectedChoice,
     this.variableName = '',
     this.variableOptions = const [],
@@ -69,6 +71,7 @@ class Step {
     int? repsMin,
     int? repsMax,
     List<String>? choices,
+    List<double>? choiceWeights,
     String? selectedChoice,
     String? variableName,
     List<String>? variableOptions,
@@ -89,6 +92,7 @@ class Step {
       repsMin: repsMin ?? this.repsMin,
       repsMax: repsMax ?? this.repsMax,
       choices: choices ?? this.choices,
+      choiceWeights: choiceWeights ?? this.choiceWeights,
       selectedChoice: selectedChoice ?? this.selectedChoice,
       variableName: variableName ?? this.variableName,
       variableOptions: variableOptions ?? this.variableOptions,
@@ -119,6 +123,39 @@ class Step {
       final random = Random();
       repsTarget = repsMin + random.nextInt(repsMax - repsMin + 1);
     }
+  }
+
+  String? selectRandomChoice() {
+    if (choices.isEmpty) return null;
+    
+    final random = Random();
+    
+    // If no weights provided or weights don't match choices, use equal probability
+    if (choiceWeights == null || choiceWeights!.length != choices.length) {
+      final index = random.nextInt(choices.length);
+      return choices[index];
+    }
+    
+    // Use weighted selection
+    final totalWeight = choiceWeights!.fold<double>(0, (sum, weight) => sum + weight);
+    if (totalWeight <= 0) {
+      // Fallback to equal probability if weights are invalid
+      final index = random.nextInt(choices.length);
+      return choices[index];
+    }
+    
+    double randomValue = random.nextDouble() * totalWeight;
+    double cumulativeWeight = 0;
+    
+    for (int i = 0; i < choices.length; i++) {
+      cumulativeWeight += choiceWeights![i];
+      if (randomValue <= cumulativeWeight) {
+        return choices[i];
+      }
+    }
+    
+    // Fallback (should never reach here)
+    return choices.last;
   }
 
   String get displayText {
@@ -163,6 +200,7 @@ class Step {
       'repsMin': repsMin,
       'repsMax': repsMax,
       'choices': choices,
+      'choiceWeights': choiceWeights,
       'selectedChoice': selectedChoice,
       'variableName': variableName,
       'variableOptions': variableOptions,
@@ -189,6 +227,7 @@ class Step {
       repsMin: json['repsMin'] ?? 1,
       repsMax: json['repsMax'] ?? 10,
       choices: List<String>.from(json['choices'] ?? []),
+      choiceWeights: json['choiceWeights'] != null ? List<double>.from(json['choiceWeights']) : null,
       selectedChoice: json['selectedChoice'],
       variableName: json['variableName'] ?? '',
       variableOptions: List<String>.from(json['variableOptions'] ?? []),

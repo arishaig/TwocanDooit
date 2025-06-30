@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../models/app_settings.dart';
 import '../../providers/settings_provider.dart';
 import '../../services/tts_service.dart';
+import 'onboarding_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -383,6 +384,72 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         onChanged: (value) {
                           settingsProvider.updateHapticFeedbackEnabled(value);
                         },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Appearance Section
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.palette,
+                            size: 28,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Appearance',
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Customize the app appearance',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      // Dark Mode Toggle
+                      SwitchListTile(
+                        title: const Text('Dark Mode'),
+                        subtitle: const Text('Use dark theme colors'),
+                        value: settings.isDarkMode,
+                        onChanged: (value) {
+                          settingsProvider.updateThemeMode(value);
+                        },
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Onboarding Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const OnboardingScreen(canSkip: false),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Restart Setup Wizard'),
+                        ),
                       ),
                     ],
                   ),

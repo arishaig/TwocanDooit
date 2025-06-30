@@ -33,26 +33,33 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         elevation: 2,
-        title: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Dooit!',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-            ),
-            Text(
-              'ADHD Routine Helper',
-              style: TextStyle(
+        title: Consumer<SettingsProvider>(
+          builder: (context, settingsProvider, child) {
+            final userName = settingsProvider.settings.userName;
+            final displayName = userName.isNotEmpty ? userName : 'Friend';
+            
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Hey $displayName, let\'s Dooit!',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+                Text(
+                  'ADHD Routine Helper',
+                  style: TextStyle(
                 fontSize: 14, 
                 fontWeight: FontWeight.normal,
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
-          ],
+              ],
+            );
+          },
         ),
         centerTitle: true,
         toolbarHeight: 80,
@@ -198,9 +205,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _navigateToSettings(BuildContext context) async {
-    final settings = context.read<SettingsProvider>().settings;
-    await AudioService.playButtonClick(settings);
-    
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const SettingsScreen(),

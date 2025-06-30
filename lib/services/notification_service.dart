@@ -141,9 +141,46 @@ class NotificationService {
     print('Nudge notification shown: $title - $body');
   }
 
-  static Future<void> _dismissNudgeNotification() async {
+  static Future<void> dismissNudgeNotification() async {
     await _notifications.cancel(_nudgeNotificationId);
     print('Nudge notification dismissed');
+  }
+
+  static Future<void> _dismissNudgeNotification() async {
+    await dismissNudgeNotification();
+  }
+
+  static Future<void> showTimerCompletedNotification(String stepTitle) async {
+    await initialize();
+    
+    const androidDetails = AndroidNotificationDetails(
+      'timer_channel',
+      'Timer Completion',
+      channelDescription: 'Notifications when timer steps finish',
+      importance: Importance.high,
+      priority: Priority.high,
+      showWhen: false,
+    );
+
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    const details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await _notifications.show(
+      2000,
+      'Timer Finished! ⏰',
+      '"$stepTitle" is complete. Ready for the next step?',
+      details,
+    );
+    
+    print('Timer completion notification shown: $stepTitle');
   }
 
   static Future<void> showRoutineCompletedNotification(String routineName) async {

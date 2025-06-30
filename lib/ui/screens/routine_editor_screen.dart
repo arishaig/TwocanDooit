@@ -497,6 +497,9 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
   late int _repsMin;
   late int _repsMax;
   late List<String> _choices;
+  late List<double> _choiceWeights;
+  late bool _useWeights;
+  String _selectedPreset = '';
   late String _variableName;
   late List<String> _variableOptions;
   late bool _voiceEnabled;
@@ -515,9 +518,22 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
     _repsMin = step?.repsMin ?? 1;
     _repsMax = step?.repsMax ?? 10;
     _choices = List.from(step?.choices ?? []);
+    final hasCustomWeights = step?.choiceWeights != null && step!.choiceWeights!.any((w) => w != 1.0);
+    _useWeights = hasCustomWeights;
+    _choiceWeights = step?.choiceWeights != null 
+        ? List.from(step!.choiceWeights!) 
+        : [];
     _variableName = step?.variableName ?? '';
     _variableOptions = List.from(step?.variableOptions ?? []);
     _voiceEnabled = step?.voiceEnabled ?? true;
+    
+    // Ensure weights list matches choices list
+    while (_choiceWeights.length < _choices.length) {
+      _choiceWeights.add(1.0);
+    }
+    while (_choiceWeights.length > _choices.length) {
+      _choiceWeights.removeLast();
+    }
   }
 
   @override
@@ -695,28 +711,270 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
                 ],
               ],
               if (_selectedType == StepType.randomChoice) ...[
-                const Text('Choices:'),
-                ..._choices.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final choice = entry.value;
-                  return ListTile(
-                    title: Text(choice),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        setState(() {
-                          _choices.removeAt(index);
-                        });
-                      },
+                const SizedBox(height: 16),
+                
+                // Weighted Dice Toggle
+                SwitchListTile(
+                  title: const Text('Weighted Dice'),
+                  subtitle: const Text('Make some options more or less likely'),
+                  value: _useWeights,
+                  onChanged: (value) {
+                    setState(() {
+                      _useWeights = value;
+                      if (!value) {
+                        // Reset to equal weights when disabled
+                        _setEqualWeights();
+                        _selectedPreset = '';
+                      } else {
+                        // Default to equal preset when first enabled
+                        _selectedPreset = 'equal';
+                        _setEqualWeights();
+                      }
+                    });
+                  },
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Choices Section
+                Row(
+                  children: [
+                    Text(
+                      'Choices:',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  );
-                }),
-                TextButton.icon(
-                  onPressed: _addChoice,
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add Choice'),
-                  style: TextButton.styleFrom(
-                    minimumSize: const Size(120, 40),
+                    const Spacer(),
+                    Text(
+                      '${_choices.length} choices',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+                
+                if (_choices.length < 2)
+                  Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.errorContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.warning,
+                          color: Theme.of(context).colorScheme.error,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Add at least 2 choices for randomization',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                
+                // Weight Presets
+                if (_useWeights && _choices.length >= 3) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'Quick Presets:',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      ActionChip(
+                        label: const Text('Equal'),
+                        backgroundColor: _selectedPreset == 'equal' 
+                            ? Theme.of(context).colorScheme.primaryContainer 
+                            : null,
+                        onPressed: () {
+                          setState(() {
+                            _selectedPreset = 'equal';
+                          });
+                          _setEqualWeights();
+                        },
+                      ),
+                      ActionChip(
+                        label: const Text('Bell Curve'),
+                        backgroundColor: _selectedPreset == 'bell' 
+                            ? Theme.of(context).colorScheme.primaryContainer 
+                            : null,
+                        onPressed: () {
+                          setState(() {
+                            _selectedPreset = 'bell';
+                          });
+                          _setBellCurveWeights();
+                        },
+                      ),
+                      ActionChip(
+                        label: const Text('Reverse Bell'),
+                        backgroundColor: _selectedPreset == 'reverse_bell' 
+                            ? Theme.of(context).colorScheme.primaryContainer 
+                            : null,
+                        onPressed: () {
+                          setState(() {
+                            _selectedPreset = 'reverse_bell';
+                          });
+                          _setReverseBellCurveWeights();
+                        },
+                      ),
+                      ActionChip(
+                        label: const Text('Favor First'),
+                        backgroundColor: _selectedPreset == 'favor_first' 
+                            ? Theme.of(context).colorScheme.primaryContainer 
+                            : null,
+                        onPressed: () {
+                          setState(() {
+                            _selectedPreset = 'favor_first';
+                          });
+                          _setFavorFirstWeights();
+                        },
+                      ),
+                      ActionChip(
+                        label: const Text('Favor Last'),
+                        backgroundColor: _selectedPreset == 'favor_last' 
+                            ? Theme.of(context).colorScheme.primaryContainer 
+                            : null,
+                        onPressed: () {
+                          setState(() {
+                            _selectedPreset = 'favor_last';
+                          });
+                          _setFavorLastWeights();
+                        },
+                      ),
+                    ],
+                  ),
+                  
+                  // Preset Description
+                  if (_selectedPreset.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                        ),
+                      ),
+                      child: Text(
+                        _getPresetDescription(_selectedPreset),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                ],
+                
+                const SizedBox(height: 8),
+                
+                // Choice List with or without Weights
+                for (int i = 0; i < _choices.length; i++)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _choices[i],
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            if (_useWeights) ...[
+                              Text(
+                                '${_getChoiceProbability(i).toStringAsFixed(1)}%',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            IconButton(
+                              icon: const Icon(Icons.delete, size: 18),
+                              onPressed: () {
+                                setState(() {
+                                  _choices.removeAt(i);
+                                  _choiceWeights.removeAt(i);
+                                  _normalizeWeights();
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        if (_useWeights) ...[
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Text(
+                                'Weight:',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Slider(
+                                  value: _choiceWeights[i],
+                                  min: 0.1,
+                                  max: 5.0,
+                                  divisions: 49,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _choiceWeights[i] = value;
+                                      _selectedPreset = ''; // Clear preset when manually changed
+                                    });
+                                  },
+                                ),
+                              ),
+                              Text(
+                                '${_choiceWeights[i].toStringAsFixed(1)}x',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                
+                const SizedBox(height: 8),
+                
+                // Add Choice Button
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: _addChoice,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Choice'),
                   ),
                 ),
               ],
@@ -763,6 +1021,7 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
                 if (controller.text.trim().isNotEmpty) {
                   setState(() {
                     _choices.add(controller.text.trim());
+                    _choiceWeights.add(1.0); // Default weight
                   });
                   Navigator.of(context).pop();
                 }
@@ -776,6 +1035,77 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
         );
       },
     );
+  }
+
+  double _getChoiceProbability(int index) {
+    if (_choiceWeights.isEmpty) return 0.0;
+    final totalWeight = _choiceWeights.fold<double>(0, (sum, weight) => sum + weight);
+    if (totalWeight <= 0) return 0.0;
+    return (_choiceWeights[index] / totalWeight) * 100;
+  }
+
+  void _normalizeWeights() {
+    // Ensure weights list matches choices list
+    while (_choiceWeights.length < _choices.length) {
+      _choiceWeights.add(1.0);
+    }
+    while (_choiceWeights.length > _choices.length) {
+      _choiceWeights.removeLast();
+    }
+  }
+
+  void _setEqualWeights() {
+    setState(() {
+      for (int i = 0; i < _choiceWeights.length; i++) {
+        _choiceWeights[i] = 1.0;
+      }
+    });
+  }
+
+  void _setBellCurveWeights() {
+    setState(() {
+      final count = _choiceWeights.length;
+      final center = (count - 1) / 2.0;
+      for (int i = 0; i < count; i++) {
+        final distance = (i - center).abs();
+        final maxDistance = count / 2.0;
+        final normalizedDistance = distance / maxDistance;
+        // Bell curve: higher weight in center, lower at edges
+        _choiceWeights[i] = 0.5 + (1.0 - normalizedDistance) * 2.0;
+      }
+    });
+  }
+
+  void _setFavorFirstWeights() {
+    setState(() {
+      for (int i = 0; i < _choiceWeights.length; i++) {
+        // Decreasing weights: first option most likely
+        _choiceWeights[i] = (_choiceWeights.length - i) * 0.5 + 0.5;
+      }
+    });
+  }
+
+  void _setFavorLastWeights() {
+    setState(() {
+      for (int i = 0; i < _choiceWeights.length; i++) {
+        // Increasing weights: last option most likely
+        _choiceWeights[i] = (i + 1) * 0.5 + 0.5;
+      }
+    });
+  }
+
+  void _setReverseBellCurveWeights() {
+    setState(() {
+      final count = _choiceWeights.length;
+      final center = (count - 1) / 2.0;
+      for (int i = 0; i < count; i++) {
+        final distance = (i - center).abs();
+        final maxDistance = count / 2.0;
+        final normalizedDistance = distance / maxDistance;
+        // Reverse bell curve: lower weight in center, higher at edges
+        _choiceWeights[i] = 0.5 + normalizedDistance * 2.0;
+      }
+    });
   }
 
   void _addVariableOption() {
@@ -816,13 +1146,14 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
     );
   }
 
+
   void _saveStep() {
     if (!_formKey.currentState!.validate()) return;
 
-    if (_selectedType == StepType.randomChoice && _choices.isEmpty) {
+    if (_selectedType == StepType.randomChoice && _choices.length < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please add at least one choice'),
+          content: Text('Please add at least 2 choices for randomization'),
         ),
       );
       return;
@@ -840,6 +1171,7 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
       repsMin: _repsMin,
       repsMax: _repsMax,
       choices: _choices,
+      choiceWeights: _useWeights && _choiceWeights.isNotEmpty ? List.from(_choiceWeights) : null,
       variableName: _variableName,
       variableOptions: _variableOptions,
       voiceEnabled: _voiceEnabled,
@@ -847,5 +1179,22 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
 
     widget.onSave(step);
     Navigator.of(context).pop();
+  }
+
+  String _getPresetDescription(String preset) {
+    switch (preset) {
+      case 'equal':
+        return 'All choices have the same probability of being selected.';
+      case 'bell':
+        return 'Middle choices are more likely, options at the edges are less likely.';
+      case 'reverse_bell':
+        return 'Options at the edges are more likely, middle choices are less likely.';
+      case 'favor_first':
+        return 'First option is most likely, probability decreases down the list.';
+      case 'favor_last':
+        return 'Last option is most likely, probability increases down the list.';
+      default:
+        return '';
+    }
   }
 }

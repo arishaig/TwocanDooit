@@ -5,6 +5,7 @@ import 'providers/execution_provider.dart';
 import 'providers/settings_provider.dart';
 import 'services/notification_service.dart';
 import 'ui/screens/home_screen.dart';
+import 'ui/screens/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,8 +17,39 @@ void main() async {
   runApp(const DooitApp());
 }
 
-class DooitApp extends StatelessWidget {
+class DooitApp extends StatefulWidget {
   const DooitApp({super.key});
+  
+  static bool get isAppInForeground => _DooitAppState._currentState == AppLifecycleState.resumed;
+
+  @override
+  State<DooitApp> createState() => _DooitAppState();
+}
+
+class _DooitAppState extends State<DooitApp> with WidgetsBindingObserver {
+  static AppLifecycleState _currentState = AppLifecycleState.resumed;
+  
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print('App lifecycle changed to: $state');
+    _currentState = state;
+    if (state == AppLifecycleState.resumed) {
+      // App regained focus - dismiss nudge notifications
+      NotificationService.dismissNudgeNotification();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +59,11 @@ class DooitApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RoutineProvider()),
         ChangeNotifierProvider(create: (_) => ExecutionProvider()),
       ],
-      child: MaterialApp(
-        title: 'Dooit',
-        theme: ThemeData(
-          useMaterial3: true,
+      child: Consumer<SettingsProvider>(
+        builder: (context, settingsProvider, child) => MaterialApp(
+          title: 'Dooit',
+          theme: ThemeData(
+            useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
             seedColor: const Color(0xFF2E7D8F),
             brightness: Brightness.light,
@@ -105,9 +138,98 @@ class DooitApp extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
           ),
+          ),
+          darkTheme: ThemeData(
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color(0xFF2E7D8F),
+              brightness: Brightness.dark,
+            ),
+            // Mobile-friendly card theme for dark mode
+            cardTheme: CardThemeData(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            ),
+            // Mobile-friendly button themes with larger touch targets
+            filledButtonTheme: FilledButtonThemeData(
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(double.infinity, 56),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            outlinedButtonTheme: OutlinedButtonThemeData(
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 56),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                minimumSize: const Size(48, 48),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            // Mobile-friendly input decoration
+            inputDecorationTheme: InputDecorationTheme(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              labelStyle: const TextStyle(fontSize: 16),
+            ),
+            // Mobile-friendly app bar theme
+            appBarTheme: const AppBarTheme(
+              elevation: 0,
+              centerTitle: true,
+              titleTextStyle: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            // Mobile-friendly floating action button
+            floatingActionButtonTheme: const FloatingActionButtonThemeData(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
+            ),
+          ),
+          themeMode: settingsProvider.settings.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          home: settingsProvider.isLoading 
+              ? const Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              : () {
+                  print('Main: isLoading: ${settingsProvider.isLoading}, hasCompletedOnboarding: ${settingsProvider.settings.hasCompletedOnboarding}');
+                  return settingsProvider.settings.hasCompletedOnboarding 
+                      ? const HomeScreen()
+                      : const OnboardingScreen();
+                }(),
+          debugShowCheckedModeBanner: false,
         ),
-        home: const HomeScreen(),
-        debugShowCheckedModeBanner: false,
       ),
     );
   }

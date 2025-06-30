@@ -7,6 +7,7 @@ import '../models/app_settings.dart';
 import 'notification_service.dart';
 import 'tts_service.dart';
 import 'audio_service.dart';
+import '../main.dart';
 
 class ExecutionSession {
   final Routine routine;
@@ -307,7 +308,18 @@ class ExecutionService {
       
       if (_remainingSeconds <= 0) {
         timer.cancel();
+        AudioService.stopCountdown(); // Stop countdown sound
         _eventController.add('Timer finished');
+        
+        final currentStep = _currentSession?.currentStep;
+        
+        // Send notification if app is not in foreground
+        if (currentStep != null && !DooitApp.isAppInForeground) {
+          print('App is in background, sending timer completion notification for: ${currentStep.title}');
+          NotificationService.showTimerCompletedNotification(currentStep.title);
+        } else {
+          print('App is in foreground, skipping notification');
+        }
         
         // Announce timer completion
         if (_currentSettings != null && _currentSession?.routine.voiceEnabled == true) {

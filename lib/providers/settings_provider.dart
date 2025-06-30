@@ -12,6 +12,33 @@ class SettingsProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
+  SettingsProvider() {
+    _initializeSettings();
+  }
+
+  Future<void> _initializeSettings() async {
+    print('Settings: Starting initialization, loading = true');
+    _setLoading(true);
+    try {
+      final settingsData = await StorageService.loadSettings();
+      print('Settings: Loaded data: ${settingsData.toString()}');
+      _settings = settingsData.isNotEmpty 
+          ? AppSettings.fromJson(settingsData)
+          : const AppSettings();
+      print('Settings: Final settings - hasCompletedOnboarding: ${_settings.hasCompletedOnboarding}, isDarkMode: ${_settings.isDarkMode}');
+      _error = null;
+      
+      // Initialize TTS with current settings
+      await TTSService.configure(_settings);
+    } catch (e) {
+      print('Settings: Error loading: $e');
+      _error = 'Failed to load settings: $e';
+    } finally {
+      print('Settings: Finished initialization, loading = false');
+      _setLoading(false);
+    }
+  }
+
   Future<void> loadSettings() async {
     _setLoading(true);
     try {
@@ -91,6 +118,22 @@ class SettingsProvider with ChangeNotifier {
 
   Future<void> updateHapticFeedbackEnabled(bool enabled) async {
     await updateSettings(_settings.copyWith(hapticFeedbackEnabled: enabled));
+  }
+
+  Future<void> updateThemeMode(bool isDarkMode) async {
+    await updateSettings(_settings.copyWith(isDarkMode: isDarkMode));
+  }
+
+  Future<void> updateUserName(String userName) async {
+    await updateSettings(_settings.copyWith(userName: userName));
+  }
+
+  Future<void> completeOnboarding() async {
+    await updateSettings(_settings.copyWith(hasCompletedOnboarding: true));
+  }
+
+  Future<void> resetOnboarding() async {
+    await updateSettings(_settings.copyWith(hasCompletedOnboarding: false));
   }
 
   void clearError() {

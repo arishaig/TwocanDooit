@@ -15,6 +15,13 @@ class AppSettings {
   // Audio and haptic feedback settings
   final bool audioFeedbackEnabled;
   final bool hapticFeedbackEnabled;
+  
+  // Theme settings
+  final bool isDarkMode;
+  
+  // User preferences
+  final String userName;
+  final bool hasCompletedOnboarding;
 
   const AppSettings({
     this.ttsEnabled = false,
@@ -29,6 +36,9 @@ class AppSettings {
     this.maxNudgeCount = 3,
     this.audioFeedbackEnabled = true,
     this.hapticFeedbackEnabled = true,
+    this.isDarkMode = true,
+    this.userName = '',
+    this.hasCompletedOnboarding = false,
   });
 
   AppSettings copyWith({
@@ -44,6 +54,9 @@ class AppSettings {
     int? maxNudgeCount,
     bool? audioFeedbackEnabled,
     bool? hapticFeedbackEnabled,
+    bool? isDarkMode,
+    String? userName,
+    bool? hasCompletedOnboarding,
   }) {
     return AppSettings(
       ttsEnabled: ttsEnabled ?? this.ttsEnabled,
@@ -58,6 +71,9 @@ class AppSettings {
       maxNudgeCount: maxNudgeCount ?? this.maxNudgeCount,
       audioFeedbackEnabled: audioFeedbackEnabled ?? this.audioFeedbackEnabled,
       hapticFeedbackEnabled: hapticFeedbackEnabled ?? this.hapticFeedbackEnabled,
+      isDarkMode: isDarkMode ?? this.isDarkMode,
+      userName: userName ?? this.userName,
+      hasCompletedOnboarding: hasCompletedOnboarding ?? this.hasCompletedOnboarding,
     );
   }
 
@@ -75,6 +91,9 @@ class AppSettings {
       'maxNudgeCount': maxNudgeCount,
       'audioFeedbackEnabled': audioFeedbackEnabled,
       'hapticFeedbackEnabled': hapticFeedbackEnabled,
+      'isDarkMode': isDarkMode,
+      'userName': userName,
+      'hasCompletedOnboarding': hasCompletedOnboarding,
     };
   }
 
@@ -92,6 +111,9 @@ class AppSettings {
       maxNudgeCount: json['maxNudgeCount'] ?? 3,
       audioFeedbackEnabled: json['audioFeedbackEnabled'] ?? true,
       hapticFeedbackEnabled: json['hapticFeedbackEnabled'] ?? true,
+      isDarkMode: json['isDarkMode'] ?? true,
+      userName: json['userName'] ?? '',
+      hasCompletedOnboarding: json['hasCompletedOnboarding'] ?? false,
     );
   }
 }

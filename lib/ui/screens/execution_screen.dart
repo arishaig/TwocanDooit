@@ -81,8 +81,10 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
             );
           }
 
-          return Column(
+          return Stack(
             children: [
+              Column(
+                children: [
               // Progress indicator with larger height for mobile
               Container(
                 height: 6,
@@ -141,6 +143,11 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                   ),
                 ),
               ),
+                ],
+              ),
+              
+              // Floating Action Buttons for Navigation
+              _buildNavigationFABs(context, executionProvider, session, currentStep),
             ],
           );
         },
@@ -614,8 +621,20 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
     // Play dice roll sound
     await AudioService.playDiceRoll(_currentSettings);
     
-    final choice = await executionProvider.selectRandomChoice(currentStep.choices);
+    // Set rolling state
+    executionProvider.setRolling(true);
+    
+    // Add delay for animation
+    await Future.delayed(const Duration(milliseconds: 1500));
+    
+    // Use the step's weighted selection method
+    final choice = currentStep.selectRandomChoice();
     currentStep.selectedChoice = choice;
+    
+    executionProvider.setRolling(false);
+    
+    // Force UI update
+    setState(() {});
   }
 
   Future<void> _rollForReps(BuildContext context, currentStep, ExecutionProvider executionProvider) async {
@@ -645,11 +664,20 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
     // Play dice roll sound
     await AudioService.playDiceRoll(_currentSettings);
     
-    // Start rolling animation first (this sets isRolling to true)
-    final choice = await executionProvider.selectRandomChoice(currentStep.choices);
+    // Set rolling state
+    executionProvider.setRolling(true);
     
-    // Then reset and set the new choice
+    // Add delay for animation
+    await Future.delayed(const Duration(milliseconds: 1500));
+    
+    // Use the step's weighted selection method
+    final choice = currentStep.selectRandomChoice();
     currentStep.selectedChoice = choice;
+    
+    executionProvider.setRolling(false);
+    
+    // Force UI update
+    setState(() {});
   }
 
   void _showExitDialog(BuildContext context) {
@@ -682,6 +710,56 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildNavigationFABs(BuildContext context, ExecutionProvider executionProvider, dynamic session, dynamic currentStep) {
+    // Don't show FABs during dice animations or timer countdowns
+    final shouldHideFABs = executionProvider.isRolling || 
+                          (currentStep.type == StepType.timer && executionProvider.remainingSeconds <= 5 && executionProvider.remainingSeconds > 0);
+    
+    if (shouldHideFABs) {
+      return const SizedBox.shrink();
+    }
+    
+    return Stack(
+      children: [
+        // Left FAB - Previous Step
+        if (session.currentStepIndex > 0)
+          Positioned(
+            left: 16,
+            top: MediaQuery.of(context).size.height * 0.4, // Mid-screen
+            child: FloatingActionButton.small(
+              heroTag: "previous_fab",
+              onPressed: () async {
+                await AudioService.playSubtleClick(_currentSettings);
+                await executionProvider.previousStep(settings: _currentSettings);
+              },
+              tooltip: 'Previous Step',
+              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+              foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+              child: const Icon(Icons.arrow_back, size: 18),
+            ),
+          ),
+        
+        // Right FAB - Next Step  
+        if (session.currentStepIndex < session.routine.steps.length - 1)
+          Positioned(
+            right: 16,
+            top: MediaQuery.of(context).size.height * 0.4, // Mid-screen
+            child: FloatingActionButton.small(
+              heroTag: "next_fab",
+              onPressed: () async {
+                await AudioService.playSubtleClick(_currentSettings);
+                await executionProvider.nextStep(settings: _currentSettings);
+              },
+              tooltip: 'Next Step',
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+              child: const Icon(Icons.arrow_forward, size: 18),
+            ),
+          ),
+      ],
     );
   }
 }

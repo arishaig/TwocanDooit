@@ -111,6 +111,11 @@ class ExecutionProvider with ChangeNotifier {
     return result;
   }
 
+  void setRolling(bool rolling) {
+    _isRolling = rolling;
+    notifyListeners();
+  }
+
   String get timerDisplay {
     final minutes = _remainingSeconds ~/ 60;
     final seconds = _remainingSeconds % 60;
