@@ -480,31 +480,26 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
         padding: const EdgeInsets.all(20), // Larger padding for mobile
         child: Column(
           children: [
-            // Primary actions on top row
+            // Navigation buttons on top row
             Row(
               children: [
                 Expanded(
-                  child: FilledButton(
-                    onPressed: () async {
-                      await AudioService.playButtonClick(_currentSettings);
-                      if (executionProvider.isPaused) {
-                        executionProvider.resumeExecution(settings: _currentSettings);
-                      } else {
-                        executionProvider.pauseExecution();
-                      }
-                    },
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size(0, 56), // Larger touch target
-                      backgroundColor: executionProvider.isPaused 
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.secondary,
+                  child: OutlinedButton(
+                    onPressed: executionProvider.currentStepIndex > 0
+                        ? () async {
+                            await AudioService.playGoBack(_currentSettings);
+                            executionProvider.previousStep(settings: _currentSettings);
+                          }
+                        : null,
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 56),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(executionProvider.isPaused ? Icons.play_arrow : Icons.pause),
-                        const SizedBox(width: 8),
-                        Text(executionProvider.isPaused ? 'Resume' : 'Pause'),
+                        Icon(Icons.arrow_back),
+                        SizedBox(width: 8),
+                        Text('Previous'),
                       ],
                     ),
                   ),
@@ -532,25 +527,30 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
               ],
             ),
             const SizedBox(height: 12),
-            // Secondary action on bottom
+            // Pause/Resume button on bottom
             SizedBox(
               width: double.infinity,
-              child: OutlinedButton(
-                onPressed: executionProvider.currentStepIndex > 0
-                    ? () async {
-                        await AudioService.playGoBack(_currentSettings);
-                        executionProvider.previousStep(settings: _currentSettings);
-                      }
-                    : null,
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(0, 48),
+              child: FilledButton(
+                onPressed: () async {
+                  await AudioService.playButtonClick(_currentSettings);
+                  if (executionProvider.isPaused) {
+                    executionProvider.resumeExecution(settings: _currentSettings);
+                  } else {
+                    executionProvider.pauseExecution();
+                  }
+                },
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(0, 56), // Larger touch target
+                  backgroundColor: executionProvider.isPaused 
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.secondary,
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.arrow_back),
-                    SizedBox(width: 8),
-                    Text('Previous Step'),
+                    Icon(executionProvider.isPaused ? Icons.play_arrow : Icons.pause),
+                    const SizedBox(width: 8),
+                    Text(executionProvider.isPaused ? 'Resume' : 'Pause'),
                   ],
                 ),
               ),
