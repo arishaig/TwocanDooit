@@ -724,39 +724,99 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
     
     return Stack(
       children: [
-        // Left FAB - Previous Step
+        // Left side tap zone - Previous Step
         if (session.currentStepIndex > 0)
           Positioned(
-            left: 16,
-            top: MediaQuery.of(context).size.height * 0.4, // Mid-screen
-            child: FloatingActionButton.small(
-              heroTag: "previous_fab",
-              onPressed: () async {
+            left: 0,
+            top: 0,
+            bottom: 0,
+            child: GestureDetector(
+              onTap: () async {
                 await AudioService.playSubtleClick(_currentSettings);
                 await executionProvider.previousStep(settings: _currentSettings);
               },
-              tooltip: 'Previous Step',
-              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-              foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
-              child: const Icon(Icons.arrow_back, size: 18),
+              child: Container(
+                width: 80, // Wide tap zone
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                      borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(12),
+                        bottomRight: Radius.circular(12),
+                      ),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.chevron_left,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 24,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         
-        // Right FAB - Next Step  
+        // Right side tap zone - Next Step  
         if (session.currentStepIndex < session.routine.steps.length - 1)
           Positioned(
-            right: 16,
-            top: MediaQuery.of(context).size.height * 0.4, // Mid-screen
-            child: FloatingActionButton.small(
-              heroTag: "next_fab",
-              onPressed: () async {
+            right: 0,
+            top: 0,
+            bottom: 0,
+            child: GestureDetector(
+              onTap: () async {
                 await AudioService.playSubtleClick(_currentSettings);
                 await executionProvider.nextStep(settings: _currentSettings);
               },
-              tooltip: 'Next Step',
-              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-              foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-              child: const Icon(Icons.arrow_forward, size: 18),
+              child: Container(
+                width: 80, // Wide tap zone
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerRight,
+                    end: Alignment.centerLeft,
+                    colors: [
+                      Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        bottomLeft: Radius.circular(12),
+                      ),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.chevron_right,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 24,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
       ],
