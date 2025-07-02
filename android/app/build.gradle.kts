@@ -6,16 +6,16 @@ plugins {
 }
 
 android {
-    namespace = "com.arishaig.dooit"
+    namespace = "com.arishaig.twocandooit"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
     signingConfigs {
         create("release") {
             keyAlias = "upload"
-            keyPassword = "dooit123456"
+            keyPassword = "twocandooit123456"
             storeFile = file("upload-keystore.jks")
-            storePassword = "dooit123456"
+            storePassword = "twocandooit123456"
         }
     }
 
@@ -31,7 +31,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.arishaig.dooit"
+        applicationId = "com.arishaig.twocandooit"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

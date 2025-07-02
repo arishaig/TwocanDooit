@@ -169,7 +169,7 @@ class _DiceWidgetState extends State<DiceWidget>
                   width: 56,
                   height: 56,
                   colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.onPrimary,
+                    Theme.of(context).filledButtonTheme.style?.foregroundColor?.resolve({}) ?? Colors.white,
                     BlendMode.srcIn,
                   ),
                 ),
@@ -185,7 +185,7 @@ class _DiceWidgetState extends State<DiceWidget>
                     width: 56,
                     height: 56,
                     colorFilter: ColorFilter.mode(
-                      Theme.of(context).colorScheme.onPrimary,
+                      Theme.of(context).filledButtonTheme.style?.foregroundColor?.resolve({}) ?? Colors.white,
                       BlendMode.srcIn,
                     ),
                   ),
@@ -195,7 +195,7 @@ class _DiceWidgetState extends State<DiceWidget>
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
+                      color: Theme.of(context).filledButtonTheme.style?.foregroundColor?.resolve({}) ?? Colors.white,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -204,7 +204,7 @@ class _DiceWidgetState extends State<DiceWidget>
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.8),
+                      color: (Theme.of(context).filledButtonTheme.style?.foregroundColor?.resolve({}) ?? Colors.white).withOpacity(0.9),
                       letterSpacing: 1.5,
                     ),
                   ),
@@ -215,7 +215,7 @@ class _DiceWidgetState extends State<DiceWidget>
                 style: TextStyle(
                   fontSize: 44,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).filledButtonTheme.style?.foregroundColor?.resolve({}) ?? Colors.white,
                 ),
               );
 

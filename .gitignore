@@ -76,6 +76,18 @@ app.*.map.json
 # Web related
 lib/generated_plugin_registrant.dart
 
+# Security - Signing keys and secrets
+*.keystore
+*.jks
+key.properties
+google-services.json
+GoogleService-Info.plist
+firebase_options.dart
+
+# Additional files to ignore
+results.txt
+*.log
+
 # Exceptions to above rules.
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock

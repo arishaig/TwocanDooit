@@ -14,19 +14,19 @@ void main() async {
   await NotificationService.initialize();
   await NotificationService.requestPermissions();
   
-  runApp(const DooitApp());
+  runApp(const TwocanDooitApp());
 }
 
-class DooitApp extends StatefulWidget {
-  const DooitApp({super.key});
+class TwocanDooitApp extends StatefulWidget {
+  const TwocanDooitApp({super.key});
   
-  static bool get isAppInForeground => _DooitAppState._currentState == AppLifecycleState.resumed;
+  static bool get isAppInForeground => _TwocanDooitAppState._currentState == AppLifecycleState.resumed;
 
   @override
-  State<DooitApp> createState() => _DooitAppState();
+  State<TwocanDooitApp> createState() => _TwocanDooitAppState();
 }
 
-class _DooitAppState extends State<DooitApp> with WidgetsBindingObserver {
+class _TwocanDooitAppState extends State<TwocanDooitApp> with WidgetsBindingObserver {
   static AppLifecycleState _currentState = AppLifecycleState.resumed;
   
   @override
@@ -61,13 +61,21 @@ class _DooitAppState extends State<DooitApp> with WidgetsBindingObserver {
       ],
       child: Consumer<SettingsProvider>(
         builder: (context, settingsProvider, child) => MaterialApp(
-          title: 'Dooit',
+          title: 'TwocanDooit',
           theme: ThemeData(
             useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF2E7D8F),
-            brightness: Brightness.light,
-          ),
+            colorScheme: const ColorScheme.light(
+              // Twocan brand colors from brand guide
+              primary: Color(0xFF2D7A9A),        // 🐦 Toucan Blue
+              secondary: Color(0xFFFFAD49),      // 🍊 Beak Orange
+              tertiary: Color(0xFFA393D3),       // 💜 Cozy Purple
+              surface: Color(0xFFFFF7ED),        // 🪶 Belly Cream
+              onSurface: Color(0xFF2B2B2B),      // 🌑 Charcoal Text
+              onPrimary: Color(0xFFFFF7ED),      // White text on Toucan Blue
+              onSecondary: Color(0xFF2B2B2B),    // Charcoal text on Beak Orange
+              surfaceVariant: Color(0xFFF5F5F5), // Light variant
+              outline: Color(0xFFE0E0E0),        // Subtle borders
+            ),
           // Mobile-friendly card theme
           cardTheme: CardThemeData(
             elevation: 3,
@@ -141,9 +149,17 @@ class _DooitAppState extends State<DooitApp> with WidgetsBindingObserver {
           ),
           darkTheme: ThemeData(
             useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF2E7D8F),
-              brightness: Brightness.dark,
+            colorScheme: const ColorScheme.dark(
+              // Twocan brand colors adapted for dark mode
+              primary: Color(0xFF2D7A9A),        // 🐦 Toucan Blue
+              secondary: Color(0xFFFFAD49),      // 🍊 Beak Orange
+              tertiary: Color(0xFFA393D3),       // 💜 Cozy Purple
+              surface: Color(0xFF1A1A1A),        // Dark surface
+              onSurface: Color(0xFFFFF7ED),      // Light text
+              onPrimary: Color(0xFFFFF7ED),      // White text on Toucan Blue
+              onSecondary: Color(0xFF2B2B2B),    // Charcoal text on Beak Orange
+              surfaceVariant: Color(0xFF2A2A2A), // Dark variant
+              outline: Color(0xFF404040),        // Subtle dark borders
             ),
             // Mobile-friendly card theme for dark mode
             cardTheme: CardThemeData(

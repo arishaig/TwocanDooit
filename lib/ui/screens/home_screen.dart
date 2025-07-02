@@ -5,6 +5,7 @@ import '../../providers/settings_provider.dart';
 import '../../models/routine.dart';
 import '../../services/audio_service.dart';
 import '../widgets/routine_card.dart';
+import '../shared/twocan_colors.dart';
 import 'routine_editor_screen.dart';
 import 'execution_screen.dart';
 import 'settings_screen.dart';
@@ -17,6 +18,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final ScrollController _scrollController = ScrollController();
+  bool _isScrolledToBottom = false;
+  
   @override
   void initState() {
     super.initState();
@@ -24,6 +28,29 @@ class _HomeScreenState extends State<HomeScreen> {
       context.read<SettingsProvider>().loadSettings();
       context.read<RoutineProvider>().loadRoutines();
     });
+    
+    // Listen to scroll changes
+    _scrollController.addListener(_onScroll);
+  }
+  
+  void _onScroll() {
+    if (_scrollController.hasClients) {
+      final maxScroll = _scrollController.position.maxScrollExtent;
+      final currentScroll = _scrollController.position.pixels;
+      final isAtBottom = currentScroll >= (maxScroll - 50); // 50px threshold
+      
+      if (_isScrolledToBottom != isAtBottom) {
+        setState(() {
+          _isScrolledToBottom = isAtBottom;
+        });
+      }
+    }
+  }
+  
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -42,21 +69,21 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Hey $displayName, let\'s Dooit!',
+                  'Hi $displayName, I\'m Twocan,',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 20,
+                    fontSize: 18,
                     color: Theme.of(context).colorScheme.onPrimary,
                   ),
                 ),
                 Text(
-                  'ADHD Routine Helper',
+                  'and together we can Dooit!',
                   style: TextStyle(
-                fontSize: 14, 
-                fontWeight: FontWeight.normal,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-            ),
+                    fontSize: 14, 
+                    fontWeight: FontWeight.normal,
+                    color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
+                  ),
+                ),
               ],
             );
           },
@@ -90,12 +117,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Error loading routines',
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    'Oops! Something got mixed up',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    routineProvider.error!,
+                    'I had trouble loading our routines, but don\'t worry - let\'s try again together!',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
@@ -105,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       routineProvider.clearError();
                       routineProvider.loadRoutines();
                     },
-                    child: const Text('Retry'),
+                    child: const Text('Let\'s Try Again'),
                   ),
                 ],
               ),
@@ -119,54 +148,113 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.schedule,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(60),
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    ),
+                    child: Center(
+                      child: Image.asset(
+                        'assets/twocan/twocan_happy.png',
+                        width: 80,
+                        height: 80,
+                        errorBuilder: (context, error, stackTrace) {
+                          // Fallback to emoji if image fails to load
+                          return Text(
+                            '🐦',
+                            style: TextStyle(fontSize: 64),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No routines yet',
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    'Ready for our first routine?',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Create your first routine to get started',
+                    'Let\'s create something together!\nI\'ll help you break it down step by step.',
                     style: Theme.of(context).textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24),
                   FilledButton.icon(
                     onPressed: () => _createNewRoutine(context),
                     icon: const Icon(Icons.add),
-                    label: const Text('Create Routine'),
+                    label: const Text('Let\'s Create One!'),
                   ),
                 ],
               ),
             );
           }
 
-          return RefreshIndicator(
-            onRefresh: () => routineProvider.loadRoutines(),
-            child: ListView.builder(
-              padding: const EdgeInsets.only(top: 8, bottom: 88), // Extra bottom padding for FAB
-              itemCount: routines.length,
-              itemBuilder: (context, index) {
-                final routine = routines[index];
-                return RoutineCard(
-                  routine: routine,
-                  onTap: () => _startRoutine(context, routine),
-                  onEdit: () => _editRoutine(context, routine),
-                  onDelete: () => _deleteRoutine(context, routine),
-                );
-              },
-            ),
+          return Stack(
+            children: [
+              RefreshIndicator(
+                onRefresh: () => routineProvider.loadRoutines(),
+                child: ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.only(top: 8, bottom: 88), // Extra bottom padding for FAB
+                  itemCount: routines.length,
+                  itemBuilder: (context, index) {
+                    final routine = routines[index];
+                    return RoutineCard(
+                      routine: routine,
+                      onTap: () => _startRoutine(context, routine),
+                      onEdit: () => _editRoutine(context, routine),
+                      onDelete: () => _deleteRoutine(context, routine),
+                    );
+                  },
+                ),
+              ),
+              // Animated Twocan thumbs up
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 800),
+                curve: Curves.easeInOutBack,
+                bottom: _isScrolledToBottom ? null : 20,
+                top: _isScrolledToBottom ? 20 : null,
+                left: 20,
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Image.asset(
+                      'assets/twocan/twocan_thumbs_up.png',
+                      width: 160,
+                      height: 160,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(
+                          Icons.thumb_up,
+                          size: 160,
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
           );
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _createNewRoutine(context),
         icon: const Icon(Icons.add),
-        label: const Text('New Routine'),
+        label: const Text('Create Together'),
       ),
     );
   }
@@ -217,8 +305,8 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Routine'),
-          content: Text('Are you sure you want to delete "${routine.name}"?'),
+          title: const Text('Remove Routine'),
+          content: Text('Should we remove "${routine.name}" from our list?\n\nNo worries if you change your mind - we can always make it again later!'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -237,3 +325,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+

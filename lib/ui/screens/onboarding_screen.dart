@@ -184,9 +184,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 32),
           Text(
-            'Welcome to Dooit!',
+            'Welcome to TwocanDooit! 🐦',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Hi! I\'m Twocan, and together we can Dooit!',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontStyle: FontStyle.italic,
+              color: Theme.of(context).colorScheme.primary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -320,7 +329,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Dooit has smart settings that work at different levels:',
+            'I have smart settings that work at different levels:',
             style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
@@ -448,7 +457,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Choose how Dooit helps keep you on track:',
+            'Let\'s choose how I can help keep you on track:',
             style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),

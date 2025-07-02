@@ -314,7 +314,7 @@ class ExecutionService {
         final currentStep = _currentSession?.currentStep;
         
         // Send notification if app is not in foreground
-        if (currentStep != null && !DooitApp.isAppInForeground) {
+        if (currentStep != null && !TwocanDooitApp.isAppInForeground) {
           print('App is in background, sending timer completion notification for: ${currentStep.title}');
           NotificationService.showTimerCompletedNotification(currentStep.title);
         } else {

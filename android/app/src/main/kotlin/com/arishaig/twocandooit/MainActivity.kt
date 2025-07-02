@@ -1,4 +1,4 @@
-package com.arishaig.dooit
+package com.arishaig.twocandooit
 
 import io.flutter.embedding.android.FlutterActivity
 

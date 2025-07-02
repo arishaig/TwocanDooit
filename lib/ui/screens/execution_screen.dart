@@ -566,10 +566,27 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.celebration,
-            size: 80,
-            color: Theme.of(context).colorScheme.primary,
+          Container(
+            width: 200,
+            height: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            ),
+            child: Center(
+              child: Image.asset(
+                'assets/twocan/twocan_happy.png',
+                width: 160,
+                height: 160,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(
+                    Icons.celebration,
+                    size: 160,
+                    color: Theme.of(context).colorScheme.primary,
+                  );
+                },
+              ),
+            ),
           ).animate().scale(duration: 600.ms, curve: Curves.elasticOut),
           const SizedBox(height: 24),
           Text(

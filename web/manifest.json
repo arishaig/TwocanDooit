@@ -1,11 +1,11 @@
 {
-    "name": "dooit",
-    "short_name": "dooit",
+    "name": "TwocanDooit",
+    "short_name": "TwocanDooit",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "ADHD-friendly routine helper app - I'm Toocan and together we can dooit!",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

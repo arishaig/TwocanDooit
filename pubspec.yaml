@@ -1,4 +1,4 @@
-name: dooit
+name: twocandooit
 description: "ADHD/executive function support app with routine management"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.1+3
 
 environment:
   sdk: ^3.8.1
@@ -111,6 +111,7 @@ flutter:
     - assets/music/binauralBeats/
     - assets/music/calm/
     - assets/music/focusBeats/
+    - assets/twocan/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -144,35 +145,35 @@ flutter_launcher_icons:
   ios: true
   web:
     generate: true
-    image_path: "app_logo.png"
+    image_path: "assets/twocan/twocan_app_icon.png"
   windows:
     generate: true
-    image_path: "app_logo.png"
+    image_path: "assets/twocan/twocan_app_icon.png"
   macos:
     generate: true
-    image_path: "app_logo.png"
-  image_path: "app_logo.png"
+    image_path: "assets/twocan/twocan_app_icon.png"
+  image_path: "assets/twocan/twocan_app_icon.png"
   min_sdk_android: 21
-  # Android adaptive icon configuration
-  adaptive_icon_background: "#FFD700"
-  adaptive_icon_foreground: "app_logo.png"
+  # Android adaptive icon configuration with Twocan brand colors
+  adaptive_icon_background: "#FFF7ED"  # 🪶 Belly Cream background
+  adaptive_icon_foreground: "assets/twocan/twocan_app_icon.png"
 
-# Native splash screen configuration  
+# Native splash screen configuration with Twocan branding
 flutter_native_splash:
-  # Background color (white for clean look)
-  color: "#ffffff"
-  # Use your new logo as the splash screen image
-  image: app_logo.png
-  # Brand color for Android 12+ themed splash
-  color_dark: "#121212"
-  image_dark: app_logo.png
+  # Background color (Twocan Belly Cream)
+  color: "#FFF7ED"
+  # Use Twocan logo as splash screen image
+  image: assets/twocan/twocan_app_icon.png
+  # Dark mode splash with darker background
+  color_dark: "#1A1A1A"
+  image_dark: assets/twocan/twocan_app_icon.png
   
   # Android 12+ splash screen
   android_12:
-    image: app_logo.png
-    color: "#ffffff"
-    color_dark: "#121212"
-    image_dark: app_logo.png
+    image: assets/twocan/twocan_app_icon.png
+    color: "#FFF7ED"
+    color_dark: "#1A1A1A"
+    image_dark: assets/twocan/twocan_app_icon.png
   
   # Enable for all platforms
   ios: true

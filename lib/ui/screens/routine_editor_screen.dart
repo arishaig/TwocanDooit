@@ -17,7 +17,7 @@ class RoutineEditorScreen extends StatefulWidget {
   State<RoutineEditorScreen> createState() => _RoutineEditorScreenState();
 }
 
-class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
+class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
@@ -28,6 +28,11 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
   late String? _selectedMusicTrack;
   late bool _isBuiltInTrack;
   String? _currentlyPreviewing;
+  
+  // Focus tracking for clipboard animation
+  late final FocusNode _nameFocusNode;
+  late final FocusNode _descriptionFocusNode;
+  bool _isTopFieldsFocused = false;
 
   bool get _isEditing => widget.routine != null;
 
@@ -44,6 +49,19 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
     _selectedMusicTrack = routine?.musicTrack;
     _isBuiltInTrack = routine?.isBuiltInTrack ?? true;
     _currentlyPreviewing = null;
+    
+    // Initialize focus nodes and listeners
+    _nameFocusNode = FocusNode();
+    _descriptionFocusNode = FocusNode();
+    
+    _nameFocusNode.addListener(_onFocusChange);
+    _descriptionFocusNode.addListener(_onFocusChange);
+  }
+  
+  void _onFocusChange() {
+    setState(() {
+      _isTopFieldsFocused = _nameFocusNode.hasFocus || _descriptionFocusNode.hasFocus;
+    });
   }
 
   @override
@@ -51,6 +69,8 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
     _nameController.dispose();
     _descriptionController.dispose();
     _categoryController.dispose();
+    _nameFocusNode.dispose();
+    _descriptionFocusNode.dispose();
     // Stop any playing preview
     AudioService.stopBackgroundMusic();
     super.dispose();
@@ -68,13 +88,16 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
           ),
         ],
       ),
-      body: Form(
+      body: Stack(
+        children: [
+          Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(20), // Larger padding for mobile
           children: [
             TextFormField(
               controller: _nameController,
+              focusNode: _nameFocusNode,
               decoration: const InputDecoration(
                 labelText: 'Routine Name',
                 hintText: 'Enter routine name',
@@ -90,6 +113,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _descriptionController,
+              focusNode: _descriptionFocusNode,
               decoration: const InputDecoration(
                 labelText: 'Description (optional)',
                 hintText: 'Enter description',
@@ -311,6 +335,51 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
               ),
           ],
         ),
+      ),
+      // Animated Twocan clipboard
+      AnimatedPositioned(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.elasticOut,
+        top: _isTopFieldsFocused ? null : 20,
+        bottom: _isTopFieldsFocused ? 20 : null,
+        right: 20,
+        child: IgnorePointer(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.elasticOut,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            transform: Matrix4.identity()
+              ..rotateZ(_isTopFieldsFocused ? 0.1 : 0),
+            child: AnimatedScale(
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.elasticOut,
+              scale: _isTopFieldsFocused ? 0.9 : 1.0,
+              child: Image.asset(
+                'assets/twocan/twocan_clipboard.png',
+                width: 160,
+                height: 160,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(
+                    Icons.edit_note,
+                    size: 160,
+                    color: Theme.of(context).colorScheme.primary,
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+        ],
       ),
     );
   }
