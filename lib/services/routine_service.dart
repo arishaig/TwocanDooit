@@ -54,6 +54,14 @@ class RoutineService {
   static Future<void> deleteRoutine(String routineId) async {
     _routines.removeWhere((routine) => routine.id == routineId);
     await saveRoutines();
+    
+    // Also delete all run records for this routine
+    await StorageService.deleteRoutineRuns(routineId);
+  }
+
+  static Future<void> importRoutine(Routine routine) async {
+    _routines.add(routine);
+    await saveRoutines();
   }
 
   static Routine? getRoutineById(String id) {

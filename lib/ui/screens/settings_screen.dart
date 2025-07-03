@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../models/app_settings.dart';
 import '../../providers/settings_provider.dart';
+import '../../providers/routine_provider.dart';
 import '../../services/tts_service.dart';
+import '../../services/routine_import_export_service.dart';
+// import '../widgets/llm_status_widget.dart';
 import 'onboarding_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -449,6 +453,114 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           },
                           icon: const Icon(Icons.refresh),
                           label: const Text('Restart Setup Wizard'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // LLM Status Section
+              // const LLMStatusWidget(),
+              // 
+              // const SizedBox(height: 20),
+              // 
+              // // LLM Demo Section (only show if LLM is available)
+              // const LLMDemoWidget(),
+              // 
+              // const SizedBox(height: 20),
+              
+              // Import/Export Section
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.import_export,
+                            size: 28,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Import & Export',
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Share routines or import from external sources',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      // Import Buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: FilledButton.icon(
+                              onPressed: _importRoutineFromFile,
+                              icon: const Icon(Icons.file_upload),
+                              label: const Text('From File'),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: _importRoutineFromClipboard,
+                              icon: const Icon(Icons.content_paste),
+                              label: const FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text('From Clipboard'),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 12),
+                      
+                      // Share All Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: _exportAllRoutines,
+                          icon: const Icon(Icons.share),
+                          label: const Text('Share All Routines'),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 12),
+                      
+                      // LLM Prompt Generator Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: _generateLLMPrompt,
+                          icon: const Icon(Icons.psychology, size: 16),
+                          label: const Text('Generate LLM Prompt'),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 8),
+                      
+                      // Format Info Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: TextButton.icon(
+                          onPressed: _showFormatInfo,
+                          icon: const Icon(Icons.info_outline, size: 16),
+                          label: const Text('Format Documentation'),
                         ),
                       ),
                     ],
@@ -948,4 +1060,322 @@ class _SettingsScreenState extends State<SettingsScreen> {
     print('TTS speak call completed');
   }
 
+  // Import/Export Methods
+
+  Future<void> _importRoutineFromFile() async {
+    try {
+      final routine = await RoutineImportExportService.instance.pickAndImportRoutine();
+      
+      if (routine != null && mounted) {
+        final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
+        await routineProvider.importRoutine(routine);
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Successfully imported "${routine.name}"'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+          ),
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Failed to import routine. Please check the file format.'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Import error: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _importRoutineFromClipboard() async {
+    try {
+      final routine = await RoutineImportExportService.instance.importRoutineFromClipboard();
+      
+      if (routine != null && mounted) {
+        final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
+        await routineProvider.importRoutine(routine);
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Successfully imported "${routine.name}" from clipboard'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+          ),
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('No valid routine found in clipboard. Make sure you copied a routine JSON.'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Clipboard import error: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _exportAllRoutines() async {
+    try {
+      final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
+      final routines = routineProvider.routines;
+      
+      if (routines.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No routines to export')),
+        );
+        return;
+      }
+      
+      final result = await RoutineImportExportService.instance.shareRoutines(
+        routines, 
+        'my_routines'
+      );
+      
+      if (result == true && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Shared ${routines.length} routines successfully!'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else if (result == false && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Failed to share routines. Please try again.'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      // result == null means user cancelled, so we don't show any message
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sharing error: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showFormatInfo() {
+    final documentation = RoutineImportExportService.instance.getFormatDocumentation();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Routine Format Documentation'),
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 400,
+          child: SingleChildScrollView(
+            child: SelectableText(
+              documentation,
+              style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Close'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final sample = RoutineImportExportService.instance.createSampleExport();
+              _showSampleExport(sample);
+            },
+            child: const Text('View Sample'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSampleExport(String sample) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sample Routine Export'),
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 400,
+          child: SingleChildScrollView(
+            child: SelectableText(
+              sample,
+              style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _generateLLMPrompt() {
+    // Show dialog to optionally get user request
+    showDialog(
+      context: context,
+      builder: (context) => _LLMPromptDialog(),
+    );
+  }
+
+}
+
+class _LLMPromptDialog extends StatefulWidget {
+  @override
+  State<_LLMPromptDialog> createState() => _LLMPromptDialogState();
+}
+
+class _LLMPromptDialogState extends State<_LLMPromptDialog> {
+  final _requestController = TextEditingController();
+  String? _generatedPrompt;
+
+  @override
+  void dispose() {
+    _requestController.dispose();
+    super.dispose();
+  }
+
+  void _generatePrompt() {
+    final userRequest = _requestController.text.trim();
+    final prompt = RoutineImportExportService.instance.generateLLMPrompt(
+      userRequest: userRequest.isEmpty ? null : userRequest,
+    );
+    
+    setState(() {
+      _generatedPrompt = prompt;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('LLM Prompt Generator'),
+      content: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: double.maxFinite,
+          maxHeight: MediaQuery.of(context).size.height * 0.8,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Generate a comprehensive prompt for an LLM to create ADHD-friendly routines. Optionally describe what kind of routine you want:',
+              style: TextStyle(fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+            
+            TextField(
+              controller: _requestController,
+              decoration: const InputDecoration(
+                labelText: 'Routine Request (Optional)',
+                hintText: 'e.g., "Create a morning routine for someone with ADHD who struggles with time management"',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
+            ),
+            
+            const SizedBox(height: 16),
+            
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: _generatePrompt,
+                icon: const Icon(Icons.auto_awesome, size: 16),
+                label: const Text('Generate Prompt'),
+              ),
+            ),
+            
+            const SizedBox(height: 16),
+            
+            if (_generatedPrompt != null) ...[
+              const Text(
+                'Generated Prompt:',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Theme.of(context).colorScheme.outline),
+                  ),
+                  child: SingleChildScrollView(
+                    child: SelectableText(
+                      _generatedPrompt!,
+                      style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
+                    ),
+                  ),
+                ),
+              ),
+            ] else ...[
+              Expanded(
+                child: Center(
+                  child: Text(
+                    'Click "Generate Prompt" to create a comprehensive LLM prompt with schema and context.',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Close'),
+        ),
+        if (_generatedPrompt != null)
+          FilledButton.icon(
+            onPressed: () async {
+              await Clipboard.setData(ClipboardData(text: _generatedPrompt!));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Prompt copied to clipboard!')),
+              );
+            },
+            icon: const Icon(Icons.copy, size: 16),
+            label: const Text('Copy'),
+          ),
+      ],
+    );
+  }
 }

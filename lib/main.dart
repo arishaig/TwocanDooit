@@ -4,8 +4,11 @@ import 'providers/routine_provider.dart';
 import 'providers/execution_provider.dart';
 import 'providers/settings_provider.dart';
 import 'services/notification_service.dart';
+// import 'services/llm/local_llm_service.dart';
 import 'ui/screens/home_screen.dart';
 import 'ui/screens/onboarding_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +16,19 @@ void main() async {
   // Initialize notification service and request permissions
   await NotificationService.initialize();
   await NotificationService.requestPermissions();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  
+  // Initialize Local AI service (on-device Gemma model)
+  // try {
+  //   await LocalLLMService.instance.initialize();
+  //   print('Local AI initialized successfully');
+  // } catch (e) {
+  //   print('Local AI initialization failed: $e');
+  //   // App continues to work without AI features
+  // }
   
   runApp(const TwocanDooitApp());
 }

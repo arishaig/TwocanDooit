@@ -4,9 +4,11 @@ import '../models/routine.dart';
 import '../models/step.dart';
 import '../models/step_type.dart';
 import '../models/app_settings.dart';
+import '../models/routine_run.dart';
 import 'notification_service.dart';
 import 'tts_service.dart';
 import 'audio_service.dart';
+import 'storage_service.dart';
 import '../main.dart';
 
 class ExecutionSession {
@@ -44,9 +46,11 @@ class ExecutionSession {
 
 class ExecutionService {
   static ExecutionSession? _currentSession;
+  static RoutineRun? _currentRun;
   static Timer? _timer;
   static int _remainingSeconds = 0;
   static AppSettings? _currentSettings;
+  static DateTime? _pauseStartTime;
   
   // Stream controllers
   static final StreamController<ExecutionSession> _sessionController =
@@ -75,6 +79,12 @@ class ExecutionService {
       step.reset();
     }
     
+    // Create run tracking record
+    _currentRun = RoutineRun(
+      routineId: routine.id,
+      totalSteps: routine.steps.length,
+    );
+    
     _currentSession = ExecutionSession(routine: routine);
     _sessionController.add(_currentSession!);
     _eventController.add('Routine started: ${routine.name}');
@@ -100,6 +110,7 @@ class ExecutionService {
     if (_currentSession == null || _currentSession!.isPaused) return;
     
     _currentSession!.isPaused = true;
+    _pauseStartTime = DateTime.now();
     _timer?.cancel();
     _sessionController.add(_currentSession!);
     _eventController.add('Execution paused');
@@ -109,6 +120,13 @@ class ExecutionService {
     if (_currentSession == null || !_currentSession!.isPaused) return;
     
     if (settings != null) _currentSettings = settings;
+    
+    // Calculate and add paused time
+    if (_pauseStartTime != null && _currentRun != null) {
+      final pausedTime = DateTime.now().difference(_pauseStartTime!);
+      _currentRun!.addPausedTime(pausedTime);
+      _pauseStartTime = null;
+    }
     
     _currentSession!.isPaused = false;
     _sessionController.add(_currentSession!);
@@ -134,8 +152,20 @@ class ExecutionService {
     _timer?.cancel();
     NotificationService.stopNudgeTimer();
     
+    // Update run progress
+    if (_currentRun != null) {
+      _currentRun!.updateProgress(_currentSession!.currentStepIndex);
+      await StorageService.saveRoutineRun(_currentRun!);
+    }
+    
     if (_currentSession!.isCompleted) {
       _eventController.add('Routine completed!');
+      
+      // Mark run as completed and save
+      if (_currentRun != null) {
+        _currentRun!.complete();
+        await StorageService.saveRoutineRun(_currentRun!);
+      }
       
       // Stop background music immediately (no fade) and play completion sound simultaneously
       if (AudioService.isMusicPlaying) {
@@ -174,11 +204,20 @@ class ExecutionService {
   }
 
   static Future<void> stopExecution() async {
+    // Save abandoned run if there was one in progress
+    if (_currentRun != null && _currentSession != null && !_currentSession!.isCompleted) {
+      _currentRun!.updateProgress(_currentSession!.currentStepIndex);
+      _currentRun!.abandon();
+      await StorageService.saveRoutineRun(_currentRun!);
+    }
+    
     _timer?.cancel();
     _timer = null;
     await AudioService.stopCountdown(); // Stop countdown sound if playing
     await AudioService.stopBackgroundMusic(); // Stop background music if playing
     _currentSession = null;
+    _currentRun = null;
+    _pauseStartTime = null;
     _remainingSeconds = 0;
     _eventController.add('Execution stopped');
   }

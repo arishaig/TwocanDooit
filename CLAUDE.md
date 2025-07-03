@@ -8,6 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `flutter run` - Run the app in debug mode
 - `flutter run --release` - Run the app in release mode
 - `flutter build apk` - Build Android APK
+- `flutter build appbundle` - Build Android App Bundle for Play Store
 - `flutter build web` - Build for web
 - `flutter pub get` - Install dependencies
 - `flutter pub outdated` - Check for outdated packages

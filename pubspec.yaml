@@ -60,10 +60,33 @@ dependencies:
   
   # File picker for user music selection
   file_picker: ^10.2.0
+  
+  # Share functionality for exporting routines
+  share_plus: ^11.0.0
+  
+  # Note: LLM inference handled by Firebase AI service
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+
+  # AI toolkit for Flutter, providing a unified interface for LLMs
+  # flutter_ai_toolkit: ^0.9.1
+
+  # Local LLM inference using Google's Gemma models
+  # flutter_gemma: ^0.9.0
+
+  # Google Play Asset Delivery for large model files
+  # asset_delivery: ^1.1.0
+
+  # Firebase core for analytics/logging (no AI functionality)
+  firebase_core: ^3.15.0
+
+  # Path provider for file system access
+  path_provider: ^2.1.4
+  
+  # HTTP client for downloading models
+  # http: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -112,6 +135,7 @@ flutter:
     - assets/music/calm/
     - assets/music/focusBeats/
     - assets/twocan/
+    - assets/models/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

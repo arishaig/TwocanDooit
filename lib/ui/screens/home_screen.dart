@@ -4,6 +4,8 @@ import '../../providers/routine_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../models/routine.dart';
 import '../../services/audio_service.dart';
+import '../../services/routine_import_export_service.dart';
+import '../../services/storage_service.dart';
 import '../widgets/routine_card.dart';
 import '../shared/twocan_colors.dart';
 import 'routine_editor_screen.dart';
@@ -19,7 +21,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
-  bool _isScrolledToBottom = false;
+  bool _isAtTop = true;
   
   @override
   void initState() {
@@ -35,13 +37,17 @@ class _HomeScreenState extends State<HomeScreen> {
   
   void _onScroll() {
     if (_scrollController.hasClients) {
-      final maxScroll = _scrollController.position.maxScrollExtent;
       final currentScroll = _scrollController.position.pixels;
-      final isAtBottom = currentScroll >= (maxScroll - 50); // 50px threshold
+      final isAtTop = currentScroll <= 50; // 50px threshold from top
       
-      if (_isScrolledToBottom != isAtBottom) {
-        setState(() {
-          _isScrolledToBottom = isAtBottom;
+      if (_isAtTop != isAtTop) {
+        // Use post-frame callback to avoid setState during layout
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            setState(() {
+              _isAtTop = isAtTop;
+            });
+          }
         });
       }
     }
@@ -208,6 +214,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       routine: routine,
                       onTap: () => _startRoutine(context, routine),
                       onEdit: () => _editRoutine(context, routine),
+                      onExport: () => _shareRoutine(context, routine),
+                      onClearRunData: () => _clearRunData(context, routine),
                       onDelete: () => _deleteRoutine(context, routine),
                     );
                   },
@@ -217,8 +225,8 @@ class _HomeScreenState extends State<HomeScreen> {
               AnimatedPositioned(
                 duration: const Duration(milliseconds: 800),
                 curve: Curves.easeInOutBack,
-                bottom: _isScrolledToBottom ? null : 20,
-                top: _isScrolledToBottom ? 20 : null,
+                bottom: _isAtTop ? 20 : null,
+                top: _isAtTop ? null : 20,
                 left: 20,
                 child: IgnorePointer(
                   child: Container(
@@ -297,6 +305,92 @@ class _HomeScreenState extends State<HomeScreen> {
       MaterialPageRoute(
         builder: (context) => const SettingsScreen(),
       ),
+    );
+  }
+
+  void _shareRoutine(BuildContext context, Routine routine) async {
+    try {
+      final exportService = RoutineImportExportService.instance;
+      final result = await exportService.shareRoutine(routine);
+      
+      if (result == true && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Routine "${routine.name}" shared successfully!'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else if (result == false && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Failed to share routine. Please try again.'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      // result == null means user cancelled, so we don't show any message
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error sharing routine: ${e.toString()}'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  void _clearRunData(BuildContext context, Routine routine) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Clear Run Data'),
+          content: Text('Clear all run history for "${routine.name}"?\n\nThis will remove all tracking data including run times, completion stats, and last run information. The routine itself will remain unchanged.\n\nThis action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                
+                final success = await StorageService.clearRoutineRunData(routine.id);
+                
+                if (mounted) {
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Run data cleared for "${routine.name}"'),
+                        backgroundColor: Colors.orange,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Failed to clear run data. Please try again.'),
+                        backgroundColor: Theme.of(context).colorScheme.error,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                }
+              },
+              child: const Text('Clear Data'),
+            ),
+          ],
+        );
+      },
     );
   }
 

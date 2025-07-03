@@ -79,6 +79,18 @@ class RoutineProvider with ChangeNotifier {
     }
   }
 
+  Future<void> importRoutine(Routine routine) async {
+    try {
+      await RoutineService.importRoutine(routine);
+      _routines = RoutineService.routines;
+      _error = null;
+      notifyListeners();
+    } catch (e) {
+      _error = 'Failed to import routine: $e';
+      notifyListeners();
+    }
+  }
+
   Future<void> addStepToRoutine(String routineId, Step step) async {
     try {
       final routine = RoutineService.getRoutineById(routineId);

@@ -1,5 +1,6 @@
 import 'package:uuid/uuid.dart';
 import 'step.dart';
+import '../services/storage_service.dart';
 
 class Routine {
   final String id;
@@ -106,6 +107,27 @@ class Routine {
     updatedAt = DateTime.now();
   }
 
+  // Analytics computed properties
+  Future<int> get timesRun async {
+    final stats = await StorageService.getRoutineStats(id);
+    return stats['timesRun'] ?? 0;
+  }
+
+  Future<DateTime?> get lastRunAt async {
+    final stats = await StorageService.getRoutineStats(id);
+    return stats['lastRunAt'];
+  }
+
+  Future<Duration?> get averageRunTime async {
+    final stats = await StorageService.getRoutineStats(id);
+    return stats['averageDuration'];
+  }
+
+  Future<double> get completionRate async {
+    final stats = await StorageService.getRoutineStats(id);
+    return stats['completionRate'] ?? 0.0;
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -125,15 +147,15 @@ class Routine {
   factory Routine.fromJson(Map<String, dynamic> json) {
     return Routine(
       id: json['id'],
-      name: json['name'],
+      name: json['name'] ?? 'Untitled Routine',
       description: json['description'] ?? '',
       category: json['category'] ?? '',
       steps: (json['steps'] as List<dynamic>?)
               ?.map((stepJson) => Step.fromJson(stepJson))
               .toList() ??
           [],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
+      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : DateTime.now(),
       voiceEnabled: json['voiceEnabled'] ?? false,
       musicEnabled: json['musicEnabled'] ?? false,
       musicTrack: json['musicTrack'],

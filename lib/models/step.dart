@@ -211,29 +211,64 @@ class Step {
   }
 
   factory Step.fromJson(Map<String, dynamic> json) {
-    return Step(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'] ?? '',
-      type: StepType.values.firstWhere(
-        (e) => e.name == json['type'],
-        orElse: () => StepType.basic,
-      ),
-      timerDuration: json['timerDuration'] ?? 60,
-      repsTarget: json['repsTarget'] ?? 1,
-      repsCompleted: json['repsCompleted'] ?? 0,
-      repDurationSeconds: json['repDurationSeconds'],
-      randomizeReps: json['randomizeReps'] ?? false,
-      repsMin: json['repsMin'] ?? 1,
-      repsMax: json['repsMax'] ?? 10,
-      choices: List<String>.from(json['choices'] ?? []),
-      choiceWeights: json['choiceWeights'] != null ? List<double>.from(json['choiceWeights']) : null,
-      selectedChoice: json['selectedChoice'],
-      variableName: json['variableName'] ?? '',
-      variableOptions: List<String>.from(json['variableOptions'] ?? []),
-      selectedVariable: json['selectedVariable'],
-      isCompleted: json['isCompleted'] ?? false,
-      voiceEnabled: json['voiceEnabled'] ?? true,
+    final stepType = StepType.values.firstWhere(
+      (e) => e.name == json['type'],
+      orElse: () => StepType.basic,
     );
+
+    // Parse common fields that all step types need
+    final baseStep = Step(
+      id: json['id'],
+      title: json['title'] ?? 'Untitled Step',
+      description: json['description'] ?? '',
+      type: stepType,
+      voiceEnabled: json['voiceEnabled'] ?? true,
+      isCompleted: json['isCompleted'] ?? false,
+    );
+
+    // Parse type-specific fields
+    return _parseTypeSpecificFields(baseStep, json, stepType);
+  }
+
+  /// Parse fields specific to each step type
+  static Step _parseTypeSpecificFields(Step baseStep, Map<String, dynamic> json, StepType stepType) {
+    switch (stepType) {
+      case StepType.basic:
+        return baseStep; // Basic steps don't need additional fields
+
+      case StepType.timer:
+        return baseStep.copyWith(
+          timerDuration: json['timerDuration'] ?? 60,
+        );
+
+      case StepType.reps:
+        return baseStep.copyWith(
+          repsTarget: json['repsTarget'] ?? 1,
+          repsCompleted: json['repsCompleted'] ?? 0,
+          repDurationSeconds: json['repDurationSeconds'],
+          randomizeReps: json['randomizeReps'] ?? false,
+          repsMin: json['repsMin'] ?? 1,
+          repsMax: json['repsMax'] ?? 10,
+        );
+
+      case StepType.randomChoice:
+        return baseStep.copyWith(
+          choices: List<String>.from(json['choices'] ?? []),
+          choiceWeights: json['choiceWeights'] != null 
+              ? (json['choiceWeights'] as List<dynamic>).map<double>((e) => (e as num).toDouble()).toList()
+              : null,
+          selectedChoice: json['selectedChoice'],
+        );
+
+      case StepType.variableParameter:
+        return baseStep.copyWith(
+          variableName: json['variableName'] ?? '',
+          variableOptions: List<String>.from(json['variableOptions'] ?? []),
+          selectedVariable: json['selectedVariable'],
+        );
+
+      default:
+        return baseStep;
+    }
   }
 }

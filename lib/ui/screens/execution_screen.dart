@@ -227,9 +227,10 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
   Widget _buildTypeSpecificContent(BuildContext context, currentStep, ExecutionProvider executionProvider) {
     switch (currentStep.type) {
       case StepType.timer:
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+        return SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
             Text(
               executionProvider.timerDisplay,
               style: Theme.of(context).textTheme.displayLarge?.copyWith(
@@ -243,6 +244,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ],
+          ),
         );
         
       case StepType.reps:
@@ -252,212 +254,221 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
           final isRolling = executionProvider.isRolling;
           final optionCount = currentStep.repsMax - currentStep.repsMin + 1;
           
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (isRolling) ...[
-                DiceWidget(
-                  isRolling: true,
-                  result: null,
-                  optionCount: optionCount,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Rolling for reps...',
-                  style: Theme.of(context).textTheme.titleMedium,
-                  textAlign: TextAlign.center,
-                ),
-              ] else ...[
-                DiceWidget(
-                  isRolling: false,
-                  result: null,
-                  optionCount: optionCount,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Roll for ${currentStep.repsMin}-${currentStep.repsMax} reps',
-                  style: Theme.of(context).textTheme.titleMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Tap the dice to roll',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+          return SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (isRolling) ...[
+                  DiceWidget(
+                    isRolling: true,
+                    result: null,
+                    optionCount: optionCount,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ],
-          );
-        } else if (currentStep.randomizeReps && _showRollResult) {
-          // Show the rolled result prominently before transitioning to rep counting
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '${currentStep.repsTarget}',
-                style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
-                  fontSize: 72,
-                ),
-              ).animate().scale(
-                duration: 2000.ms,
-                begin: const Offset(1.5, 1.5),
-                end: const Offset(1.0, 1.0),
-                curve: Curves.elasticOut,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'You rolled ${currentStep.repsTarget} reps!',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ).animate().fadeIn(delay: 500.ms, duration: 1000.ms),
-              const SizedBox(height: 32),
-              Text(
-                'Starting rep counting...',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ).animate().fadeIn(delay: 1500.ms, duration: 500.ms),
-            ],
-          );
-        } else {
-          // Normal reps display (either non-random or ready for rep counting)
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '${currentStep.repsCompleted}',
-                style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              Text(
-                'of ${currentStep.repsTarget}${currentStep.randomizeReps ? ' (rolled)' : ''}',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 24),
-              FilledButton.icon(
-                onPressed: () => executionProvider.completeCurrentStep(settings: _currentSettings),
-                icon: const Icon(Icons.add),
-                label: const Text('Complete Rep'),
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size(200, 56),
-                ),
-              ),
-            ],
-          );
-        }
-        
-      case StepType.randomChoice:
-        final isRolling = executionProvider.isRolling;
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (isRolling) ...[
-              // Show rolling animation whether it's initial roll or reroll
-              DiceWidget(
-                isRolling: true,
-                result: null,
-                optionCount: currentStep.choices.length,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'Rolling dice...',
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-            ] else if (currentStep.selectedChoice == null) ...[
-              // Initial state - no choice selected yet
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 2,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.casino,
-                      size: 48,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Tap anywhere to roll',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Choose from: ${currentStep.choices.join(', ')}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            ] else ...[
-              // Result state - choice has been selected
-              Column(
-                children: [
-                  GestureDetector(
-                    onTap: () => _reroll(context, currentStep, executionProvider),
-                    child: DiceWidget(
-                      isRolling: false,
-                      result: currentStep.choices.indexOf(currentStep.selectedChoice!) + 1,
-                      optionCount: currentStep.choices.length,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   Text(
-                    'Selected:',
+                    'Rolling for reps...',
                     style: Theme.of(context).textTheme.titleMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                ] else ...[
+                  DiceWidget(
+                    isRolling: false,
+                    result: null,
+                    optionCount: optionCount,
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Roll for ${currentStep.repsMin}-${currentStep.repsMax} reps',
+                    style: Theme.of(context).textTheme.titleMedium,
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    currentStep.selectedChoice!,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Tap the dice to reroll',
+                    'Tap the dice to roll',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ],
-              ),
+              ],
+            ),
+          );
+        } else if (currentStep.randomizeReps && _showRollResult) {
+          // Show the rolled result prominently before transitioning to rep counting
+          return SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${currentStep.repsTarget}',
+                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                    fontSize: 72,
+                  ),
+                ).animate().scale(
+                  duration: 2000.ms,
+                  begin: const Offset(1.5, 1.5),
+                  end: const Offset(1.0, 1.0),
+                  curve: Curves.elasticOut,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'You rolled ${currentStep.repsTarget} reps!',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ).animate().fadeIn(delay: 500.ms, duration: 1000.ms),
+                const SizedBox(height: 32),
+                Text(
+                  'Starting rep counting...',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.center,
+                ).animate().fadeIn(delay: 1500.ms, duration: 500.ms),
             ],
-          ],
+            ),
+          );
+        } else {
+          // Normal reps display (either non-random or ready for rep counting)
+          return SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${currentStep.repsCompleted}',
+                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                Text(
+                  'of ${currentStep.repsTarget}${currentStep.randomizeReps ? ' (rolled)' : ''}',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 24),
+                FilledButton.icon(
+                  onPressed: () => executionProvider.completeCurrentStep(settings: _currentSettings),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Complete Rep'),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(200, 56),
+                  ),
+                ),
+            ],
+            ),
+          );
+        }
+        
+      case StepType.randomChoice:
+        final isRolling = executionProvider.isRolling;
+        return SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (isRolling) ...[
+                // Show rolling animation whether it's initial roll or reroll
+                DiceWidget(
+                  isRolling: true,
+                  result: null,
+                  optionCount: currentStep.choices.length,
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Rolling dice...',
+                  style: Theme.of(context).textTheme.titleMedium,
+                  textAlign: TextAlign.center,
+                ),
+              ] else if (currentStep.selectedChoice == null) ...[
+                // Initial state - no choice selected yet
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(32),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.primary,
+                      width: 2,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.casino,
+                        size: 48,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Tap anywhere to roll',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Choose from: ${currentStep.choices.join(', ')}',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ] else ...[
+                // Result state - choice has been selected
+                Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () => _reroll(context, currentStep, executionProvider),
+                      child: DiceWidget(
+                        isRolling: false,
+                        result: currentStep.choices.indexOf(currentStep.selectedChoice!) + 1,
+                        optionCount: currentStep.choices.length,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Selected:',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      currentStep.selectedChoice!,
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Tap the dice to reroll',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
         );
         
       case StepType.basic:
       default:
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+        return SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
             Icon(
               Icons.task_alt,
               size: 80,
@@ -470,6 +481,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
               textAlign: TextAlign.center,
             ),
           ],
+          ),
         );
     }
   }

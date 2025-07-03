@@ -6,6 +6,8 @@ class RoutineCard extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final VoidCallback? onExport;
+  final VoidCallback? onClearRunData;
 
   const RoutineCard({
     super.key,
@@ -13,6 +15,8 @@ class RoutineCard extends StatelessWidget {
     this.onTap,
     this.onEdit,
     this.onDelete,
+    this.onExport,
+    this.onClearRunData,
   });
 
   @override
@@ -74,6 +78,12 @@ class RoutineCard extends StatelessWidget {
                           case 'edit':
                             onEdit?.call();
                             break;
+                          case 'export':
+                            onExport?.call();
+                            break;
+                          case 'clearRunData':
+                            onClearRunData?.call();
+                            break;
                           case 'delete':
                             onDelete?.call();
                             break;
@@ -87,6 +97,26 @@ class RoutineCard extends StatelessWidget {
                               Icon(Icons.edit),
                               SizedBox(width: 12),
                               Text('Edit'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'export',
+                          child: Row(
+                            children: [
+                              Icon(Icons.share),
+                              SizedBox(width: 12),
+                              Text('Share'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'clearRunData',
+                          child: Row(
+                            children: [
+                              Icon(Icons.history_toggle_off, color: Colors.orange),
+                              SizedBox(width: 12),
+                              Text('Clear Run Data', style: TextStyle(color: Colors.orange)),
                             ],
                           ),
                         ),
@@ -145,6 +175,67 @@ class RoutineCard extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+              // Last run information
+              const SizedBox(height: 12),
+              FutureBuilder<DateTime?>(
+                future: routine.lastRunAt,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox.shrink();
+                  }
+                  
+                  final lastRun = snapshot.data;
+                  if (lastRun == null) {
+                    return Row(
+                      children: [
+                        Icon(
+                          Icons.schedule,
+                          size: 16,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Never run',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                  
+                  final now = DateTime.now();
+                  final difference = now.difference(lastRun);
+                  String timeAgo;
+                  
+                  if (difference.inDays > 0) {
+                    timeAgo = '${difference.inDays} day${difference.inDays != 1 ? 's' : ''} ago';
+                  } else if (difference.inHours > 0) {
+                    timeAgo = '${difference.inHours} hour${difference.inHours != 1 ? 's' : ''} ago';
+                  } else if (difference.inMinutes > 0) {
+                    timeAgo = '${difference.inMinutes} minute${difference.inMinutes != 1 ? 's' : ''} ago';
+                  } else {
+                    timeAgo = 'Just now';
+                  }
+                  
+                  return Row(
+                    children: [
+                      Icon(
+                        Icons.schedule,
+                        size: 16,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Last run: $timeAgo',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
           ),
