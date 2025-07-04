@@ -24,8 +24,15 @@ Your cheerleader, planner, and snack reminder-er all rolled into one adorable ca
 - **Basic Tasks**: Simple checklist items with encouraging checkmarks
 - **Timers**: Countdown timers with cozy audio feedback and background notifications
 - **Repetition Steps**: Configurable rep counting with optional randomization
-- **Random Choice**: Weighted dice system for decision-making (novelty = motivation = dopamine!)
+- **Random Choice**: Interactive 2.5D dice rolling with haptic feedback for decision-making
 - **Variable Parameters**: Dynamic content selection for routine variety
+
+### 📊 Analytics & Tracking
+- **Individual Run Tracking**: Each routine execution recorded with detailed metrics
+- **Completion Analytics**: Run count, completion rate, average duration, and last run time
+- **Progress Visualization**: Routine cards display "last run" with relative time formatting
+- **Data Management**: Clear run data for individual routines with confirmation dialogs
+- **Clean Exports**: Analytics excluded from routine sharing for privacy
 
 ### 🧠 ADHD-Friendly Features
 - **Gentle Nudges**: Optional reminder notifications that auto-dismiss when app regains focus
@@ -40,6 +47,8 @@ Your cheerleader, planner, and snack reminder-er all rolled into one adorable ca
 - **Smart UI**: Navigation elements hide during focused interactions
 - **Cross-Platform**: Runs on Android, iOS, web, and desktop
 - **Offline-First**: Local storage with no required internet connection
+- **Native Sharing**: Import/export routines using device's native share menu
+- **LLM Integration**: Comprehensive prompts for AI-assisted routine creation
 
 ## 🚀 Getting Started
 

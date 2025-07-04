@@ -595,21 +595,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Dooit - ADHD Routine Helper',
+                        'TwocanDooit',
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Version 1.0.0',
+                        'Version 1.0.1+3',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'An executive function support app designed to help with routine management and step-by-step guidance.',
+                        'A cozy, ADHD-friendly routine helper with your colorful toucan sidekick. Features step-by-step guidance, interactive dice rolling, routine analytics, and gentle encouragement to help make tasks feel safe, possible, and even fun.',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],

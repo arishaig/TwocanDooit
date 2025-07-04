@@ -22,6 +22,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isAtTop = true;
+  bool _isUpdating = false;
   
   @override
   void initState() {
@@ -36,17 +37,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   
   void _onScroll() {
-    if (_scrollController.hasClients) {
+    if (_scrollController.hasClients && !_isUpdating) {
       final currentScroll = _scrollController.position.pixels;
       final isAtTop = currentScroll <= 50; // 50px threshold from top
       
       if (_isAtTop != isAtTop) {
+        _isUpdating = true;
         // Use post-frame callback to avoid setState during layout
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             setState(() {
               _isAtTop = isAtTop;
             });
+            _isUpdating = false;
           }
         });
       }
