@@ -1,0 +1,62 @@
+{
+  "format": "TwocanDooit-Routines",
+  "version": "1.0", 
+  "category": "Mindfulness",
+  "description": "Simple breathing and gratitude practices for overwhelming moments",
+  "routines": [
+    {
+      "id": "calm-breathing",
+      "name": "Calm Breathing",
+      "description": "Simple breathing for overwhelming moments",
+      "category": "Mindfulness",
+      "steps": [
+        {
+          "id": "find-breath",
+          "title": "Find your breath",
+          "description": "Just notice you're breathing - no need to change it",
+          "type": "timer",
+          "timerDuration": 60,
+          "order": 0
+        },
+        {
+          "id": "gentle-breathing",
+          "title": "Gentle breathing",
+          "description": "Breathe in comfort, breathe out tension",
+          "type": "timer",
+          "timerDuration": 180,
+          "order": 1
+        },
+        {
+          "id": "return-to-day",
+          "title": "Return to your day",
+          "description": "Carry this calm feeling with you",
+          "type": "basic",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "id": "micro-gratitude",
+      "name": "Micro Gratitude",
+      "description": "Tiny moments of appreciation",
+      "category": "Mindfulness",
+      "steps": [
+        {
+          "id": "notice-good",
+          "title": "Notice something good",
+          "description": "Look around - what's one thing you appreciate?",
+          "type": "basic",
+          "order": 0
+        },
+        {
+          "id": "gratitude-category",
+          "title": "Gratitude category",
+          "description": "What kind of goodness speaks to you today?",
+          "type": "randomChoice",
+          "choices": ["Something beautiful", "Someone kind", "A comfort", "Your body working", "A small pleasure"],
+          "order": 1
+        }
+      ]
+    }
+  ]
+}

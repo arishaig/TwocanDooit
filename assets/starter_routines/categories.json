@@ -1,0 +1,68 @@
+{
+  "categories": [
+    {
+      "id": "daily_essentials",
+      "title": "Daily Essentials",
+      "description": "Morning & evening routines",
+      "emoji": "🌅",
+      "routineCount": 2,
+      "highlights": ["Gentle wake-up", "Evening wind-down"]
+    },
+    {
+      "id": "health_wellness",
+      "title": "Health & Wellness", 
+      "description": "Exercise & self-care",
+      "emoji": "💪",
+      "routineCount": 2,
+      "highlights": ["Body-friendly movement", "Self-care reset"]
+    },
+    {
+      "id": "productivity",
+      "title": "Productivity",
+      "description": "Work & study focus",
+      "emoji": "📚", 
+      "routineCount": 2,
+      "highlights": ["ADHD-friendly focus", "Task breakdown"]
+    },
+    {
+      "id": "mindfulness",
+      "title": "Mindfulness",
+      "description": "Breathing & gratitude",
+      "emoji": "🧘",
+      "routineCount": 2,
+      "highlights": ["Calm breathing", "Micro gratitude"]
+    },
+    {
+      "id": "creativity",
+      "title": "Creativity", 
+      "description": "Art & creative expression",
+      "emoji": "🎨",
+      "routineCount": 2,
+      "highlights": ["Creative spark", "Inspiration hunt"]
+    },
+    {
+      "id": "home_life",
+      "title": "Home Life",
+      "description": "Cleaning & organization", 
+      "emoji": "🏠",
+      "routineCount": 2,
+      "highlights": ["Gentle tidying", "Space reset"]
+    },
+    {
+      "id": "cat_care",
+      "title": "Cat Care",
+      "description": "Caring for your feline friend",
+      "emoji": "🐱",
+      "routineCount": 2,
+      "highlights": ["Daily cat care", "Weekly wellness"]
+    },
+    {
+      "id": "dog_care", 
+      "title": "Dog Care",
+      "description": "Caring for your canine companion",
+      "emoji": "🐶",
+      "routineCount": 2,
+      "highlights": ["Daily dog care", "Weekly wellness"]
+    }
+  ]
+}

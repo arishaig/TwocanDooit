@@ -1,0 +1,139 @@
+{
+  "format": "TwocanDooit-Routines",
+  "version": "1.0",
+  "category": "Dog Care",
+  "description": "Caring for your canine companion with love and structure",
+  "routines": [
+    {
+      "id": "daily-dog-care",
+      "name": "Daily Dog Care",
+      "description": "Essential daily routine for your dog's health and happiness",
+      "category": "Pet Care",
+      "steps": [
+        {
+          "id": "morning-potty",
+          "title": "Morning potty break",
+          "description": "Let your dog outside for their morning bathroom break",
+          "type": "basic",
+          "order": 0
+        },
+        {
+          "id": "breakfast-time",
+          "title": "Breakfast feeding",
+          "description": "Provide fresh water and morning meal",
+          "type": "basic",
+          "order": 1
+        },
+        {
+          "id": "walk-duration",
+          "title": "Morning walk",
+          "description": "Get some exercise and fresh air together",
+          "type": "timer",
+          "timerDuration": 1800,
+          "order": 2
+        },
+        {
+          "id": "training-activity",
+          "title": "Choose training focus",
+          "description": "Pick a skill to practice today",
+          "type": "randomChoice",
+          "choices": ["Sit and stay", "Come when called", "Heel walking", "Paw shake", "Down and roll over"],
+          "order": 3
+        },
+        {
+          "id": "training-session",
+          "title": "Training practice",
+          "description": "Short, positive training session",
+          "type": "timer",
+          "timerDuration": 600,
+          "order": 4
+        },
+        {
+          "id": "evening-potty",
+          "title": "Evening potty break",
+          "description": "Final outdoor break before bedtime",
+          "type": "basic",
+          "order": 5
+        },
+        {
+          "id": "dinner-time",
+          "title": "Dinner feeding",
+          "description": "Evening meal and fresh water check",
+          "type": "basic",
+          "order": 6
+        }
+      ]
+    },
+    {
+      "id": "weekly-dog-wellness",
+      "name": "Weekly Dog Wellness",
+      "description": "Weekly health maintenance and bonding activities",
+      "category": "Pet Care",
+      "steps": [
+        {
+          "id": "health-check",
+          "title": "Weekly health check",
+          "description": "Check eyes, ears, teeth, and overall condition",
+          "type": "timer",
+          "timerDuration": 300,
+          "order": 0
+        },
+        {
+          "id": "brushing-session",
+          "title": "Brushing and grooming",
+          "description": "Brush coat and check for any skin issues",
+          "type": "timer",
+          "timerDuration": 900,
+          "order": 1
+        },
+        {
+          "id": "nail-trim",
+          "title": "Nail trimming",
+          "description": "Trim nails or check if they need trimming",
+          "type": "timer",
+          "timerDuration": 600,
+          "order": 2
+        },
+        {
+          "id": "teeth-cleaning",
+          "title": "Dental care",
+          "description": "Brush teeth or provide dental chew",
+          "type": "timer",
+          "timerDuration": 300,
+          "order": 3
+        },
+        {
+          "id": "adventure-choice",
+          "title": "Choose weekly adventure",
+          "description": "Plan a special outing or activity",
+          "type": "randomChoice",
+          "choices": ["New park visit", "Dog-friendly store trip", "Hiking trail", "Beach or lake visit", "Playdate with other dogs"],
+          "order": 4
+        },
+        {
+          "id": "toy-wash",
+          "title": "Clean toys and bowls",
+          "description": "Wash food bowls and favorite toys",
+          "type": "timer",
+          "timerDuration": 900,
+          "order": 5
+        },
+        {
+          "id": "bed-refresh",
+          "title": "Refresh sleeping area",
+          "description": "Wash or fluff dog bed and blankets",
+          "type": "basic",
+          "order": 6
+        },
+        {
+          "id": "mental-stimulation",
+          "title": "Mental enrichment activity",
+          "description": "Provide brain exercise for your dog",
+          "type": "randomChoice",
+          "choices": ["Puzzle toy", "Hide treats around house", "Learn new trick", "Sniffing game", "Kong stuffing"],
+          "order": 7
+        }
+      ]
+    }
+  ]
+}

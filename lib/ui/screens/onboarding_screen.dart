@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../models/app_settings.dart';
+import '../../services/starter_routines_service.dart';
+import '../../services/routine_service.dart';
 import 'home_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -24,6 +26,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool _tempAudioFeedback = true;
   bool _tempHapticFeedback = true;
   bool _tempDarkMode = true;
+  
+  // Starter routines selection
+  List<StarterCategory> _availableCategories = [];
+  Set<String> _selectedCategories = {};
+  bool _loadingCategories = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStarterCategories();
+  }
 
   @override
   void dispose() {
@@ -33,7 +46,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _nextPage() {
-    if (_currentPage < 5) {
+    if (_currentPage < 6) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -66,6 +79,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ),
     );
     
+    // Load selected starter routines
+    if (_selectedCategories.isNotEmpty) {
+      try {
+        final starterRoutines = await StarterRoutinesService.instance
+            .loadRoutinesForCategories(_selectedCategories.toList());
+        if (starterRoutines.isNotEmpty) {
+          // Save the starter routines to storage
+          await RoutineService.saveStarterRoutines(starterRoutines);
+        }
+      } catch (e) {
+        print('Error loading starter routines: $e');
+        // Continue with onboarding even if starter routines fail to load
+      }
+    }
+    
     if (mounted) {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -83,6 +111,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         MaterialPageRoute(builder: (context) => const HomeScreen()),
         (route) => false,
       );
+    }
+  }
+
+  Future<void> _loadStarterCategories() async {
+    try {
+      final categories = await StarterRoutinesService.instance.loadCategories();
+      if (mounted) {
+        setState(() {
+          _availableCategories = categories;
+          _loadingCategories = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading starter categories: $e');
+      if (mounted) {
+        setState(() {
+          _loadingCategories = false;
+        });
+      }
     }
   }
 
@@ -139,6 +186,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   _buildSettingsHierarchyPage(),
                   _buildFeedbackSettingsPage(),
                   _buildAccessibilitySettingsPage(),
+                  _buildStarterRoutinesPage(),
                 ],
               ),
             ),
@@ -158,8 +206,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   if (_currentPage > 0) const SizedBox(width: 16),
                   Expanded(
                     child: FilledButton(
-                      onPressed: _currentPage == 5 ? _completeOnboarding : _nextPage,
-                      child: Text(_currentPage == 5 ? 'Get Started' : 'Next'),
+                      onPressed: _currentPage == 6 ? _completeOnboarding : _nextPage,
+                      child: Text(_currentPage == 6 ? 'Get Started' : 'Next'),
                     ),
                   ),
                 ],
@@ -706,6 +754,139 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStarterRoutinesPage() {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        children: [
+          const SizedBox(height: 40),
+          Icon(
+            Icons.auto_awesome,
+            size: 80,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          const SizedBox(height: 32),
+          Text(
+            'Choose Your Starter Routines',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Select categories that interest you. We\'ll add sample routines to help you get started:',
+            style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          Expanded(
+            child: _loadingCategories 
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: _availableCategories.length,
+                        itemBuilder: (context, index) {
+                          final category = _availableCategories[index];
+                          final isSelected = _selectedCategories.contains(category.id);
+                          
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: CheckboxListTile(
+                              value: isSelected,
+                              onChanged: (value) {
+                                setState(() {
+                                  if (value == true) {
+                                    _selectedCategories.add(category.id);
+                                  } else {
+                                    _selectedCategories.remove(category.id);
+                                  }
+                                });
+                              },
+                              title: Row(
+                                children: [
+                                  Text(
+                                    category.emoji,
+                                    style: const TextStyle(fontSize: 24),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      category.title,
+                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 4),
+                                  Text(category.description),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Includes: ${category.highlights.join(", ")}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              controlAffinity: ListTileControlAffinity.leading,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surfaceVariant,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'You can skip this and start with a blank canvas.',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Selected: ${_selectedCategories.length} categories',
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
           ),
         ],
       ),

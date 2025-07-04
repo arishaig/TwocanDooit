@@ -1,0 +1,64 @@
+{
+  "format": "TwocanDooit-Routines",
+  "version": "1.0",
+  "category": "Home Life", 
+  "description": "Kind approach to home care and organization",
+  "routines": [
+    {
+      "id": "gentle-tidying",
+      "name": "Gentle Tidying",
+      "description": "Kind approach to home care",
+      "category": "Home",
+      "steps": [
+        {
+          "id": "choose-zone",
+          "title": "Choose your zone",
+          "description": "Pick one small area that would feel good to tidy",
+          "type": "randomChoice",
+          "choices": ["Desk surface", "Coffee table", "Kitchen counter", "Bedside table", "One drawer"],
+          "order": 0
+        },
+        {
+          "id": "tidy-kindly",
+          "title": "Tidy with kindness",
+          "description": "Go slow, be gentle with yourself",
+          "type": "timer",
+          "timerDuration": 600,
+          "order": 1
+        },
+        {
+          "id": "appreciate-effort",
+          "title": "Appreciate your effort",
+          "description": "Look at what you accomplished - well done!",
+          "type": "basic",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "id": "space-reset",
+      "name": "Space Reset",
+      "description": "Quick refresh for your environment",
+      "category": "Home",
+      "steps": [
+        {
+          "id": "quick-pickup",
+          "title": "Quick pickup",
+          "description": "Put away items that have wandered",
+          "type": "reps",
+          "repsTarget": 10,
+          "repsDescription": "items returned to their homes",
+          "order": 0
+        },
+        {
+          "id": "comfort-adjustment",
+          "title": "Comfort adjustment",
+          "description": "Make your space more comfortable",
+          "type": "randomChoice",
+          "choices": ["Open a window", "Adjust lighting", "Fluff cushions", "Clear surfaces", "Add something cozy"],
+          "order": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "format": "TwocanDooit-Routines",
+  "version": "1.0",
+  "category": "Daily Essentials",
+  "description": "Gentle routines to start and end your day with kindness",
+  "routines": [
+    {
+      "id": "morning-gentle-start",
+      "name": "Gentle Morning Start",
+      "description": "Ease into your day with simple, manageable steps",
+      "category": "Daily",
+      "steps": [
+        {
+          "id": "morning-breathe",
+          "title": "Wake up and breathe",
+          "description": "Take 3 deep breaths and notice how you feel",
+          "type": "basic",
+          "order": 0
+        },
+        {
+          "id": "morning-hydrate",
+          "title": "Hydrate",
+          "description": "Drink a glass of water to start your day",
+          "type": "basic",
+          "order": 1
+        },
+        {
+          "id": "morning-teeth",
+          "title": "Brush teeth",
+          "description": "Take your time and be gentle with yourself",
+          "type": "timer",
+          "timerDuration": 120,
+          "order": 2
+        },
+        {
+          "id": "morning-breakfast",
+          "title": "Choose breakfast mood",
+          "description": "What sounds good today?",
+          "type": "randomChoice",
+          "choices": ["Something warm", "Something fresh", "Something quick", "Something special"],
+          "order": 3
+        }
+      ]
+    },
+    {
+      "id": "evening-wind-down",
+      "name": "Wind Down Evening",
+      "description": "Gentle transition to rest and relaxation",
+      "category": "Daily",
+      "steps": [
+        {
+          "id": "evening-tidy",
+          "title": "Tidy one small area",
+          "description": "Just one surface or corner - that's enough",
+          "type": "timer",
+          "timerDuration": 300,
+          "order": 0
+        },
+        {
+          "id": "evening-activity",
+          "title": "Choose evening activity",
+          "description": "How would you like to unwind?",
+          "type": "randomChoice",
+          "choices": ["Read a few pages", "Listen to music", "Light stretching", "Journal thoughts", "Watch something cozy"],
+          "order": 1
+        },
+        {
+          "id": "evening-intention",
+          "title": "Tomorrow's intention",
+          "description": "Set one kind intention for tomorrow",
+          "type": "basic",
+          "order": 2
+        }
+      ]
+    }
+  ]
+}

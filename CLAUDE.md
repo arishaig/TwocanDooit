@@ -20,6 +20,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `flutter run` - Start development with hot reload
 - Use `r` in terminal for hot reload, `R` for hot restart
 
+### Git Workflow
+- **Commit regularly** - Create git commits after completing meaningful changes or features
+- **Descriptive messages** - Use clear commit messages that explain what was changed and why
+- **Before major changes** - Always commit current work before starting significant refactoring
+- **Rollback capability** - Regular commits enable easy rollback if issues arise
+- **End of session** - Commit all changes before ending development sessions
+
 ## Project Architecture
 
 ### Core Architecture

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../models/routine.dart';
 import '../models/step.dart';
 import '../services/routine_service.dart';
+import '../services/category_service.dart';
 
 class RoutineProvider with ChangeNotifier {
   List<Routine> _routines = [];
@@ -20,6 +21,9 @@ class RoutineProvider with ChangeNotifier {
       await RoutineService.loadRoutines();
       _routines = RoutineService.routines;
       _error = null;
+      
+      // Initialize category service with existing routine categories
+      await CategoryService.instance.initializeCategoriesFromRoutines(_routines);
     } catch (e) {
       _error = 'Failed to load routines: $e';
     } finally {

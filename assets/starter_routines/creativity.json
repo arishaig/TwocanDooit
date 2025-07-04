@@ -1,0 +1,64 @@
+{
+  "format": "TwocanDooit-Routines",
+  "version": "1.0",
+  "category": "Creativity",
+  "description": "Low-pressure creative exploration and inspiration gathering",
+  "routines": [
+    {
+      "id": "creative-spark",
+      "name": "Creative Spark",
+      "description": "Low-pressure creative exploration",
+      "category": "Creativity",
+      "steps": [
+        {
+          "id": "creative-checkin",
+          "title": "Creative check-in",
+          "description": "How's your creative energy today?",
+          "type": "randomChoice",
+          "choices": ["Playful and excited", "Quiet and contemplative", "Restless and seeking", "Tired but curious"],
+          "order": 0
+        },
+        {
+          "id": "creative-medium",
+          "title": "Creative medium",
+          "description": "What wants to be expressed?",
+          "type": "randomChoice",
+          "choices": ["Words", "Colors", "Movement", "Sounds", "Shapes"],
+          "order": 1
+        },
+        {
+          "id": "create-freely",
+          "title": "Create freely",
+          "description": "No goals, no judgment - just play",
+          "type": "timer",
+          "timerDuration": 600,
+          "order": 2
+        }
+      ]
+    },
+    {
+      "id": "inspiration-hunt",
+      "name": "Inspiration Hunt",
+      "description": "Gathering sparks of inspiration",
+      "category": "Creativity",
+      "steps": [
+        {
+          "id": "inspiration-source",
+          "title": "Inspiration source",
+          "description": "Where might inspiration be hiding?",
+          "type": "randomChoice",
+          "choices": ["Nature outside", "Objects around you", "Memories", "Other people's art", "Random combinations"],
+          "order": 0
+        },
+        {
+          "id": "collect-inspiration",
+          "title": "Collect inspiration",
+          "description": "Notice, photograph, sketch, or just remember",
+          "type": "timer",
+          "timerDuration": 300,
+          "order": 1
+        }
+      ]
+    }
+  ]
+}

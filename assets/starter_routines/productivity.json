@@ -1,0 +1,76 @@
+{
+  "format": "TwocanDooit-Routines",
+  "version": "1.0",
+  "category": "Productivity",
+  "description": "ADHD-friendly focus techniques that work with your brain",
+  "routines": [
+    {
+      "id": "adhd-friendly-focus",
+      "name": "ADHD-Friendly Focus",
+      "description": "Work with your brain, not against it",
+      "category": "Productivity",
+      "steps": [
+        {
+          "id": "brain-dump",
+          "title": "Brain dump",
+          "description": "Write down everything on your mind (2 minutes)",
+          "type": "timer",
+          "timerDuration": 120,
+          "order": 0
+        },
+        {
+          "id": "pick-one",
+          "title": "Pick ONE thing",
+          "description": "Choose just one task to focus on",
+          "type": "basic",
+          "order": 1
+        },
+        {
+          "id": "focus-sprint",
+          "title": "Focus sprint",
+          "description": "Work for a short, manageable burst",
+          "type": "timer",
+          "timerDuration": 1500,
+          "order": 2
+        },
+        {
+          "id": "celebrate",
+          "title": "Celebrate!",
+          "description": "You did it! Acknowledge your effort",
+          "type": "basic",
+          "order": 3
+        }
+      ]
+    },
+    {
+      "id": "break-it-down",
+      "name": "Break It Down",
+      "description": "Turn overwhelming tasks into manageable steps",
+      "category": "Productivity",
+      "steps": [
+        {
+          "id": "name-big-task",
+          "title": "Name the big task",
+          "description": "What feels overwhelming right now?",
+          "type": "basic",
+          "order": 0
+        },
+        {
+          "id": "find-tiny-step",
+          "title": "Find the tiny first step",
+          "description": "What's the smallest possible start?",
+          "type": "basic",
+          "order": 1
+        },
+        {
+          "id": "do-tiny-step",
+          "title": "Do the tiny step",
+          "description": "Just the first tiny piece - that's enough",
+          "type": "timer",
+          "timerDuration": 300,
+          "order": 2
+        }
+      ]
+    }
+  ]
+}

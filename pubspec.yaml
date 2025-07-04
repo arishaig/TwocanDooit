@@ -136,6 +136,7 @@ flutter:
     - assets/music/focusBeats/
     - assets/twocan/
     - assets/models/
+    - assets/starter_routines/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

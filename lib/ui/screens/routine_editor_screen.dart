@@ -7,6 +7,8 @@ import '../../models/step.dart' as model_step;
 import '../../models/step_type.dart';
 import '../../providers/routine_provider.dart';
 import '../../services/audio_service.dart';
+import '../../services/category_service.dart';
+import '../widgets/category_input_field.dart';
 
 class RoutineEditorScreen extends StatefulWidget {
   final Routine? routine;
@@ -21,7 +23,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
-  late final TextEditingController _categoryController;
+  late String _category;
   late List<model_step.Step> _steps;
   late bool _voiceEnabled;
   late bool _musicEnabled;
@@ -42,7 +44,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
     final routine = widget.routine;
     _nameController = TextEditingController(text: routine?.name ?? '');
     _descriptionController = TextEditingController(text: routine?.description ?? '');
-    _categoryController = TextEditingController(text: routine?.category ?? '');
+    _category = routine?.category ?? '';
     _steps = routine?.steps.map((s) => s.copyWith()).toList() ?? [];
     _voiceEnabled = routine?.voiceEnabled ?? false;
     _musicEnabled = routine?.musicEnabled ?? false;
@@ -68,7 +70,6 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
-    _categoryController.dispose();
     _nameFocusNode.dispose();
     _descriptionFocusNode.dispose();
     // Stop any playing preview
@@ -122,13 +123,15 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
               maxLines: 4,
             ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _categoryController,
-              decoration: const InputDecoration(
-                labelText: 'Category (optional)',
-                hintText: 'e.g., Daily, Health, Work',
-                border: OutlineInputBorder(),
-              ),
+            CategoryInputField(
+              initialValue: _category,
+              onChanged: (value) {
+                setState(() {
+                  _category = value;
+                });
+              },
+              labelText: 'Category (optional)',
+              hintText: 'e.g., Daily, Health, Work',
             ),
             const SizedBox(height: 16),
             SwitchListTile(
@@ -510,7 +513,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
       final updatedRoutine = widget.routine!.copyWith(
         name: _nameController.text.trim(),
         description: _descriptionController.text.trim(),
-        category: _categoryController.text.trim(),
+        category: _category.trim(),
         steps: _steps,
         voiceEnabled: _voiceEnabled,
         musicEnabled: _musicEnabled,
@@ -522,7 +525,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
       await routineProvider.createRoutine(
         name: _nameController.text.trim(),
         description: _descriptionController.text.trim(),
-        category: _categoryController.text.trim(),
+        category: _category.trim(),
         voiceEnabled: _voiceEnabled,
         musicEnabled: _musicEnabled,
         musicTrack: _selectedMusicTrack,
@@ -533,6 +536,11 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
       final newRoutine = routineProvider.routines.last;
       final updatedRoutine = newRoutine.copyWith(steps: _steps);
       await routineProvider.updateRoutine(updatedRoutine);
+    }
+
+    // Record category usage for autocomplete
+    if (_category.trim().isNotEmpty) {
+      await CategoryService.instance.recordCategoryUsage(_category.trim());
     }
 
     if (mounted) {

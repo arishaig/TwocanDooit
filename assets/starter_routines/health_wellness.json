@@ -1,0 +1,71 @@
+{
+  "format": "TwocanDooit-Routines",
+  "version": "1.0",
+  "category": "Health & Wellness",
+  "description": "Body-friendly movement and self-care that respects your energy",
+  "routines": [
+    {
+      "id": "body-friendly-movement",
+      "name": "Body-Friendly Movement",
+      "description": "Gentle exercise that respects your energy levels",
+      "category": "Health",
+      "steps": [
+        {
+          "id": "body-checkin",
+          "title": "Check in with your body",
+          "description": "How are you feeling today? No judgment.",
+          "type": "basic",
+          "order": 0
+        },
+        {
+          "id": "gentle-warmup",
+          "title": "Gentle warm-up",
+          "description": "Move in ways that feel good",
+          "type": "timer",
+          "timerDuration": 180,
+          "order": 1
+        },
+        {
+          "id": "movement-choice",
+          "title": "Movement choice",
+          "description": "What does your body want to do?",
+          "type": "randomChoice",
+          "choices": ["Stretching", "Dancing", "Walking", "Yoga poses", "Simple strength"],
+          "order": 2
+        },
+        {
+          "id": "movement-time",
+          "title": "Movement time",
+          "description": "Go at your own pace - you're doing great",
+          "type": "timer",
+          "timerDuration": 600,
+          "order": 3
+        }
+      ]
+    },
+    {
+      "id": "self-care-reset",
+      "name": "Quick Self-Care Reset",
+      "description": "Small acts of kindness to yourself",
+      "category": "Health",
+      "steps": [
+        {
+          "id": "selfcare-check",
+          "title": "Self-care check",
+          "description": "What do you need right now?",
+          "type": "randomChoice",
+          "choices": ["Physical comfort", "Emotional support", "Mental break", "Social connection"],
+          "order": 0
+        },
+        {
+          "id": "selfcare-action",
+          "title": "Mini self-care action",
+          "description": "One small thing just for you",
+          "type": "randomChoice",
+          "choices": ["Wash face with cool water", "Apply hand cream mindfully", "Text a friend", "Make a warm drink", "Play favorite song"],
+          "order": 1
+        }
+      ]
+    }
+  ]
+}

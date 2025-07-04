@@ -10,13 +10,17 @@ class RoutineService {
 
   static Future<void> loadRoutines() async {
     _routines = await StorageService.loadRoutines();
-    if (_routines.isEmpty) {
-      await _createSampleData();
-    }
+    // Note: Sample data is now loaded selectively during onboarding
+    // No automatic sample data creation
   }
 
   static Future<void> saveRoutines() async {
     await StorageService.saveRoutines(_routines);
+  }
+
+  static Future<void> saveStarterRoutines(List<Routine> starterRoutines) async {
+    _routines.addAll(starterRoutines);
+    await saveRoutines();
   }
 
   static Future<Routine> createRoutine({

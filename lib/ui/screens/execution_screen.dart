@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:vibration/vibration.dart';
 import '../../models/routine.dart';
 import '../../models/step_type.dart';
@@ -397,10 +398,14 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                   ),
                   child: Column(
                     children: [
-                      Icon(
-                        Icons.casino,
-                        size: 48,
-                        color: Theme.of(context).colorScheme.primary,
+                      SvgPicture.asset(
+                        DiceWidget.getDieTypeForOptions(currentStep.choices.length).assetPath,
+                        width: 48,
+                        height: 48,
+                        colorFilter: ColorFilter.mode(
+                          Theme.of(context).colorScheme.primary,
+                          BlendMode.srcIn,
+                        ),
                       ),
                       const SizedBox(height: 16),
                       Text(
