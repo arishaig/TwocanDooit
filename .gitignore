@@ -87,6 +87,7 @@ firebase_options.dart
 # Additional files to ignore
 results.txt
 *.log
+assets/
 
 # Exceptions to above rules.
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
