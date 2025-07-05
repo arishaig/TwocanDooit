@@ -9,36 +9,83 @@
       "name": "ADHD-Friendly Focus",
       "description": "Work with your brain, not against it",
       "category": "Productivity",
+      "voiceEnabled": true,
+      "musicEnabled": true,
+      "musicTrack": "binauralBeats",
+      "isBuiltInTrack": true,
       "steps": [
+        {
+          "id": "workspace-prep",
+          "title": "Prep your {workspace}",
+          "description": "Set up your work area",
+          "type": "variableParameter",
+          "variableName": "workspace",
+          "variableOptions": ["desk", "table", "couch", "bed", "floor space"],
+          "voiceEnabled": true,
+          "order": 0
+        },
         {
           "id": "brain-dump",
           "title": "Brain dump",
-          "description": "Write down everything on your mind (2 minutes)",
+          "description": "Write down everything on your mind",
           "type": "timer",
           "timerDuration": 120,
-          "order": 0
+          "voiceEnabled": true,
+          "order": 1
         },
         {
           "id": "pick-one",
           "title": "Pick ONE thing",
-          "description": "Choose just one task to focus on",
+          "description": "Choose just one task from your list",
           "type": "basic",
-          "order": 1
+          "voiceEnabled": true,
+          "order": 2
+        },
+        {
+          "id": "remove-distractions",
+          "title": "Remove distractions",
+          "description": "Phone away, tabs closed, notifications off",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "mini-goal",
+          "title": "Set a tiny goal",
+          "description": "What's the smallest progress you can make?",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 4
         },
         {
           "id": "focus-sprint",
           "title": "Focus sprint",
           "description": "Work for a short, manageable burst",
           "type": "timer",
-          "timerDuration": 1500,
-          "order": 2
+          "timerDuration": 900,
+          "voiceEnabled": true,
+          "order": 5
+        },
+        {
+          "id": "movement-break",
+          "title": "Movement break",
+          "description": "Quick movements to reset",
+          "type": "reps",
+          "repsTarget": 10,
+          "randomizeReps": true,
+          "repsMin": 5,
+          "repsMax": 20,
+          "repsDescription": "movements (jumping jacks, stretches, etc)",
+          "voiceEnabled": true,
+          "order": 6
         },
         {
           "id": "celebrate",
           "title": "Celebrate!",
-          "description": "You did it! Acknowledge your effort",
+          "description": "Acknowledge your effort - you did it!",
           "type": "basic",
-          "order": 3
+          "voiceEnabled": true,
+          "order": 7
         }
       ]
     },
@@ -47,28 +94,67 @@
       "name": "Break It Down",
       "description": "Turn overwhelming tasks into manageable steps",
       "category": "Productivity",
+      "voiceEnabled": true,
+      "musicEnabled": false,
       "steps": [
         {
           "id": "name-big-task",
-          "title": "Name the big task",
+          "title": "Name the big scary task",
           "description": "What feels overwhelming right now?",
           "type": "basic",
+          "voiceEnabled": true,
           "order": 0
         },
         {
-          "id": "find-tiny-step",
-          "title": "Find the tiny first step",
-          "description": "What's the smallest possible start?",
+          "id": "why-matters",
+          "title": "Why it matters",
+          "description": "Quick reminder: why do you want to do this?",
           "type": "basic",
+          "voiceEnabled": true,
           "order": 1
         },
         {
+          "id": "task-feelings",
+          "title": "How does it feel?",
+          "description": "Name the feeling about this task",
+          "type": "randomChoice",
+          "choices": ["Too big", "Too boring", "Too confusing", "Too many steps", "Don't know where to start"],
+          "voiceEnabled": true,
+          "order": 2
+        },
+        {
+          "id": "break-into-pieces",
+          "title": "Break it into pieces",
+          "description": "List 3-5 smaller parts",
+          "type": "timer",
+          "timerDuration": 180,
+          "voiceEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "find-tiny-step",
+          "title": "Find the tiniest first step",
+          "description": "What's the absolute smallest start?",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 4
+        },
+        {
           "id": "do-tiny-step",
-          "title": "Do the tiny step",
-          "description": "Just the first tiny piece - that's enough",
+          "title": "Do just the tiny step",
+          "description": "Only this one small thing",
           "type": "timer",
           "timerDuration": 300,
-          "order": 2
+          "voiceEnabled": true,
+          "order": 5
+        },
+        {
+          "id": "appreciate-start",
+          "title": "Appreciate your start",
+          "description": "You began! That's often the hardest part",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 6
         }
       ]
     }

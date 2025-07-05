@@ -29,8 +29,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   
   // Starter routines selection
   List<StarterCategory> _availableCategories = [];
+  List<StarterCategory> _additionalCategories = [];
   Set<String> _selectedCategories = {};
   bool _loadingCategories = true;
+  bool _showingAdditionalCategories = false;
 
   @override
   void initState() {
@@ -116,10 +118,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Future<void> _loadStarterCategories() async {
     try {
-      final categories = await StarterRoutinesService.instance.loadCategories();
+      final topLevelCategories = await StarterRoutinesService.instance.loadTopLevelCategories();
+      final additionalCategories = await StarterRoutinesService.instance.loadAdditionalCategories();
       if (mounted) {
         setState(() {
-          _availableCategories = categories;
+          _availableCategories = topLevelCategories;
+          _additionalCategories = additionalCategories;
           _loadingCategories = false;
         });
       }
@@ -131,6 +135,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         });
       }
     }
+  }
+
+  void _toggleShowMore() {
+    setState(() {
+      _showingAdditionalCategories = !_showingAdditionalCategories;
+    });
   }
 
   @override
@@ -792,61 +802,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               : Column(
                   children: [
                     Expanded(
-                      child: ListView.builder(
-                        itemCount: _availableCategories.length,
-                        itemBuilder: (context, index) {
-                          final category = _availableCategories[index];
-                          final isSelected = _selectedCategories.contains(category.id);
+                      child: ListView(
+                        children: [
+                          // Top-level categories
+                          ..._availableCategories.map((category) => _buildCategoryCard(category)),
                           
-                          return Card(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            child: CheckboxListTile(
-                              value: isSelected,
-                              onChanged: (value) {
-                                setState(() {
-                                  if (value == true) {
-                                    _selectedCategories.add(category.id);
-                                  } else {
-                                    _selectedCategories.remove(category.id);
-                                  }
-                                });
-                              },
-                              title: Row(
-                                children: [
-                                  Text(
-                                    category.emoji,
-                                    style: const TextStyle(fontSize: 24),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      category.title,
-                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                          // Show More button
+                          if (_additionalCategories.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: OutlinedButton.icon(
+                                onPressed: _toggleShowMore,
+                                icon: Icon(_showingAdditionalCategories 
+                                    ? Icons.expand_less 
+                                    : Icons.expand_more),
+                                label: Text(_showingAdditionalCategories 
+                                    ? 'Show Less' 
+                                    : 'Show More (${_additionalCategories.length} more)'),
                               ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 4),
-                                  Text(category.description),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Includes: ${category.highlights.join(", ")}',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              controlAffinity: ListTileControlAffinity.leading,
                             ),
-                          );
-                        },
+                          
+                          // Additional categories (when expanded)
+                          if (_showingAdditionalCategories)
+                            ..._additionalCategories.map((category) => _buildCategoryCard(category)),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -889,6 +868,59 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryCard(StarterCategory category) {
+    final isSelected = _selectedCategories.contains(category.id);
+    
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: CheckboxListTile(
+        value: isSelected,
+        onChanged: (value) {
+          setState(() {
+            if (value == true) {
+              _selectedCategories.add(category.id);
+            } else {
+              _selectedCategories.remove(category.id);
+            }
+          });
+        },
+        title: Row(
+          children: [
+            Text(
+              category.emoji,
+              style: const TextStyle(fontSize: 24),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                category.title,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Text(category.description),
+            const SizedBox(height: 4),
+            Text(
+              'Includes: ${category.highlights.join(", ")}',
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+        controlAffinity: ListTileControlAffinity.leading,
       ),
     );
   }

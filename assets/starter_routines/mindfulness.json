@@ -9,14 +9,42 @@
       "name": "Calm Breathing",
       "description": "Simple breathing for overwhelming moments",
       "category": "Mindfulness",
+      "voiceEnabled": true,
+      "musicEnabled": true,
+      "musicTrack": "calm",
+      "isBuiltInTrack": true,
       "steps": [
+        {
+          "id": "find-position",
+          "title": "Get comfortable in {position}",
+          "description": "Find a comfortable position",
+          "type": "variableParameter",
+          "variableName": "position",
+          "variableOptions": ["chair", "floor", "bed", "standing", "lying down"],
+          "voiceEnabled": true,
+          "order": 0
+        },
         {
           "id": "find-breath",
           "title": "Find your breath",
           "description": "Just notice you're breathing - no need to change it",
           "type": "timer",
           "timerDuration": 60,
-          "order": 0
+          "voiceEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "breath-counts",
+          "title": "Counted breaths",
+          "description": "Breathe in for 4, hold for 4, out for 4",
+          "type": "reps",
+          "repsTarget": 5,
+          "randomizeReps": true,
+          "repsMin": 3,
+          "repsMax": 8,
+          "repsDescription": "breath cycles",
+          "voiceEnabled": true,
+          "order": 2
         },
         {
           "id": "gentle-breathing",
@@ -24,14 +52,24 @@
           "description": "Breathe in comfort, breathe out tension",
           "type": "timer",
           "timerDuration": 180,
-          "order": 1
+          "voiceEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "body-scan",
+          "title": "Quick body scan",
+          "description": "Notice how your body feels now",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 4
         },
         {
           "id": "return-to-day",
           "title": "Return to your day",
           "description": "Carry this calm feeling with you",
           "type": "basic",
-          "order": 2
+          "voiceEnabled": true,
+          "order": 5
         }
       ]
     },
@@ -40,21 +78,61 @@
       "name": "Micro Gratitude",
       "description": "Tiny moments of appreciation",
       "category": "Mindfulness",
+      "voiceEnabled": true,
+      "musicEnabled": false,
       "steps": [
+        {
+          "id": "gratitude-moment",
+          "title": "Pause for gratitude",
+          "description": "Take a moment to shift your focus",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 0
+        },
         {
           "id": "notice-good",
           "title": "Notice something good",
           "description": "Look around - what's one thing you appreciate?",
           "type": "basic",
-          "order": 0
+          "voiceEnabled": true,
+          "order": 1
         },
         {
           "id": "gratitude-category",
           "title": "Gratitude category",
-          "description": "What kind of goodness speaks to you today?",
+          "description": "What kind of goodness to find?",
           "type": "randomChoice",
-          "choices": ["Something beautiful", "Someone kind", "A comfort", "Your body working", "A small pleasure"],
-          "order": 1
+          "choices": ["Something beautiful", "Someone kind", "A comfort", "Your body working", "A small pleasure", "A memory", "A possibility"],
+          "choiceWeights": [0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.10],
+          "voiceEnabled": true,
+          "order": 2
+        },
+        {
+          "id": "gratitude-specifics",
+          "title": "Get specific",
+          "description": "Name 3 details about what you're grateful for",
+          "type": "reps",
+          "repsTarget": 3,
+          "repsDescription": "specific details",
+          "voiceEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "gratitude-feeling",
+          "title": "Feel the gratitude",
+          "description": "Let the appreciation wash over you",
+          "type": "timer",
+          "timerDuration": 60,
+          "voiceEnabled": true,
+          "order": 4
+        },
+        {
+          "id": "gratitude-share",
+          "title": "Share if you'd like",
+          "description": "Tell someone or write it down (optional)",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 5
         }
       ]
     }

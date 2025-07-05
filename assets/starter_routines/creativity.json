@@ -9,22 +9,69 @@
       "name": "Creative Spark",
       "description": "Low-pressure creative exploration",
       "category": "Creativity",
+      "voiceEnabled": true,
+      "musicEnabled": true,
+      "musicTrack": "focusBeats",
+      "isBuiltInTrack": true,
       "steps": [
+        {
+          "id": "creative-space",
+          "title": "Set up in {space}",
+          "description": "Choose your creative space",
+          "type": "variableParameter",
+          "variableName": "space",
+          "variableOptions": ["desk", "floor", "couch", "kitchen table", "outside"],
+          "voiceEnabled": true,
+          "order": 0
+        },
         {
           "id": "creative-checkin",
           "title": "Creative check-in",
           "description": "How's your creative energy today?",
           "type": "randomChoice",
-          "choices": ["Playful and excited", "Quiet and contemplative", "Restless and seeking", "Tired but curious"],
-          "order": 0
+          "choices": ["Playful and excited", "Quiet and contemplative", "Restless and seeking", "Tired but curious", "Open to anything"],
+          "voiceEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "gather-materials",
+          "title": "Gather materials",
+          "description": "Collect what calls to you - no pressure",
+          "type": "timer",
+          "timerDuration": 120,
+          "voiceEnabled": true,
+          "order": 2
         },
         {
           "id": "creative-medium",
           "title": "Creative medium",
           "description": "What wants to be expressed?",
           "type": "randomChoice",
-          "choices": ["Words", "Colors", "Movement", "Sounds", "Shapes"],
-          "order": 1
+          "choices": ["Words", "Colors", "Movement", "Sounds", "Shapes", "Textures", "Mixed media"],
+          "choiceWeights": [0.15, 0.20, 0.15, 0.10, 0.15, 0.10, 0.15],
+          "voiceEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "permission-slip",
+          "title": "Give yourself permission",
+          "description": "Permission to play, experiment, and 'fail'",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 4
+        },
+        {
+          "id": "warm-up-play",
+          "title": "Warm-up play",
+          "description": "Make marks, sounds, or movements",
+          "type": "reps",
+          "repsTarget": 5,
+          "randomizeReps": true,
+          "repsMin": 3,
+          "repsMax": 10,
+          "repsDescription": "playful marks/movements",
+          "voiceEnabled": true,
+          "order": 5
         },
         {
           "id": "create-freely",
@@ -32,7 +79,16 @@
           "description": "No goals, no judgment - just play",
           "type": "timer",
           "timerDuration": 600,
-          "order": 2
+          "voiceEnabled": true,
+          "order": 6
+        },
+        {
+          "id": "appreciate-process",
+          "title": "Appreciate the process",
+          "description": "Thank yourself for creating",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 7
         }
       ]
     },
@@ -41,22 +97,61 @@
       "name": "Inspiration Hunt",
       "description": "Gathering sparks of inspiration",
       "category": "Creativity",
+      "voiceEnabled": true,
+      "musicEnabled": false,
       "steps": [
         {
-          "id": "inspiration-source",
-          "title": "Inspiration source",
-          "description": "Where might inspiration be hiding?",
-          "type": "randomChoice",
-          "choices": ["Nature outside", "Objects around you", "Memories", "Other people's art", "Random combinations"],
+          "id": "hunt-intention",
+          "title": "Set hunt intention",
+          "description": "Open to finding unexpected inspiration",
+          "type": "basic",
+          "voiceEnabled": true,
           "order": 0
         },
         {
-          "id": "collect-inspiration",
-          "title": "Collect inspiration",
-          "description": "Notice, photograph, sketch, or just remember",
-          "type": "timer",
-          "timerDuration": 300,
+          "id": "inspiration-source",
+          "title": "Inspiration source",
+          "description": "Where might inspiration hide?",
+          "type": "randomChoice",
+          "choices": ["Nature outside", "Objects around you", "Memories", "Other people's art", "Random combinations", "Overheard conversations", "Textures and patterns"],
+          "voiceEnabled": true,
           "order": 1
+        },
+        {
+          "id": "collection-method",
+          "title": "Choose collection method",
+          "description": "How will you capture inspiration?",
+          "type": "randomChoice",
+          "choices": ["Phone photos", "Quick sketches", "Voice memos", "Written notes", "Just observe"],
+          "voiceEnabled": true,
+          "order": 2
+        },
+        {
+          "id": "hunt-timer",
+          "title": "Go hunting",
+          "description": "Explore with fresh eyes",
+          "type": "timer",
+          "timerDuration": 600,
+          "voiceEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "capture-finds",
+          "title": "Capture {number} finds",
+          "description": "Document what caught your attention",
+          "type": "variableParameter",
+          "variableName": "number",
+          "variableOptions": ["3", "5", "7", "10"],
+          "voiceEnabled": true,
+          "order": 4
+        },
+        {
+          "id": "reflection",
+          "title": "Quick reflection",
+          "description": "What surprised or delighted you?",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 5
         }
       ]
     }

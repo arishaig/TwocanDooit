@@ -9,6 +9,8 @@ class StarterCategory {
   final String emoji;
   final int routineCount;
   final List<String> highlights;
+  final bool isTopLevel;
+  final int order;
 
   const StarterCategory({
     required this.id,
@@ -17,6 +19,8 @@ class StarterCategory {
     required this.emoji,
     required this.routineCount,
     required this.highlights,
+    required this.isTopLevel,
+    required this.order,
   });
 
   factory StarterCategory.fromJson(Map<String, dynamic> json) {
@@ -27,6 +31,8 @@ class StarterCategory {
       emoji: json['emoji'] as String,
       routineCount: json['routineCount'] as int,
       highlights: List<String>.from(json['highlights'] as List),
+      isTopLevel: json['isTopLevel'] as bool? ?? false,
+      order: json['order'] as int? ?? 0,
     );
   }
 }
@@ -43,13 +49,30 @@ class StarterRoutinesService {
       final Map<String, dynamic> data = jsonDecode(jsonString);
       final List<dynamic> categoriesData = data['categories'] as List;
       
-      return categoriesData
+      final categories = categoriesData
           .map((categoryJson) => StarterCategory.fromJson(categoryJson as Map<String, dynamic>))
           .toList();
+      
+      // Sort by order
+      categories.sort((a, b) => a.order.compareTo(b.order));
+      
+      return categories;
     } catch (e) {
       print('Error loading starter categories: $e');
       return [];
     }
+  }
+
+  /// Load only top-level categories (for initial display)
+  Future<List<StarterCategory>> loadTopLevelCategories() async {
+    final allCategories = await loadCategories();
+    return allCategories.where((category) => category.isTopLevel).toList();
+  }
+
+  /// Load additional categories (for "Show More")
+  Future<List<StarterCategory>> loadAdditionalCategories() async {
+    final allCategories = await loadCategories();
+    return allCategories.where((category) => !category.isTopLevel).toList();
   }
 
   /// Load routines for specific categories

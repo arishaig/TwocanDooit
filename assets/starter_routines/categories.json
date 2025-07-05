@@ -6,15 +6,19 @@
       "description": "Morning & evening routines",
       "emoji": "🌅",
       "routineCount": 2,
-      "highlights": ["Gentle wake-up", "Evening wind-down"]
+      "highlights": ["Gentle wake-up", "Evening wind-down"],
+      "isTopLevel": true,
+      "order": 1
     },
     {
-      "id": "health_wellness",
-      "title": "Health & Wellness", 
-      "description": "Exercise & self-care",
-      "emoji": "💪",
-      "routineCount": 2,
-      "highlights": ["Body-friendly movement", "Self-care reset"]
+      "id": "adhd_essentials",
+      "title": "ADHD Essentials",
+      "description": "Designed for ADHD challenges",
+      "emoji": "🧠",
+      "routineCount": 3,
+      "highlights": ["Medication reminders", "Task transitions", "Overwhelm reset"],
+      "isTopLevel": true,
+      "order": 2
     },
     {
       "id": "productivity",
@@ -22,7 +26,19 @@
       "description": "Work & study focus",
       "emoji": "📚", 
       "routineCount": 2,
-      "highlights": ["ADHD-friendly focus", "Task breakdown"]
+      "highlights": ["ADHD-friendly focus", "Task breakdown"],
+      "isTopLevel": true,
+      "order": 3
+    },
+    {
+      "id": "health_wellness",
+      "title": "Health & Wellness", 
+      "description": "Exercise & self-care",
+      "emoji": "💪",
+      "routineCount": 2,
+      "highlights": ["Body-friendly movement", "Self-care reset"],
+      "isTopLevel": false,
+      "order": 4
     },
     {
       "id": "mindfulness",
@@ -30,7 +46,9 @@
       "description": "Breathing & gratitude",
       "emoji": "🧘",
       "routineCount": 2,
-      "highlights": ["Calm breathing", "Micro gratitude"]
+      "highlights": ["Calm breathing", "Micro gratitude"],
+      "isTopLevel": false,
+      "order": 5
     },
     {
       "id": "creativity",
@@ -38,7 +56,9 @@
       "description": "Art & creative expression",
       "emoji": "🎨",
       "routineCount": 2,
-      "highlights": ["Creative spark", "Inspiration hunt"]
+      "highlights": ["Creative spark", "Inspiration hunt"],
+      "isTopLevel": false,
+      "order": 6
     },
     {
       "id": "home_life",
@@ -46,7 +66,9 @@
       "description": "Cleaning & organization", 
       "emoji": "🏠",
       "routineCount": 2,
-      "highlights": ["Gentle tidying", "Space reset"]
+      "highlights": ["Gentle tidying", "Space reset"],
+      "isTopLevel": false,
+      "order": 7
     },
     {
       "id": "cat_care",
@@ -54,7 +76,9 @@
       "description": "Caring for your feline friend",
       "emoji": "🐱",
       "routineCount": 2,
-      "highlights": ["Daily cat care", "Weekly wellness"]
+      "highlights": ["Daily cat care", "Weekly wellness"],
+      "isTopLevel": false,
+      "order": 8
     },
     {
       "id": "dog_care", 
@@ -62,7 +86,9 @@
       "description": "Caring for your canine companion",
       "emoji": "🐶",
       "routineCount": 2,
-      "highlights": ["Daily dog care", "Weekly wellness"]
+      "highlights": ["Daily dog care", "Weekly wellness"],
+      "isTopLevel": false,
+      "order": 9
     }
   ]
 }

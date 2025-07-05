@@ -21,12 +21,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
   List<dynamic> _availableVoices = [];
   bool _isLoadingLanguages = false;
   bool _isLoadingVoices = false;
+  final _ttsTestController = TextEditingController(
+    text: 'This is a test of the text to speech feature. Your current language and voice settings sound like this.',
+  );
 
   @override
   void initState() {
     super.initState();
     _loadLanguages();
     _loadVoices();
+  }
+
+  @override
+  void dispose() {
+    _ttsTestController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadLanguages() async {
@@ -232,6 +241,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ],
                         
                         const SizedBox(height: 20),
+                        
+                        // Test TTS Text Input
+                        Text(
+                          'Test Text',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: _ttsTestController,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Enter text to test speech...',
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                          ),
+                          maxLines: 3,
+                          minLines: 2,
+                        ),
+                        
+                        const SizedBox(height: 12),
                         
                         // Test TTS Button
                         SizedBox(
@@ -1047,14 +1078,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _testTTS(AppSettings settings) async {
+    final testText = _ttsTestController.text.trim();
+    if (testText.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter some text to test speech'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+    
     print('Test TTS button pressed');
     print('TTS Enabled: ${settings.ttsEnabled}');
     print('TTS Rate: ${settings.ttsRate}');
     print('TTS Language: ${settings.ttsLanguage}');
     print('TTS Voice: ${settings.ttsVoice}');
+    print('Test Text: $testText');
     
     await TTSService.speak(
-      'This is a test of the text to speech feature. Your current language and voice settings sound like this.',
+      testText,
       settings,
     );
     print('TTS speak call completed');

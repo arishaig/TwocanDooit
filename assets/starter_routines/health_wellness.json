@@ -9,12 +9,17 @@
       "name": "Body-Friendly Movement",
       "description": "Gentle exercise that respects your energy levels",
       "category": "Health",
+      "voiceEnabled": true,
+      "musicEnabled": true,
+      "musicTrack": "focusBeats",
+      "isBuiltInTrack": true,
       "steps": [
         {
           "id": "body-checkin",
-          "title": "Check in with your body",
-          "description": "How are you feeling today? No judgment.",
+          "title": "Body check-in",
+          "description": "How's your energy on a scale of 1-10?",
           "type": "basic",
+          "voiceEnabled": true,
           "order": 0
         },
         {
@@ -23,23 +28,57 @@
           "description": "Move in ways that feel good",
           "type": "timer",
           "timerDuration": 180,
+          "voiceEnabled": true,
           "order": 1
         },
         {
           "id": "movement-choice",
           "title": "Movement choice",
-          "description": "What does your body want to do?",
+          "description": "What does your body want?",
           "type": "randomChoice",
-          "choices": ["Stretching", "Dancing", "Walking", "Yoga poses", "Simple strength"],
+          "choices": ["Stretching flow", "Dance party", "Walk around", "Yoga poses", "Light strength", "Balance practice"],
+          "choiceWeights": [0.20, 0.15, 0.20, 0.20, 0.15, 0.10],
+          "voiceEnabled": true,
           "order": 2
         },
         {
+          "id": "movement-reps",
+          "title": "Movement reps",
+          "description": "Do your chosen movement",
+          "type": "reps",
+          "repsTarget": 10,
+          "randomizeReps": true,
+          "repsMin": 5,
+          "repsMax": 15,
+          "repsDescription": "movements",
+          "voiceEnabled": true,
+          "order": 3
+        },
+        {
           "id": "movement-time",
-          "title": "Movement time",
-          "description": "Go at your own pace - you're doing great",
+          "title": "Movement session",
+          "description": "Continue at your own pace",
           "type": "timer",
           "timerDuration": 600,
-          "order": 3
+          "voiceEnabled": true,
+          "order": 4
+        },
+        {
+          "id": "cool-down",
+          "title": "Cool down",
+          "description": "Gentle stretches and breathing",
+          "type": "timer",
+          "timerDuration": 120,
+          "voiceEnabled": true,
+          "order": 5
+        },
+        {
+          "id": "hydrate-after",
+          "title": "Hydrate",
+          "description": "Drink water and appreciate your effort",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 6
         }
       ]
     },
@@ -48,22 +87,56 @@
       "name": "Quick Self-Care Reset",
       "description": "Small acts of kindness to yourself",
       "category": "Health",
+      "voiceEnabled": true,
+      "musicEnabled": false,
       "steps": [
         {
           "id": "selfcare-check",
           "title": "Self-care check",
           "description": "What do you need right now?",
           "type": "randomChoice",
-          "choices": ["Physical comfort", "Emotional support", "Mental break", "Social connection"],
+          "choices": ["Physical comfort", "Emotional support", "Mental break", "Social connection", "Sensory soothing"],
+          "voiceEnabled": true,
           "order": 0
+        },
+        {
+          "id": "selfcare-location",
+          "title": "Go to {location}",
+          "description": "Move to a comfortable space",
+          "type": "variableParameter",
+          "variableName": "location",
+          "variableOptions": ["bathroom", "bedroom", "cozy chair", "outside", "quiet corner"],
+          "voiceEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "selfcare-breathing",
+          "title": "Centering breaths",
+          "description": "Ground yourself with breathing",
+          "type": "reps",
+          "repsTarget": 5,
+          "repsDescription": "slow breaths",
+          "voiceEnabled": true,
+          "order": 2
         },
         {
           "id": "selfcare-action",
           "title": "Mini self-care action",
           "description": "One small thing just for you",
           "type": "randomChoice",
-          "choices": ["Wash face with cool water", "Apply hand cream mindfully", "Text a friend", "Make a warm drink", "Play favorite song"],
-          "order": 1
+          "choices": ["Wash face with cool water", "Apply lotion mindfully", "Text a friend", "Make a warm drink", "Play favorite song", "Look out window"],
+          "choiceWeights": [0.15, 0.15, 0.20, 0.20, 0.20, 0.10],
+          "voiceEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "selfcare-timer",
+          "title": "Enjoy your self-care",
+          "description": "Take your time with this",
+          "type": "timer",
+          "timerDuration": 300,
+          "voiceEnabled": true,
+          "order": 4
         }
       ]
     }

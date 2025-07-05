@@ -9,58 +9,107 @@
       "name": "Daily Dog Care",
       "description": "Essential daily routine for your dog's health and happiness",
       "category": "Pet Care",
+      "voiceEnabled": true,
+      "musicEnabled": false,
       "steps": [
+        {
+          "id": "morning-greeting",
+          "title": "Morning greeting",
+          "description": "Greet your dog with love",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 0
+        },
         {
           "id": "morning-potty",
           "title": "Morning potty break",
-          "description": "Let your dog outside for their morning bathroom break",
+          "description": "Let dog out for bathroom needs",
           "type": "basic",
-          "order": 0
+          "voiceEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "water-check",
+          "title": "Fresh water in {location}",
+          "description": "Refill water bowls",
+          "type": "variableParameter",
+          "variableName": "location",
+          "variableOptions": ["kitchen", "outside", "crate", "multiple bowls"],
+          "voiceEnabled": true,
+          "order": 2
         },
         {
           "id": "breakfast-time",
           "title": "Breakfast feeding",
-          "description": "Provide fresh water and morning meal",
+          "description": "Provide morning meal",
           "type": "basic",
-          "order": 1
+          "voiceEnabled": true,
+          "order": 3
         },
         {
           "id": "walk-duration",
           "title": "Morning walk",
-          "description": "Get some exercise and fresh air together",
+          "description": "Exercise and fresh air together",
           "type": "timer",
-          "timerDuration": 1800,
-          "order": 2
+          "timerDuration": 900,
+          "voiceEnabled": true,
+          "order": 4
         },
         {
           "id": "training-activity",
           "title": "Choose training focus",
-          "description": "Pick a skill to practice today",
+          "description": "Pick a skill to practice",
           "type": "randomChoice",
-          "choices": ["Sit and stay", "Come when called", "Heel walking", "Paw shake", "Down and roll over"],
-          "order": 3
-        },
-        {
-          "id": "training-session",
-          "title": "Training practice",
-          "description": "Short, positive training session",
-          "type": "timer",
-          "timerDuration": 600,
-          "order": 4
-        },
-        {
-          "id": "evening-potty",
-          "title": "Evening potty break",
-          "description": "Final outdoor break before bedtime",
-          "type": "basic",
+          "choices": ["Sit and stay", "Come when called", "Heel walking", "Leave it", "Down", "Paw shake", "Roll over"],
+          "choiceWeights": [0.20, 0.20, 0.15, 0.15, 0.10, 0.10, 0.10],
+          "voiceEnabled": true,
           "order": 5
+        },
+        {
+          "id": "training-reps",
+          "title": "Training repetitions",
+          "description": "Practice with treats",
+          "type": "reps",
+          "repsTarget": 5,
+          "randomizeReps": true,
+          "repsMin": 3,
+          "repsMax": 8,
+          "repsDescription": "training repetitions",
+          "voiceEnabled": true,
+          "order": 6
+        },
+        {
+          "id": "midday-potty",
+          "title": "Midday potty break",
+          "description": "Quick bathroom break",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 7
+        },
+        {
+          "id": "evening-activity",
+          "title": "Evening activity",
+          "description": "Choose evening exercise",
+          "type": "randomChoice",
+          "choices": ["Short walk", "Backyard play", "Indoor games", "Tug of war", "Hide and seek"],
+          "voiceEnabled": true,
+          "order": 8
         },
         {
           "id": "dinner-time",
           "title": "Dinner feeding",
-          "description": "Evening meal and fresh water check",
+          "description": "Evening meal",
           "type": "basic",
-          "order": 6
+          "voiceEnabled": true,
+          "order": 9
+        },
+        {
+          "id": "final-potty",
+          "title": "Final potty break",
+          "description": "Last bathroom trip before bed",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 10
         }
       ]
     },
@@ -69,30 +118,55 @@
       "name": "Weekly Dog Wellness",
       "description": "Weekly health maintenance and bonding activities",
       "category": "Pet Care",
+      "voiceEnabled": true,
+      "musicEnabled": true,
+      "musicTrack": "focusBeats",
+      "isBuiltInTrack": true,
       "steps": [
         {
           "id": "health-check",
-          "title": "Weekly health check",
-          "description": "Check eyes, ears, teeth, and overall condition",
+          "title": "Full body check",
+          "description": "Check eyes, ears, teeth, skin, paws",
           "type": "timer",
           "timerDuration": 300,
+          "voiceEnabled": true,
           "order": 0
         },
         {
-          "id": "brushing-session",
-          "title": "Brushing and grooming",
-          "description": "Brush coat and check for any skin issues",
-          "type": "timer",
-          "timerDuration": 900,
+          "id": "weight-check",
+          "title": "Weight and body condition",
+          "description": "Feel ribs and check overall condition",
+          "type": "basic",
+          "voiceEnabled": true,
           "order": 1
         },
         {
+          "id": "brushing-fur-type",
+          "title": "Brush {fur_type} coat",
+          "description": "Thorough brushing session",
+          "type": "variableParameter",
+          "variableName": "fur_type",
+          "variableOptions": ["short", "long", "double", "curly", "wire"],
+          "voiceEnabled": true,
+          "order": 2
+        },
+        {
+          "id": "brushing-session",
+          "title": "Brushing and bonding",
+          "description": "Remove loose fur and check skin",
+          "type": "timer",
+          "timerDuration": 900,
+          "voiceEnabled": true,
+          "order": 3
+        },
+        {
           "id": "nail-trim",
-          "title": "Nail trimming",
-          "description": "Trim nails or check if they need trimming",
+          "title": "Nail maintenance",
+          "description": "Trim or file nails carefully",
           "type": "timer",
           "timerDuration": 600,
-          "order": 2
+          "voiceEnabled": true,
+          "order": 4
         },
         {
           "id": "teeth-cleaning",
@@ -100,38 +174,44 @@
           "description": "Brush teeth or provide dental chew",
           "type": "timer",
           "timerDuration": 300,
-          "order": 3
-        },
-        {
-          "id": "adventure-choice",
-          "title": "Choose weekly adventure",
-          "description": "Plan a special outing or activity",
-          "type": "randomChoice",
-          "choices": ["New park visit", "Dog-friendly store trip", "Hiking trail", "Beach or lake visit", "Playdate with other dogs"],
-          "order": 4
-        },
-        {
-          "id": "toy-wash",
-          "title": "Clean toys and bowls",
-          "description": "Wash food bowls and favorite toys",
-          "type": "timer",
-          "timerDuration": 900,
+          "voiceEnabled": true,
           "order": 5
         },
         {
-          "id": "bed-refresh",
-          "title": "Refresh sleeping area",
-          "description": "Wash or fluff dog bed and blankets",
-          "type": "basic",
+          "id": "ear-cleaning",
+          "title": "Clean ears gently",
+          "description": "Check and clean if needed",
+          "type": "timer",
+          "timerDuration": 180,
+          "voiceEnabled": true,
           "order": 6
         },
         {
-          "id": "mental-stimulation",
-          "title": "Mental enrichment activity",
-          "description": "Provide brain exercise for your dog",
+          "id": "adventure-choice",
+          "title": "Weekly adventure",
+          "description": "Plan special outing",
           "type": "randomChoice",
-          "choices": ["Puzzle toy", "Hide treats around house", "Learn new trick", "Sniffing game", "Kong stuffing"],
+          "choices": ["New trail hike", "Dog park visit", "Pet store trip", "Beach/lake swim", "Playdate setup", "Car ride adventure", "Outdoor cafe visit"],
+          "voiceEnabled": true,
           "order": 7
+        },
+        {
+          "id": "clean-supplies",
+          "title": "Clean dog items",
+          "description": "Wash bowls, toys, bedding",
+          "type": "timer",
+          "timerDuration": 900,
+          "voiceEnabled": true,
+          "order": 8
+        },
+        {
+          "id": "mental-enrichment",
+          "title": "Mental stimulation",
+          "description": "Brain exercise activity",
+          "type": "randomChoice",
+          "choices": ["Puzzle toy", "Scent work", "New trick training", "Hide treats", "Kong stuffing", "Obstacle course"],
+          "voiceEnabled": true,
+          "order": 9
         }
       ]
     }

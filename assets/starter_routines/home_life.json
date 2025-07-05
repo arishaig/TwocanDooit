@@ -9,14 +9,46 @@
       "name": "Gentle Tidying",
       "description": "Kind approach to home care",
       "category": "Home",
+      "voiceEnabled": true,
+      "musicEnabled": true,
+      "musicTrack": "focusBeats",
+      "isBuiltInTrack": true,
       "steps": [
+        {
+          "id": "tidy-mindset",
+          "title": "Set kind intention",
+          "description": "This is self-care, not a chore",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 0
+        },
         {
           "id": "choose-zone",
           "title": "Choose your zone",
-          "description": "Pick one small area that would feel good to tidy",
+          "description": "Pick one small area to love",
           "type": "randomChoice",
-          "choices": ["Desk surface", "Coffee table", "Kitchen counter", "Bedside table", "One drawer"],
-          "order": 0
+          "choices": ["Desk surface", "Coffee table", "Kitchen counter", "Bedside table", "One drawer", "Entryway", "Bathroom counter"],
+          "choiceWeights": [0.15, 0.15, 0.20, 0.15, 0.10, 0.15, 0.10],
+          "voiceEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "gather-supplies",
+          "title": "Gather supplies",
+          "description": "Trash bag, donation box, cleaning cloth",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 2
+        },
+        {
+          "id": "sort-items",
+          "title": "Sort {number} items",
+          "description": "Keep, donate, trash, or relocate",
+          "type": "variableParameter",
+          "variableName": "number",
+          "variableOptions": ["5", "10", "15", "20"],
+          "voiceEnabled": true,
+          "order": 3
         },
         {
           "id": "tidy-kindly",
@@ -24,14 +56,25 @@
           "description": "Go slow, be gentle with yourself",
           "type": "timer",
           "timerDuration": 600,
-          "order": 1
+          "voiceEnabled": true,
+          "order": 4
+        },
+        {
+          "id": "wipe-surface",
+          "title": "Quick wipe down",
+          "description": "Clean the surface you cleared",
+          "type": "timer",
+          "timerDuration": 60,
+          "voiceEnabled": true,
+          "order": 5
         },
         {
           "id": "appreciate-effort",
           "title": "Appreciate your effort",
-          "description": "Look at what you accomplished - well done!",
+          "description": "Look at what you accomplished!",
           "type": "basic",
-          "order": 2
+          "voiceEnabled": true,
+          "order": 6
         }
       ]
     },
@@ -40,23 +83,73 @@
       "name": "Space Reset",
       "description": "Quick refresh for your environment",
       "category": "Home",
+      "voiceEnabled": true,
+      "musicEnabled": false,
       "steps": [
+        {
+          "id": "reset-intention",
+          "title": "Reset intention",
+          "description": "Creating calm in your space",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 0
+        },
+        {
+          "id": "choose-room",
+          "title": "Choose {room} to reset",
+          "description": "Pick your focus area",
+          "type": "variableParameter",
+          "variableName": "room",
+          "variableOptions": ["living room", "bedroom", "kitchen", "bathroom", "workspace"],
+          "voiceEnabled": true,
+          "order": 1
+        },
         {
           "id": "quick-pickup",
           "title": "Quick pickup",
-          "description": "Put away items that have wandered",
+          "description": "Return wandering items",
           "type": "reps",
           "repsTarget": 10,
-          "repsDescription": "items returned to their homes",
-          "order": 0
+          "randomizeReps": true,
+          "repsMin": 5,
+          "repsMax": 15,
+          "repsDescription": "items to their homes",
+          "voiceEnabled": true,
+          "order": 2
+        },
+        {
+          "id": "trash-sweep",
+          "title": "Trash sweep",
+          "description": "Gather any obvious trash",
+          "type": "timer",
+          "timerDuration": 120,
+          "voiceEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "surface-clear",
+          "title": "Clear one surface",
+          "description": "Make one surface completely clear",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 4
         },
         {
           "id": "comfort-adjustment",
           "title": "Comfort adjustment",
-          "description": "Make your space more comfortable",
+          "description": "Make space more comfortable",
           "type": "randomChoice",
-          "choices": ["Open a window", "Adjust lighting", "Fluff cushions", "Clear surfaces", "Add something cozy"],
-          "order": 1
+          "choices": ["Open windows", "Adjust lighting", "Fluff cushions", "Light a candle", "Play music", "Add cozy blanket"],
+          "voiceEnabled": true,
+          "order": 5
+        },
+        {
+          "id": "final-touch",
+          "title": "One final touch",
+          "description": "What would make this space feel loved?",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 6
         }
       ]
     }

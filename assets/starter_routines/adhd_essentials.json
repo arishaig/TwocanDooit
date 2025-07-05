@@ -1,0 +1,168 @@
+{
+  "format": "TwocanDooit-Routines",
+  "version": "1.0",
+  "category": "ADHD Essentials",
+  "description": "Routines designed specifically for ADHD challenges",
+  "routines": [
+    {
+      "id": "morning-medication",
+      "name": "Morning Medication",
+      "description": "Never forget your meds again with this gentle reminder routine",
+      "category": "ADHD Essentials",
+      "voiceEnabled": true,
+      "musicEnabled": false,
+      "steps": [
+        {
+          "id": "med-location",
+          "title": "Go to {location}",
+          "description": "Head to where you keep your meds",
+          "type": "variableParameter",
+          "variableName": "location",
+          "variableOptions": ["kitchen", "bathroom", "bedroom", "medicine cabinet"],
+          "voiceEnabled": true,
+          "order": 0
+        },
+        {
+          "id": "take-meds",
+          "title": "Take medication with {liquid}",
+          "description": "Take your morning medication",
+          "type": "variableParameter",
+          "variableName": "liquid",
+          "variableOptions": ["water", "juice", "coffee", "tea", "milk"],
+          "voiceEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "log-meds",
+          "title": "Log medication taken",
+          "description": "Mark it done in your tracking app or calendar",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 2
+        },
+        {
+          "id": "wait-period",
+          "title": "Gentle activity while waiting",
+          "description": "Do something calm while meds kick in",
+          "type": "timer",
+          "timerDuration": 1200,
+          "voiceEnabled": true,
+          "order": 3
+        }
+      ]
+    },
+    {
+      "id": "task-transition",
+      "name": "Task Transition Reset",
+      "description": "Smooth transitions between activities",
+      "category": "ADHD Essentials",
+      "voiceEnabled": true,
+      "musicEnabled": true,
+      "musicTrack": "binauralBeats",
+      "isBuiltInTrack": true,
+      "steps": [
+        {
+          "id": "acknowledge-end",
+          "title": "Acknowledge current task ending",
+          "description": "Take a moment to mentally close out what you were doing",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 0
+        },
+        {
+          "id": "transition-breath",
+          "title": "Transition breathing",
+          "description": "Clear your mind with focused breathing",
+          "type": "timer",
+          "timerDuration": 60,
+          "voiceEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "body-movement",
+          "title": "Quick body movement",
+          "description": "Shake it out or stretch",
+          "type": "reps",
+          "repsTarget": 5,
+          "randomizeReps": true,
+          "repsMin": 3,
+          "repsMax": 8,
+          "repsDescription": "stretches or shakes",
+          "voiceEnabled": true,
+          "order": 2
+        },
+        {
+          "id": "name-next-task",
+          "title": "Name your next task",
+          "description": "Say out loud what you're about to do",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "first-tiny-step",
+          "title": "Identify first tiny step",
+          "description": "What's the smallest way to start?",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 4
+        }
+      ]
+    },
+    {
+      "id": "overwhelm-reset",
+      "name": "Overwhelm Reset",
+      "description": "Quick reset when feeling stuck or overwhelmed",
+      "category": "ADHD Essentials",
+      "voiceEnabled": true,
+      "musicEnabled": true,
+      "musicTrack": "calm",
+      "isBuiltInTrack": true,
+      "steps": [
+        {
+          "id": "pause-acknowledge",
+          "title": "Pause and acknowledge",
+          "description": "It's okay to feel overwhelmed",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 0
+        },
+        {
+          "id": "grounding-54321",
+          "title": "5-4-3-2-1 Grounding",
+          "description": "Name 5 things you see, 4 you hear, 3 you feel, 2 you smell, 1 you taste",
+          "type": "timer",
+          "timerDuration": 120,
+          "voiceEnabled": true,
+          "order": 1
+        },
+        {
+          "id": "choose-reset",
+          "title": "Choose your reset",
+          "description": "What would help right now?",
+          "type": "randomChoice",
+          "choices": ["Get water", "Step outside", "Text a friend", "Do 10 jumping jacks", "Listen to favorite song"],
+          "voiceEnabled": true,
+          "order": 2
+        },
+        {
+          "id": "reset-action",
+          "title": "Do your reset action",
+          "description": "Take your chosen action",
+          "type": "timer",
+          "timerDuration": 180,
+          "voiceEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "one-thing",
+          "title": "Choose ONE thing",
+          "description": "Pick just one small thing to do next",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 4
+        }
+      ]
+    }
+  ]
+}

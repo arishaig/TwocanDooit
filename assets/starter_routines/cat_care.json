@@ -9,51 +9,78 @@
       "name": "Daily Cat Care",
       "description": "Essential daily care for your cat's health and happiness",
       "category": "Pet Care",
+      "voiceEnabled": true,
+      "musicEnabled": false,
       "steps": [
         {
-          "id": "check-water",
-          "title": "Check water bowl",
-          "description": "Ensure fresh, clean water is available",
+          "id": "morning-greeting",
+          "title": "Morning greeting",
+          "description": "Say good morning to your cat",
           "type": "basic",
+          "voiceEnabled": true,
           "order": 0
+        },
+        {
+          "id": "check-water",
+          "title": "Check water in {location}",
+          "description": "Ensure fresh, clean water",
+          "type": "variableParameter",
+          "variableName": "location",
+          "variableOptions": ["kitchen", "bathroom", "living room", "bedroom", "multiple spots"],
+          "voiceEnabled": true,
+          "order": 1
         },
         {
           "id": "feed-cat",
           "title": "Feeding time",
-          "description": "Provide appropriate amount of cat food",
+          "description": "Provide appropriate amount of food",
           "type": "basic",
-          "order": 1
+          "voiceEnabled": true,
+          "order": 2
         },
         {
           "id": "litter-check",
-          "title": "Litter box check",
-          "description": "Clean and maintain the litter box",
+          "title": "Litter box maintenance",
+          "description": "Scoop and check litter level",
           "type": "timer",
           "timerDuration": 180,
-          "order": 2
+          "voiceEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "health-observation",
+          "title": "Quick health check",
+          "description": "Notice eating, drinking, bathroom habits",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 4
         },
         {
           "id": "playtime-activity",
           "title": "Choose play activity",
-          "description": "Engage your cat with interactive play",
+          "description": "Engage with interactive play",
           "type": "randomChoice",
-          "choices": ["Feather wand", "Laser pointer", "Catnip toy", "String play", "Ball toy"],
-          "order": 3
+          "choices": ["Feather wand", "Laser pointer", "Catnip toy", "String play", "Ball toy", "Hide and seek treats", "Cardboard box"],
+          "choiceWeights": [0.20, 0.15, 0.15, 0.15, 0.15, 0.10, 0.10],
+          "voiceEnabled": true,
+          "order": 5
         },
         {
           "id": "playtime",
           "title": "Interactive playtime",
-          "description": "Active play session with your cat",
+          "description": "Active play session",
           "type": "timer",
           "timerDuration": 900,
-          "order": 4
+          "voiceEnabled": true,
+          "order": 6
         },
         {
-          "id": "grooming-check",
-          "title": "Quick grooming check",
-          "description": "Check for any grooming needs or health concerns",
+          "id": "cuddle-check",
+          "title": "Cuddle time?",
+          "description": "Offer affection if your cat is interested",
           "type": "basic",
-          "order": 5
+          "voiceEnabled": true,
+          "order": 7
         }
       ]
     },
@@ -62,59 +89,91 @@
       "name": "Weekly Cat Wellness",
       "description": "Weekly health and environment maintenance for cats",
       "category": "Pet Care",
+      "voiceEnabled": true,
+      "musicEnabled": false,
       "steps": [
         {
           "id": "weight-check",
-          "title": "Weight and body condition",
-          "description": "Gently check your cat's weight and overall condition",
-          "type": "basic",
+          "title": "Weight and body check",
+          "description": "Feel for weight changes, lumps, or issues",
+          "type": "timer",
+          "timerDuration": 120,
+          "voiceEnabled": true,
           "order": 0
         },
         {
+          "id": "brushing-prep",
+          "title": "Get brush and treats",
+          "description": "Prepare for grooming session",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 1
+        },
+        {
           "id": "brushing-session",
-          "title": "Brushing session",
-          "description": "Brush your cat's fur to prevent matting",
+          "title": "Gentle brushing",
+          "description": "Brush to prevent matting and hairballs",
           "type": "timer",
           "timerDuration": 600,
-          "order": 1
+          "voiceEnabled": true,
+          "order": 2
         },
         {
           "id": "nail-trim-check",
           "title": "Check nails",
-          "description": "Examine nails and trim if needed",
+          "description": "Examine and trim if needed",
           "type": "basic",
-          "order": 2
+          "voiceEnabled": true,
+          "order": 3
         },
         {
-          "id": "ear-cleaning",
-          "title": "Ear check and cleaning",
-          "description": "Gently clean ears and check for issues",
+          "id": "ear-teeth-check",
+          "title": "Check ears and teeth",
+          "description": "Look for wax buildup or dental issues",
           "type": "timer",
-          "timerDuration": 300,
-          "order": 3
+          "timerDuration": 180,
+          "voiceEnabled": true,
+          "order": 4
         },
         {
           "id": "litter-deep-clean",
           "title": "Deep clean litter area",
-          "description": "Thoroughly clean and sanitize litter box area",
+          "description": "Full litter change and box sanitize",
           "type": "timer",
           "timerDuration": 900,
-          "order": 4
+          "voiceEnabled": true,
+          "order": 5
+        },
+        {
+          "id": "wash-items",
+          "title": "Wash cat items",
+          "description": "Clean food bowls, water fountains, toys",
+          "type": "timer",
+          "timerDuration": 600,
+          "voiceEnabled": true,
+          "order": 6
         },
         {
           "id": "toy-rotation",
           "title": "Rotate toys",
-          "description": "Switch out toys to keep things interesting",
-          "type": "basic",
-          "order": 5
+          "description": "Put away some, bring out others",
+          "type": "reps",
+          "repsTarget": 5,
+          "randomizeReps": true,
+          "repsMin": 3,
+          "repsMax": 8,
+          "repsDescription": "toys to rotate",
+          "voiceEnabled": true,
+          "order": 7
         },
         {
           "id": "environmental-enrichment",
           "title": "Add enrichment",
-          "description": "What can make your cat's environment better?",
+          "description": "Enhance your cat's environment",
           "type": "randomChoice",
-          "choices": ["New hiding spot", "Cardboard box", "Cat grass", "Window perch setup", "Puzzle feeder"],
-          "order": 6
+          "choices": ["New hiding spot", "Cardboard box fort", "Cat grass", "Window perch setup", "Puzzle feeder", "Paper bag cave", "Catnip refresh"],
+          "voiceEnabled": true,
+          "order": 8
         }
       ]
     }

@@ -9,36 +9,66 @@
       "name": "Gentle Morning Start",
       "description": "Ease into your day with simple, manageable steps",
       "category": "Daily",
+      "voiceEnabled": true,
+      "musicEnabled": true,
+      "musicTrack": "calm",
+      "isBuiltInTrack": true,
       "steps": [
         {
           "id": "morning-breathe",
-          "title": "Wake up and breathe",
-          "description": "Take 3 deep breaths and notice how you feel",
-          "type": "basic",
+          "title": "Wake up breathing",
+          "description": "Take 3 deep breaths before getting up",
+          "type": "reps",
+          "repsTarget": 3,
+          "repsDescription": "deep breaths",
+          "voiceEnabled": true,
           "order": 0
         },
         {
-          "id": "morning-hydrate",
-          "title": "Hydrate",
-          "description": "Drink a glass of water to start your day",
-          "type": "basic",
+          "id": "morning-stretch",
+          "title": "Gentle stretches",
+          "description": "Stretch in bed or standing",
+          "type": "timer",
+          "timerDuration": 60,
+          "voiceEnabled": true,
           "order": 1
+        },
+        {
+          "id": "morning-hydrate",
+          "title": "Hydrate with {temperature} water",
+          "description": "Start your day with hydration",
+          "type": "variableParameter",
+          "variableName": "temperature",
+          "variableOptions": ["cold", "room temp", "warm", "hot"],
+          "voiceEnabled": true,
+          "order": 2
         },
         {
           "id": "morning-teeth",
           "title": "Brush teeth",
-          "description": "Take your time and be gentle with yourself",
+          "description": "Take your time and be gentle",
           "type": "timer",
           "timerDuration": 120,
-          "order": 2
+          "voiceEnabled": true,
+          "order": 3
         },
         {
           "id": "morning-breakfast",
           "title": "Choose breakfast mood",
           "description": "What sounds good today?",
           "type": "randomChoice",
-          "choices": ["Something warm", "Something fresh", "Something quick", "Something special"],
-          "order": 3
+          "choices": ["Something warm", "Something fresh", "Something quick", "Something special", "Just coffee/tea"],
+          "choiceWeights": [0.25, 0.20, 0.25, 0.15, 0.15],
+          "voiceEnabled": true,
+          "order": 4
+        },
+        {
+          "id": "morning-intention",
+          "title": "Set one kind intention",
+          "description": "What's one thing you'd like for today?",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 5
         }
       ]
     },
@@ -47,29 +77,63 @@
       "name": "Wind Down Evening",
       "description": "Gentle transition to rest and relaxation",
       "category": "Daily",
+      "voiceEnabled": true,
+      "musicEnabled": true,
+      "musicTrack": "calm",
+      "isBuiltInTrack": true,
       "steps": [
         {
-          "id": "evening-tidy",
-          "title": "Tidy one small area",
-          "description": "Just one surface or corner - that's enough",
-          "type": "timer",
-          "timerDuration": 300,
+          "id": "evening-devices",
+          "title": "Put devices to bed",
+          "description": "Plug in phones and close laptops",
+          "type": "basic",
+          "voiceEnabled": true,
           "order": 0
         },
         {
-          "id": "evening-activity",
-          "title": "Choose evening activity",
-          "description": "How would you like to unwind?",
-          "type": "randomChoice",
-          "choices": ["Read a few pages", "Listen to music", "Light stretching", "Journal thoughts", "Watch something cozy"],
+          "id": "evening-tidy",
+          "title": "5-minute tidy",
+          "description": "Quick pickup of {area}",
+          "type": "variableParameter",
+          "variableName": "area",
+          "variableOptions": ["living room", "bedroom", "kitchen", "bathroom", "workspace"],
+          "voiceEnabled": true,
           "order": 1
         },
         {
-          "id": "evening-intention",
-          "title": "Tomorrow's intention",
-          "description": "Set one kind intention for tomorrow",
-          "type": "basic",
+          "id": "evening-selfcare",
+          "title": "Evening self-care",
+          "description": "Wash face, brush teeth, change clothes",
+          "type": "timer",
+          "timerDuration": 300,
+          "voiceEnabled": true,
           "order": 2
+        },
+        {
+          "id": "evening-activity",
+          "title": "Calming activity",
+          "description": "Choose how to unwind",
+          "type": "randomChoice",
+          "choices": ["Read a few pages", "Listen to music", "Light stretching", "Journal thoughts", "Meditation app", "Gratitude list"],
+          "choiceWeights": [0.20, 0.15, 0.20, 0.15, 0.15, 0.15],
+          "voiceEnabled": true,
+          "order": 3
+        },
+        {
+          "id": "evening-prep",
+          "title": "Tomorrow prep",
+          "description": "Set out clothes or prep one thing for morning",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 4
+        },
+        {
+          "id": "evening-gratitude",
+          "title": "Name one good thing",
+          "description": "What went well today, no matter how small?",
+          "type": "basic",
+          "voiceEnabled": true,
+          "order": 5
         }
       ]
     }
