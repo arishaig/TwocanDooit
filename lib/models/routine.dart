@@ -81,9 +81,10 @@ class Routine {
   }
 
   void reorderSteps(int oldIndex, int newIndex) {
-    if (oldIndex < newIndex) {
-      newIndex -= 1;
+    if (oldIndex < 0 || oldIndex >= steps.length || newIndex < 0 || newIndex >= steps.length) {
+      return; // Invalid indices
     }
+    
     final Step step = steps.removeAt(oldIndex);
     steps.insert(newIndex, step);
     updatedAt = DateTime.now();

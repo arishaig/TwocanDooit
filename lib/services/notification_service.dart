@@ -142,8 +142,10 @@ class NotificationService {
   }
 
   static Future<void> dismissNudgeNotification() async {
-    await _notifications.cancel(_nudgeNotificationId);
-    print('Nudge notification dismissed');
+    if (_isInitialized) {
+      await _notifications.cancel(_nudgeNotificationId);
+      print('Nudge notification dismissed');
+    }
   }
 
   static Future<void> _dismissNudgeNotification() async {

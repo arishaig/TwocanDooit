@@ -91,7 +91,18 @@ class TestHelpers {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
       const MethodChannel('dexterous.com/flutter/local_notifications'),
       (MethodCall methodCall) async {
-        return null;
+        switch (methodCall.method) {
+          case 'initialize':
+            return true;
+          case 'cancel':
+            return null;
+          case 'cancelAll':
+            return null;
+          case 'show':
+            return null;
+          default:
+            return null;
+        }
       },
     );
 
