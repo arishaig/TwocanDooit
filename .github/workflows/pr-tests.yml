@@ -27,6 +27,12 @@ jobs:
     - name: Install dependencies
       run: flutter pub get
     
+    - name: Create Firebase options stub for CI
+      run: |
+        if [ ! -f "lib/firebase_options.dart" ]; then
+          cp lib/firebase_options_stub.dart lib/firebase_options.dart
+        fi
+    
     - name: Analyze code
       run: flutter analyze
     
