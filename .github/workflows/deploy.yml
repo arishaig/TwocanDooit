@@ -39,10 +39,22 @@ jobs:
     
     - name: Create key.properties file
       run: |
-        echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
-        echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-        echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-        echo "storeFile=${{ secrets.STORE_FILE }}" >> android/key.properties
+        echo "storePassword=${KEYSTORE_PASSWORD:-TwocanDooit2025!}" > android/key.properties
+        echo "keyPassword=${KEY_PASSWORD:-TwocanDooit2025!}" >> android/key.properties
+        echo "keyAlias=${KEY_ALIAS:-upload-key-new}" >> android/key.properties
+        echo "storeFile=${STORE_FILE:-upload-key-new.jks}" >> android/key.properties
+      env:
+        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        STORE_FILE: ${{ secrets.STORE_FILE }}
+    
+    - name: Verify key.properties and keystore
+      run: |
+        echo "Contents of key.properties:"
+        cat android/key.properties
+        echo "Keystore file exists:"
+        ls -la android/app/upload-key-new.jks
     
     - name: Build App Bundle
       run: flutter build appbundle --release
