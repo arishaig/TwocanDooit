@@ -37,9 +37,12 @@ jobs:
     - name: Run tests
       run: flutter test
     
-    - name: Create keystore file
+    - name: Create key.properties file
       run: |
-        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-key-new.jks
+        echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
+        echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+        echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+        echo "storeFile=${{ secrets.STORE_FILE }}" >> android/key.properties
     
     - name: Build App Bundle
       run: flutter build appbundle --release
