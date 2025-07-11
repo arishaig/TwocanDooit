@@ -9,7 +9,7 @@ import '../../test_helpers.dart';
 
 void main() {
   setUpAll(() {
-    TestHelpers.setupFirebaseMocks();
+    TestHelpers.setupAllPluginMocks();
   });
 
   group('StorageService Tests', () {

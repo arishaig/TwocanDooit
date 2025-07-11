@@ -31,6 +31,78 @@ class TestHelpers {
       },
     );
   }
+
+  /// Sets up all plugin mocks for testing
+  static void setupAllPluginMocks() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    
+    // Firebase Core
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('plugins.flutter.io/firebase_core'),
+      (MethodCall methodCall) async {
+        return <String, dynamic>{
+          'name': 'test',
+          'options': <String, dynamic>{
+            'apiKey': 'test-api-key',
+            'appId': 'test-app-id',
+            'messagingSenderId': 'test-sender-id',
+            'projectId': 'test-project-id',
+          },
+        };
+      },
+    );
+
+    // SharedPreferences
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('plugins.flutter.io/shared_preferences'),
+      (MethodCall methodCall) async {
+        if (methodCall.method == 'getAll') {
+          return <String, dynamic>{};
+        }
+        return null;
+      },
+    );
+
+    // AudioPlayers
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('xyz.luan/audioplayers.global'),
+      (MethodCall methodCall) async {
+        return null;
+      },
+    );
+
+    // AudioPlayers player instances
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('xyz.luan/audioplayers'),
+      (MethodCall methodCall) async {
+        return null;
+      },
+    );
+
+    // Flutter TTS
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('flutter_tts'),
+      (MethodCall methodCall) async {
+        return null;
+      },
+    );
+
+    // Flutter Local Notifications
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('dexterous.com/flutter/local_notifications'),
+      (MethodCall methodCall) async {
+        return null;
+      },
+    );
+
+    // Vibration
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('vibration'),
+      (MethodCall methodCall) async {
+        return null;
+      },
+    );
+  }
   /// Creates a basic test routine with sample steps
   static Routine createTestRoutine({
     String name = 'Test Routine',

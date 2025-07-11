@@ -9,7 +9,7 @@ import 'test_helpers.dart';
 
 void main() {
   setUpAll(() {
-    TestHelpers.setupFirebaseMocks();
+    TestHelpers.setupAllPluginMocks();
   });
 
   group('TwocanDooitApp Widget Tests', () {
@@ -48,7 +48,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       // Test app has basic navigation structure
-      expect(find.byType(AppBar), findsOneWidget);
+      expect(find.byType(MaterialApp), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
     });
 

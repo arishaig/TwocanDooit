@@ -219,7 +219,9 @@ class ExecutionService {
     _currentRun = null;
     _pauseStartTime = null;
     _remainingSeconds = 0;
-    _eventController.add('Execution stopped');
+    if (!_eventController.isClosed) {
+      _eventController.add('Execution stopped');
+    }
   }
 
   static Future<void> completeCurrentStep({AppSettings? settings}) async {

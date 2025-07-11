@@ -12,8 +12,8 @@ void main() {
     setUpAll(() async {
       // Mock SharedPreferences
       SharedPreferences.setMockInitialValues({});
-      // Mock Firebase
-      TestHelpers.setupFirebaseMocks();
+      // Mock all plugins
+      TestHelpers.setupAllPluginMocks();
     });
 
     setUp(() async {
@@ -327,11 +327,15 @@ void main() {
       });
 
       test('should persist state across provider instances', () async {
-        await provider.updateUserName('Persistent User');
-        await provider.updateThemeMode(true);
-        await provider.completeOnboarding();
+        // Create a separate provider for this test to avoid disposal conflicts
+        final testProvider = SettingsProvider();
+        await Future.delayed(Duration(milliseconds: 100));
         
-        provider.dispose();
+        await testProvider.updateUserName('Persistent User');
+        await testProvider.updateThemeMode(true);
+        await testProvider.completeOnboarding();
+        
+        testProvider.dispose();
         
         final newProvider = SettingsProvider();
         await Future.delayed(Duration(milliseconds: 100));

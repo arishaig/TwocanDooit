@@ -13,7 +13,7 @@ void main() {
     late AppSettings testSettings;
 
     setUpAll(() {
-      TestHelpers.setupFirebaseMocks();
+      TestHelpers.setupAllPluginMocks();
     });
 
     setUp(() {
@@ -98,8 +98,11 @@ void main() {
         expect(session.progress, equals(1.0));
       });
 
-      test('should calculate total elapsed time', () {
+      test('should calculate total elapsed time', () async {
         final session = ExecutionSession(routine: testRoutine);
+        
+        // Add a small delay to ensure elapsed time > 0
+        await Future.delayed(Duration(milliseconds: 10));
         
         final elapsed = session.totalElapsed;
         expect(elapsed, isA<Duration>());

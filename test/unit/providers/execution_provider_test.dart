@@ -17,17 +17,22 @@ void main() {
     setUpAll(() async {
       // Mock SharedPreferences
       SharedPreferences.setMockInitialValues({});
-      // Mock Firebase
-      TestHelpers.setupFirebaseMocks();
+      // Mock all plugins
+      TestHelpers.setupAllPluginMocks();
     });
 
     setUp(() async {
-      provider = ExecutionProvider();
       testRoutine = TestHelpers.createTestRoutine();
       testSettings = TestHelpers.createTestSettings();
       
       // Clean up any existing execution state
       await ExecutionService.stopExecution();
+      
+      // Create provider after cleanup to avoid receiving initial 'Execution stopped' event
+      provider = ExecutionProvider();
+      
+      // Allow any initial stream events to settle
+      await Future.delayed(Duration(milliseconds: 10));
     });
 
     tearDown(() async {
@@ -333,16 +338,22 @@ void main() {
 
     group('Disposal', () {
       test('should clean up resources on dispose', () {
+        // Create a separate provider for disposal testing
+        final disposalProvider = ExecutionProvider();
+        
         // This should not throw exceptions
-        expect(() => provider.dispose(), returnsNormally);
+        expect(() => disposalProvider.dispose(), returnsNormally);
       });
 
       test('should cancel stream subscriptions on dispose', () {
-        provider.dispose();
+        // Create a separate provider for disposal testing
+        final disposalProvider = ExecutionProvider();
+        
+        disposalProvider.dispose();
         
         // After disposal, the provider should still be in a valid state
-        expect(provider.currentSession, isNull);
-        expect(provider.isRunning, isFalse);
+        expect(disposalProvider.currentSession, isNull);
+        expect(disposalProvider.isRunning, isFalse);
       });
     });
 
