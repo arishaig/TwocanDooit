@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';
 import 'package:twocandooit/providers/routine_provider.dart';
 import 'package:twocandooit/providers/settings_provider.dart';
 import 'package:twocandooit/providers/execution_provider.dart';
@@ -11,6 +13,23 @@ import 'package:twocandooit/models/app_settings.dart';
 
 /// Helper class for creating test fixtures and common test utilities
 class TestHelpers {
+  /// Sets up Firebase mocks for testing
+  static void setupFirebaseMocks() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('plugins.flutter.io/firebase_core'),
+      (MethodCall methodCall) async {
+        return <String, dynamic>{
+          'name': 'test',
+          'options': <String, dynamic>{
+            'apiKey': 'test-api-key',
+            'appId': 'test-app-id',
+            'messagingSenderId': 'test-sender-id',
+            'projectId': 'test-project-id',
+          },
+        };
+      },
+    );
+  }
   /// Creates a basic test routine with sample steps
   static Routine createTestRoutine({
     String name = 'Test Routine',
@@ -189,6 +208,27 @@ class TestHelpers {
       ttsEnabled: ttsEnabled,
       nudgeEnabled: nudgeEnabled,
       nudgeIntervalMinutes: 5,
+    );
+  }
+
+  /// Test app class that doesn't initialize Firebase
+  static Widget createTestTwocanApp() {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => RoutineProvider()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(create: (_) => ExecutionProvider()),
+      ],
+      child: MaterialApp(
+        title: 'TwocanDooit Test',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        ),
+        home: const Scaffold(
+          body: Center(child: Text('Test App')),
+        ),
+      ),
     );
   }
 }

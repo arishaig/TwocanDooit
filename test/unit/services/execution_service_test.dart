@@ -12,6 +12,10 @@ void main() {
     late Routine testRoutine;
     late AppSettings testSettings;
 
+    setUpAll(() {
+      TestHelpers.setupFirebaseMocks();
+    });
+
     setUp(() {
       testRoutine = TestHelpers.createTestRoutine();
       testSettings = TestHelpers.createTestSettings();

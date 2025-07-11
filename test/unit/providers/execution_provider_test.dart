@@ -17,6 +17,8 @@ void main() {
     setUpAll(() async {
       // Mock SharedPreferences
       SharedPreferences.setMockInitialValues({});
+      // Mock Firebase
+      TestHelpers.setupFirebaseMocks();
     });
 
     setUp(() async {

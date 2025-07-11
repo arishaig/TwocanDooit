@@ -8,6 +8,10 @@ import 'package:twocandooit/models/step_type.dart';
 import '../../test_helpers.dart';
 
 void main() {
+  setUpAll(() {
+    TestHelpers.setupFirebaseMocks();
+  });
+
   group('StorageService Tests', () {
     late List<Routine> testRoutines;
     late Map<String, dynamic> testSettings;

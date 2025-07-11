@@ -12,6 +12,8 @@ void main() {
     setUpAll(() async {
       // Mock SharedPreferences
       SharedPreferences.setMockInitialValues({});
+      // Mock Firebase
+      TestHelpers.setupFirebaseMocks();
     });
 
     setUp(() async {
@@ -266,8 +268,8 @@ void main() {
       test('should handle update errors gracefully', () async {
         // This test would need to mock a save failure
         // For now, we verify the error handling structure exists
-        final result = await provider.updateSettings(provider.settings.copyWith(userName: 'Test'));
-        expect(result, isA<void>());
+        await provider.updateSettings(provider.settings.copyWith(userName: 'Test'));
+        expect(provider.error, isNull); // No error since there's no actual error
       });
     });
 

@@ -166,4 +166,9 @@ class RoutineService {
     _routines.addAll([morningRoutine, exerciseRoutine, studyBreakRoutine]);
     await saveRoutines();
   }
+
+  static Future<void> clearAll() async {
+    _routines.clear();
+    await StorageService.clearAll();
+  }
 }
