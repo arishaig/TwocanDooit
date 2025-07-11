@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dooit/ui/widgets/routine_card.dart';
-import 'package:dooit/models/routine.dart';
-import 'package:dooit/models/step.dart' as DooitStep;
-import 'package:dooit/models/step_type.dart';
+import 'package:twocandooit/ui/widgets/routine_card.dart';
+import 'package:twocandooit/models/routine.dart';
+import 'package:twocandooit/models/step.dart' as DooitStep;
+import 'package:twocandooit/models/step_type.dart';
 
 void main() {
   group('RoutineCard Tests', () {

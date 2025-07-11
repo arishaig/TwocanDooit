@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dooit/models/step.dart';
-import 'package:dooit/models/step_type.dart';
+import 'package:twocandooit/models/step.dart';
+import 'package:twocandooit/models/step_type.dart';
 
 void main() {
   group('Step Model Tests', () {

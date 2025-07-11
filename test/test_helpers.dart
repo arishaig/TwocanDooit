@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:dooit/providers/routine_provider.dart';
-import 'package:dooit/providers/settings_provider.dart';
-import 'package:dooit/providers/execution_provider.dart';
-import 'package:dooit/models/routine.dart';
-import 'package:dooit/models/step.dart' as DooitStep;
-import 'package:dooit/models/step_type.dart';
-import 'package:dooit/models/app_settings.dart';
+import 'package:twocandooit/providers/routine_provider.dart';
+import 'package:twocandooit/providers/settings_provider.dart';
+import 'package:twocandooit/providers/execution_provider.dart';
+import 'package:twocandooit/models/routine.dart';
+import 'package:twocandooit/models/step.dart' as DooitStep;
+import 'package:twocandooit/models/step_type.dart';
+import 'package:twocandooit/models/app_settings.dart';
 
 /// Helper class for creating test fixtures and common test utilities
 class TestHelpers {

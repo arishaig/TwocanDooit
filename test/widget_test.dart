@@ -5,14 +5,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dooit/main.dart';
+import 'package:twocandooit/main.dart';
 import 'test_helpers.dart';
 
 void main() {
-  group('DooitApp Widget Tests', () {
+  group('TwocanDooitApp Widget Tests', () {
     testWidgets('should launch without errors', (WidgetTester tester) async {
       // Build the app and trigger a frame
-      await tester.pumpWidget(const DooitApp());
+      await tester.pumpWidget(const TwocanDooitApp());
       
       // Pump a few frames without waiting for all animations to settle
       await tester.pump();
@@ -26,7 +26,7 @@ void main() {
     });
 
     testWidgets('should show home screen content', (WidgetTester tester) async {
-      await tester.pumpWidget(const DooitApp());
+      await tester.pumpWidget(const TwocanDooitApp());
       
       // Pump a few frames without waiting for all animations to settle
       await tester.pump();
@@ -44,7 +44,7 @@ void main() {
     });
 
     testWidgets('should handle navigation', (WidgetTester tester) async {
-      await tester.pumpWidget(const DooitApp());
+      await tester.pumpWidget(const TwocanDooitApp());
       
       // Pump a few frames without waiting for all animations to settle
       await tester.pump();
@@ -60,7 +60,7 @@ void main() {
     });
 
     testWidgets('should handle theme correctly', (WidgetTester tester) async {
-      await tester.pumpWidget(const DooitApp());
+      await tester.pumpWidget(const TwocanDooitApp());
       
       // Pump a few frames without waiting for all animations to settle
       await tester.pump();

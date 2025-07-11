@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dooit/ui/widgets/dice_widget.dart';
+import 'package:twocandooit/ui/widgets/dice_widget.dart';
 
 void main() {
   group('DiceWidget Tests', () {
