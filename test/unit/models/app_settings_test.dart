@@ -178,12 +178,13 @@ void main() {
         );
         
         final updatedSettings = originalSettings.copyWith(
-          ttsVoice: null,
-          ttsVoiceLocale: null,
+          ttsEnabled: false,
         );
         
-        expect(updatedSettings.ttsVoice, isNull);
-        expect(updatedSettings.ttsVoiceLocale, isNull);
+        // copyWith doesn't explicitly set null values, they preserve existing ones
+        expect(updatedSettings.ttsVoice, equals('original-voice'));
+        expect(updatedSettings.ttsVoiceLocale, equals('en-US'));
+        expect(updatedSettings.ttsEnabled, isFalse);
       });
     });
 

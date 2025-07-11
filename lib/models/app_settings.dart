@@ -100,20 +100,36 @@ class AppSettings {
   factory AppSettings.fromJson(Map<String, dynamic> json) {
     return AppSettings(
       ttsEnabled: json['ttsEnabled'] ?? false,
-      ttsRate: (json['ttsRate'] ?? 0.5).toDouble(),
-      ttsPitch: (json['ttsPitch'] ?? 1.0).toDouble(),
-      ttsVolume: (json['ttsVolume'] ?? 1.0).toDouble(),
+      ttsRate: _parseDouble(json['ttsRate'], 0.5),
+      ttsPitch: _parseDouble(json['ttsPitch'], 1.0),
+      ttsVolume: _parseDouble(json['ttsVolume'], 1.0),
       ttsLanguage: json['ttsLanguage'] ?? 'en-US',
       ttsVoice: json['ttsVoice'],
       ttsVoiceLocale: json['ttsVoiceLocale'],
       nudgeEnabled: json['nudgeEnabled'] ?? true,
-      nudgeIntervalMinutes: json['nudgeIntervalMinutes'] ?? 5,
-      maxNudgeCount: json['maxNudgeCount'] ?? 3,
+      nudgeIntervalMinutes: _parseInt(json['nudgeIntervalMinutes'], 5),
+      maxNudgeCount: _parseInt(json['maxNudgeCount'], 3),
       audioFeedbackEnabled: json['audioFeedbackEnabled'] ?? true,
       hapticFeedbackEnabled: json['hapticFeedbackEnabled'] ?? true,
       isDarkMode: json['isDarkMode'] ?? true,
       userName: json['userName'] ?? '',
       hasCompletedOnboarding: json['hasCompletedOnboarding'] ?? false,
     );
+  }
+
+  static double _parseDouble(dynamic value, double defaultValue) {
+    if (value == null) return defaultValue;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? defaultValue;
+    return defaultValue;
+  }
+
+  static int _parseInt(dynamic value, int defaultValue) {
+    if (value == null) return defaultValue;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? defaultValue;
+    return defaultValue;
   }
 }

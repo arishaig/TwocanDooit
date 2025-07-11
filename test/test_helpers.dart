@@ -15,6 +15,7 @@ import 'package:twocandooit/models/app_settings.dart';
 class TestHelpers {
   /// Sets up Firebase mocks for testing
   static void setupFirebaseMocks() {
+    TestWidgetsFlutterBinding.ensureInitialized();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
       const MethodChannel('plugins.flutter.io/firebase_core'),
       (MethodCall methodCall) async {
