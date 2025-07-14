@@ -8,15 +8,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        fetch-depth: 0
     
     - name: Set up Java
       uses: actions/setup-java@v4
@@ -86,7 +81,7 @@ jobs:
         ls -la android/app/$(grep "storeFile=" android/key.properties | cut -d'=' -f2)
     
     - name: Build App Bundle
-      run: flutter build appbundle --release
+      run: flutter build appbundle --release --build-number=${{ github.run_number }}
     
     - name: Upload to Play Store
       uses: r0adkll/upload-google-play@v1.1.3
@@ -97,29 +92,3 @@ jobs:
         track: alpha
         status: completed
         changesNotSentForReview: true
-    
-    - name: Increment build number
-      run: |
-        # Get current version from pubspec.yaml
-        current_version=$(grep "version:" pubspec.yaml | sed 's/version: //')
-        version_name=$(echo $current_version | cut -d'+' -f1)
-        build_number=$(echo $current_version | cut -d'+' -f2)
-        new_build_number=$((build_number + 1))
-        new_version="${version_name}+${new_build_number}"
-        
-        # Update pubspec.yaml
-        sed -i "s/version: $current_version/version: $new_version/" pubspec.yaml
-        
-        echo "Updated version from $current_version to $new_version"
-    
-    - name: Commit and push build number increment
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add pubspec.yaml
-        if git diff --staged --quiet; then
-          echo "No changes to commit"
-        else
-          git commit -m "Increment build number after successful deployment 🚀"
-          git push origin main
-        fi
