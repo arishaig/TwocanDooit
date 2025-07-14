@@ -53,7 +53,7 @@ class _FlyingTwocanState extends State<FlyingTwocan>
     if ((oldWidget.startPosition != widget.startPosition || 
          oldWidget.endPosition != widget.endPosition ||
          oldWidget.shouldFly != widget.shouldFly) && widget.shouldFly) {
-      print('FlyingTwocan: Starting flight from ${widget.startPosition} to ${widget.endPosition}');
+      debugPrint('FlyingTwocan: Starting flight from ${widget.startPosition} to ${widget.endPosition}');
       _generateRandomFlight();
       _updateAnimations();
       _startFlight();
@@ -65,7 +65,7 @@ class _FlyingTwocanState extends State<FlyingTwocan>
     _arcIntensity = 20 + random.nextDouble() * 60; // 20-80px arc
     _rotationIntensity = (random.nextDouble() - 0.5) * 0.4; // -0.2 to 0.2 radians
     _flightDuration = widget.duration ?? Duration(milliseconds: 800 + random.nextInt(400));
-    print('FlyingTwocan: Generated arc=${_arcIntensity.toStringAsFixed(1)}, rotation=${_rotationIntensity.toStringAsFixed(3)}, duration=${_flightDuration.inMilliseconds}ms');
+    debugPrint('FlyingTwocan: Generated arc=${_arcIntensity.toStringAsFixed(1)}, rotation=${_rotationIntensity.toStringAsFixed(3)}, duration=${_flightDuration.inMilliseconds}ms');
   }
 
   void _setupAnimations() {
@@ -128,7 +128,7 @@ class _FlyingTwocanState extends State<FlyingTwocan>
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),

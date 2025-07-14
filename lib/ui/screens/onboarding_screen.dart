@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/settings_provider.dart';
@@ -91,7 +92,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           await RoutineService.saveStarterRoutines(starterRoutines);
         }
       } catch (e) {
-        print('Error loading starter routines: $e');
+        debugPrint('Error loading starter routines: $e');
         // Continue with onboarding even if starter routines fail to load
       }
     }
@@ -128,7 +129,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         });
       }
     } catch (e) {
-      print('Error loading starter categories: $e');
+      debugPrint('Error loading starter categories: $e');
       if (mounted) {
         setState(() {
           _loadingCategories = false;
@@ -171,7 +172,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             // Linear progress indicator
             LinearProgressIndicator(
               value: (_currentPage + 1) / 6,
-              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
             
             // Page content
@@ -459,7 +460,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           decoration: BoxDecoration(
             color: isPrimary 
                 ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.surfaceVariant,
+                : Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -618,7 +619,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -743,7 +744,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -832,7 +833,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceVariant,
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(

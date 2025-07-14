@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import '../models/routine.dart';
 
@@ -58,7 +59,7 @@ class StarterRoutinesService {
       
       return categories;
     } catch (e) {
-      print('Error loading starter categories: $e');
+      debugPrint('Error loading starter categories: $e');
       return [];
     }
   }
@@ -84,7 +85,7 @@ class StarterRoutinesService {
         final routines = await _loadRoutinesForCategory(categoryId);
         allRoutines.addAll(routines);
       } catch (e) {
-        print('Error loading routines for category $categoryId: $e');
+        debugPrint('Error loading routines for category $categoryId: $e');
         // Continue loading other categories even if one fails
       }
     }
@@ -115,7 +116,7 @@ class StarterRoutinesService {
       
       return routines;
     } catch (e) {
-      print('Error loading routines from $assetPath: $e');
+      debugPrint('Error loading routines from $assetPath: $e');
       return [];
     }
   }
@@ -136,7 +137,7 @@ class StarterRoutinesService {
         };
       }).toList();
     } catch (e) {
-      print('Error loading routine preview for $categoryId: $e');
+      debugPrint('Error loading routine preview for $categoryId: $e');
       return [];
     }
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -43,7 +44,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       _availableLanguages = await TTSService.getLanguages();
     } catch (e) {
-      print('Failed to load TTS languages: $e');
+      debugPrint('Failed to load TTS languages: $e');
     } finally {
       setState(() => _isLoadingLanguages = false);
     }
@@ -54,7 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       _availableVoices = await TTSService.getVoices();
     } catch (e) {
-      print('Failed to load TTS voices: $e');
+      debugPrint('Failed to load TTS voices: $e');
     } finally {
       setState(() => _isLoadingVoices = false);
     }
@@ -1089,18 +1090,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
       return;
     }
     
-    print('Test TTS button pressed');
-    print('TTS Enabled: ${settings.ttsEnabled}');
-    print('TTS Rate: ${settings.ttsRate}');
-    print('TTS Language: ${settings.ttsLanguage}');
-    print('TTS Voice: ${settings.ttsVoice}');
-    print('Test Text: $testText');
+    debugPrint('Test TTS button pressed');
+    debugPrint('TTS Enabled: ${settings.ttsEnabled}');
+    debugPrint('TTS Rate: ${settings.ttsRate}');
+    debugPrint('TTS Language: ${settings.ttsLanguage}');
+    debugPrint('TTS Voice: ${settings.ttsVoice}');
+    debugPrint('Test Text: $testText');
     
     await TTSService.speak(
       testText,
       settings,
     );
-    print('TTS speak call completed');
+    debugPrint('TTS speak call completed');
   }
 
   // Import/Export Methods
@@ -1372,7 +1373,7 @@ class _LLMPromptDialogState extends State<_LLMPromptDialog> {
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Theme.of(context).colorScheme.outline),
                   ),

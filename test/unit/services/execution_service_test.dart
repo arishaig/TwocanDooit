@@ -4,7 +4,6 @@ import 'package:twocandooit/models/routine.dart';
 import 'package:twocandooit/models/step.dart';
 import 'package:twocandooit/models/step_type.dart';
 import 'package:twocandooit/models/app_settings.dart';
-import 'package:twocandooit/models/routine_run.dart';
 import '../../test_helpers.dart';
 
 void main() {

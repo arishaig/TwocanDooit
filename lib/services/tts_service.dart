@@ -26,13 +26,13 @@ class TTSService {
         );
       } catch (e) {
         // iOS audio category setting failed - this is normal on non-iOS platforms
-        print('iOS audio category not available (normal on non-iOS): $e');
+        debugPrint('iOS audio category not available (normal on non-iOS): $e');
       }
       
       _isInitialized = true;
-      print('TTS initialization completed successfully');
+      debugPrint('TTS initialization completed successfully');
     } catch (e) {
-      print('TTS initialization failed: $e');
+      debugPrint('TTS initialization failed: $e');
     }
   }
 
@@ -52,7 +52,7 @@ class TTSService {
         await _flutterTts.setVoice({"name": settings.ttsVoice!, "locale": voiceLocale});
       }
     } catch (e) {
-      print('TTS configuration failed: $e');
+      debugPrint('TTS configuration failed: $e');
     }
   }
 
@@ -65,7 +65,7 @@ class TTSService {
       await configure(settings, routine: routine);
       await _flutterTts.speak(text);
     } catch (e) {
-      print('TTS speak failed: $e');
+      debugPrint('TTS speak failed: $e');
     }
   }
 
@@ -73,7 +73,7 @@ class TTSService {
     try {
       await _flutterTts.stop();
     } catch (e) {
-      print('TTS stop failed: $e');
+      debugPrint('TTS stop failed: $e');
     }
   }
 
@@ -81,7 +81,7 @@ class TTSService {
     try {
       await _flutterTts.pause();
     } catch (e) {
-      print('TTS pause failed: $e');
+      debugPrint('TTS pause failed: $e');
     }
   }
 
@@ -89,7 +89,7 @@ class TTSService {
     try {
       return await _flutterTts.getLanguages ?? [];
     } catch (e) {
-      print('TTS getLanguages failed: $e');
+      debugPrint('TTS getLanguages failed: $e');
       return [];
     }
   }
@@ -98,7 +98,7 @@ class TTSService {
     try {
       return await _flutterTts.getVoices ?? [];
     } catch (e) {
-      print('TTS getVoices failed: $e');
+      debugPrint('TTS getVoices failed: $e');
       return [];
     }
   }

@@ -41,7 +41,7 @@ class RoutineProvider with ChangeNotifier {
     bool isBuiltInTrack = true,
   }) async {
     try {
-      final routine = await RoutineService.createRoutine(
+      await RoutineService.createRoutine(
         name: name,
         description: description,
         category: category,

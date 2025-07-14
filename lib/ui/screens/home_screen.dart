@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     fontSize: 14, 
                     fontWeight: FontWeight.normal,
-                    color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
+                    color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9),
                   ),
                 ),
               ],
@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     height: 120,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(60),
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                     ),
                     child: Center(
                       child: Image.asset(
@@ -237,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -251,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return Icon(
                           Icons.thumb_up,
                           size: 160,
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                         );
                       },
                     ),
@@ -274,33 +274,39 @@ class _HomeScreenState extends State<HomeScreen> {
     final settings = context.read<SettingsProvider>().settings;
     await AudioService.playButtonClick(settings);
     
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const RoutineEditorScreen(),
-      ),
-    );
+    if (context.mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => const RoutineEditorScreen(),
+        ),
+      );
+    }
   }
 
   void _editRoutine(BuildContext context, Routine routine) async {
     final settings = context.read<SettingsProvider>().settings;
     await AudioService.playButtonClick(settings);
     
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => RoutineEditorScreen(routine: routine),
-      ),
-    );
+    if (context.mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => RoutineEditorScreen(routine: routine),
+        ),
+      );
+    }
   }
 
   void _startRoutine(BuildContext context, Routine routine) async {
     final settings = context.read<SettingsProvider>().settings;
     await AudioService.playButtonClick(settings);
     
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ExecutionScreen(routine: routine),
-      ),
-    );
+    if (context.mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => ExecutionScreen(routine: routine),
+        ),
+      );
+    }
   }
 
   void _navigateToSettings(BuildContext context) async {

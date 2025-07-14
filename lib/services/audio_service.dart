@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:vibration/vibration.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../models/app_settings.dart';
@@ -66,9 +67,9 @@ class AudioService {
       ));
       
       _isInitialized = true;
-      print('AudioService initialized with ducking: transient focus (sounds) + persistent focus (music)');
+      debugPrint('AudioService initialized with ducking: transient focus (sounds) + persistent focus (music)');
     } catch (e) {
-      print('Failed to initialize AudioService: $e');
+      debugPrint('Failed to initialize AudioService: $e');
     }
   }
 
@@ -81,14 +82,14 @@ class AudioService {
       
       // Don't interfere with background music - use a different player
       if (playerToUse == _audioPlayer && _musicPlayer?.state == PlayerState.playing) {
-        print('Background music playing, using separate player for sound effects');
+        debugPrint('Background music playing, using separate player for sound effects');
       }
       
       await playerToUse.setVolume(volume);
       await playerToUse.play(AssetSource(assetPath));
-      print('Played sound: $assetPath at volume: $volume, music still playing: ${_musicPlayer?.state == PlayerState.playing}');
+      debugPrint('Played sound: $assetPath at volume: $volume, music still playing: ${_musicPlayer?.state == PlayerState.playing}');
     } catch (e) {
-      print('Failed to play sound $assetPath: $e');
+      debugPrint('Failed to play sound $assetPath: $e');
     }
   }
 
@@ -97,16 +98,16 @@ class AudioService {
     try {
       await initialize();
       
-      print('Button click - Audio enabled: ${settings.audioFeedbackEnabled}, Haptic enabled: ${settings.hapticFeedbackEnabled}');
+      debugPrint('Button click - Audio enabled: ${settings.audioFeedbackEnabled}, Haptic enabled: ${settings.hapticFeedbackEnabled}');
       
       if (settings.hapticFeedbackEnabled && await Vibration.hasVibrator() == true) {
         Vibration.vibrate(duration: 30, amplitude: 80);
-        print('Haptic feedback played for button click');
+        debugPrint('Haptic feedback played for button click');
       }
       
       await _playSound(_buttonClickSound, settings);
     } catch (e) {
-      print('Failed to play button click: $e');
+      debugPrint('Failed to play button click: $e');
     }
   }
 
@@ -115,16 +116,16 @@ class AudioService {
     try {
       await initialize();
       
-      print('Subtle click - Audio enabled: ${settings.audioFeedbackEnabled}, Haptic enabled: ${settings.hapticFeedbackEnabled}');
+      debugPrint('Subtle click - Audio enabled: ${settings.audioFeedbackEnabled}, Haptic enabled: ${settings.hapticFeedbackEnabled}');
       
       if (settings.hapticFeedbackEnabled && await Vibration.hasVibrator() == true) {
         Vibration.vibrate(duration: 30, amplitude: 80);
-        print('Haptic feedback played for subtle click');
+        debugPrint('Haptic feedback played for subtle click');
       }
       
       await _playSound(_subtleClickSound, settings, volume: 0.2); // 20% volume
     } catch (e) {
-      print('Failed to play subtle click: $e');
+      debugPrint('Failed to play subtle click: $e');
     }
   }
 
@@ -135,12 +136,12 @@ class AudioService {
       
       if (settings.hapticFeedbackEnabled && await Vibration.hasVibrator() == true) {
         Vibration.vibrate(duration: 40, amplitude: 90);
-        print('Haptic feedback played for go back');
+        debugPrint('Haptic feedback played for go back');
       }
       
       await _playSound(_goBackSound, settings);
     } catch (e) {
-      print('Failed to play go back sound: $e');
+      debugPrint('Failed to play go back sound: $e');
     }
   }
 
@@ -151,12 +152,12 @@ class AudioService {
       
       if (settings.hapticFeedbackEnabled && await Vibration.hasVibrator() == true) {
         Vibration.vibrate(duration: 60, amplitude: 100);
-        print('Haptic feedback played for step complete');
+        debugPrint('Haptic feedback played for step complete');
       }
       
       await _playSound(_subtleClickSound, settings);
     } catch (e) {
-      print('Failed to play step complete: $e');
+      debugPrint('Failed to play step complete: $e');
     }
   }
 
@@ -171,12 +172,12 @@ class AudioService {
           Vibration.vibrate(duration: 80, amplitude: 150);
           if (i < 2) await Future.delayed(const Duration(milliseconds: 100));
         }
-        print('Haptic feedback played for completion');
+        debugPrint('Haptic feedback played for completion');
       }
       
       await _playSound(_routineCompleteSound, settings);
     } catch (e) {
-      print('Failed to play completion sound: $e');
+      debugPrint('Failed to play completion sound: $e');
     }
   }
 
@@ -187,13 +188,13 @@ class AudioService {
       
       if (settings.hapticFeedbackEnabled && await Vibration.hasVibrator() == true) {
         Vibration.vibrate(duration: 100, amplitude: 120);
-        print('Haptic feedback played for dice roll');
+        debugPrint('Haptic feedback played for dice roll');
       }
       
       final randomDiceSound = _diceSounds[_random.nextInt(_diceSounds.length)];
       await _playSound(randomDiceSound, settings);
     } catch (e) {
-      print('Failed to play dice roll sound: $e');
+      debugPrint('Failed to play dice roll sound: $e');
     }
   }
 
@@ -205,12 +206,12 @@ class AudioService {
       
       if (settings.hapticFeedbackEnabled && await Vibration.hasVibrator() == true) {
         Vibration.vibrate(duration: 50, amplitude: 100);
-        print('Haptic feedback played for countdown start');
+        debugPrint('Haptic feedback played for countdown start');
       }
       
       await _playSound(_countdownSound, settings, player: _countdownPlayer);
     } catch (e) {
-      print('Failed to play countdown sound: $e');
+      debugPrint('Failed to play countdown sound: $e');
     }
   }
 
@@ -218,9 +219,9 @@ class AudioService {
   static Future<void> stopCountdown() async {
     try {
       await _countdownPlayer?.stop();
-      print('Countdown sound stopped');
+      debugPrint('Countdown sound stopped');
     } catch (e) {
-      print('Failed to stop countdown: $e');
+      debugPrint('Failed to stop countdown: $e');
     }
   }
 
@@ -240,21 +241,21 @@ class AudioService {
       
       if (isBuiltIn) {
         final assetPath = _builtInMusicTracks[trackName] ?? _builtInMusicTracks.values.first;
-        print('Playing built-in track: $trackName -> $assetPath');
+        debugPrint('Playing built-in track: $trackName -> $assetPath');
         await _musicPlayer!.setVolume(volume);
         await _musicPlayer!.setReleaseMode(ReleaseMode.loop);
         await _musicPlayer!.play(AssetSource(assetPath));
       } else {
         // For user-added tracks, trackName would be the file path
-        print('Playing custom track: $trackName');
+        debugPrint('Playing custom track: $trackName');
         await _musicPlayer!.setVolume(volume);
         await _musicPlayer!.setReleaseMode(ReleaseMode.loop);
         await _musicPlayer!.play(DeviceFileSource(trackName));
       }
       
-      print('Started background music: $trackName at volume: $volume, state: ${_musicPlayer!.state}');
+      debugPrint('Started background music: $trackName at volume: $volume, state: ${_musicPlayer!.state}');
     } catch (e) {
-      print('Failed to start background music: $e');
+      debugPrint('Failed to start background music: $e');
     }
   }
 
@@ -273,18 +274,18 @@ class AudioService {
       }
       
       await _musicPlayer!.stop();
-      print('Background music faded out');
+      debugPrint('Background music faded out');
     } catch (e) {
-      print('Failed to fade out background music: $e');
+      debugPrint('Failed to fade out background music: $e');
     }
   }
 
   static Future<void> stopBackgroundMusic() async {
     try {
       await _musicPlayer?.stop();
-      print('Background music stopped');
+      debugPrint('Background music stopped');
     } catch (e) {
-      print('Failed to stop background music: $e');
+      debugPrint('Failed to stop background music: $e');
     }
   }
 
@@ -296,10 +297,10 @@ class AudioService {
       String assetPath;
       if (isBuiltIn) {
         assetPath = _builtInMusicTracks[trackName] ?? _builtInMusicTracks.values.first;
-        print('Previewing built-in track: $trackName -> $assetPath');
+        debugPrint('Previewing built-in track: $trackName -> $assetPath');
         await _musicPlayer!.setSource(AssetSource(assetPath));
       } else {
-        print('Previewing custom track: $trackName');
+        debugPrint('Previewing custom track: $trackName');
         await _musicPlayer!.setSource(DeviceFileSource(trackName));
       }
       
@@ -307,15 +308,15 @@ class AudioService {
       await _musicPlayer!.setReleaseMode(ReleaseMode.stop); // Don't loop for preview
       await _musicPlayer!.resume();
       
-      print('Started music preview: $trackName at volume: $volume');
+      debugPrint('Started music preview: $trackName at volume: $volume');
       
       // Stop preview after 10 seconds
       Timer(const Duration(seconds: 10), () async {
         await stopBackgroundMusic();
-        print('Preview stopped after 10 seconds');
+        debugPrint('Preview stopped after 10 seconds');
       });
     } catch (e) {
-      print('Failed to play music preview: $e');
+      debugPrint('Failed to play music preview: $e');
     }
   }
 

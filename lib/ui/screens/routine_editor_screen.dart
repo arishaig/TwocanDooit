@@ -222,7 +222,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
                           width: double.infinity,
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surfaceVariant,
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Row(
@@ -354,7 +354,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -943,16 +943,16 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                         ),
                       ),
                       child: Text(
                         _getPresetDescription(_selectedPreset),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
                         ),
                       ),
                     ),
@@ -968,10 +968,10 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
                     margin: const EdgeInsets.only(bottom: 8),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Column(
