@@ -39,16 +39,14 @@ jobs:
     
     - name: Create keystore file
       run: |
-        if [ -z "${{ secrets.KEYSTORE_BASE64 }}" ]; then
-          echo "ERROR: KEYSTORE_BASE64 secret is not set"
-          exit 1
-        fi
-        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-key-new.jks
+        echo "$KEYSTORE_BASE64" | base64 -d > android/app/upload-key-new.jks
         if [ ! -f android/app/upload-key-new.jks ]; then
           echo "ERROR: Failed to create keystore file"
           exit 1
         fi
         echo "Keystore file created successfully"
+      env:
+        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
     
     - name: Create key.properties file
       run: |
