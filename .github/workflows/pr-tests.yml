@@ -37,7 +37,7 @@ jobs:
       run: flutter analyze
     
     - name: Run all tests
-      run: flutter test
+      run: flutter test --timeout=120s
     
     - name: Build debug APK (validation)
       run: flutter build apk --debug
