@@ -1,5 +1,8 @@
 # TwocanDooit 🐦
 
+[![Tests](https://github.com/arishaig/twocandooit/actions/workflows/pr-tests.yml/badge.svg)](https://github.com/arishaig/twocandooit/actions/workflows/pr-tests.yml)
+[![Deploy](https://github.com/arishaig/twocandooit/actions/workflows/deploy.yml/badge.svg)](https://github.com/arishaig/twocandooit/actions/workflows/deploy.yml)
+
 > *"You don't have to do it alone. Twocan do it."*
 
 A cozy, gently whimsical ADHD-friendly routine helper that respects how your brain works—especially when it doesn't. TwocanDooit is your colorful little sidekick who helps make things feel safe, possible, and even a little fun.
