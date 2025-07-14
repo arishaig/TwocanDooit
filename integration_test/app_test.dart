@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:dooit/main.dart';
+import 'package:twocandooit/main.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('Dooit App Integration Tests', () {
     testWidgets('should launch and show home screen', (WidgetTester tester) async {
-      await tester.pumpWidget(const DooitApp());
+      await tester.pumpWidget(const TwocanDooitApp());
       await tester.pumpAndSettle();
 
       // Should show the app title or home screen
@@ -23,7 +23,7 @@ void main() {
     });
 
     testWidgets('should navigate to routine editor', (WidgetTester tester) async {
-      await tester.pumpWidget(const DooitApp());
+      await tester.pumpWidget(const TwocanDooitApp());
       await tester.pumpAndSettle();
 
       // Find and tap the add routine button (FAB)
@@ -38,7 +38,7 @@ void main() {
     });
 
     testWidgets('should create and execute a basic routine', (WidgetTester tester) async {
-      await tester.pumpWidget(const DooitApp());
+      await tester.pumpWidget(const TwocanDooitApp());
       await tester.pumpAndSettle();
 
       // Navigate to routine editor
@@ -91,7 +91,7 @@ void main() {
     });
 
     testWidgets('should navigate to settings and toggle options', (WidgetTester tester) async {
-      await tester.pumpWidget(const DooitApp());
+      await tester.pumpWidget(const TwocanDooitApp());
       await tester.pumpAndSettle();
 
       // Find and tap settings button (if available in app bar)
@@ -114,7 +114,7 @@ void main() {
     });
 
     testWidgets('should handle music selection in routine editor', (WidgetTester tester) async {
-      await tester.pumpWidget(const DooitApp());
+      await tester.pumpWidget(const TwocanDooitApp());
       await tester.pumpAndSettle();
 
       // Navigate to routine editor
