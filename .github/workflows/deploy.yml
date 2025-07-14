@@ -42,7 +42,7 @@ jobs:
         echo "storePassword=${KEYSTORE_PASSWORD:-TwocanDooit2025!}" > android/key.properties
         echo "keyPassword=${KEY_PASSWORD:-TwocanDooit2025!}" >> android/key.properties
         echo "keyAlias=${KEY_ALIAS:-upload-key-new}" >> android/key.properties
-        echo "storeFile=${STORE_FILE:-upload-key-new.jks}" >> android/key.properties
+        echo "storeFile=${STORE_FILE:-app/upload-key-new.jks}" >> android/key.properties
       env:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
@@ -55,6 +55,8 @@ jobs:
         cat android/key.properties
         echo "Keystore file exists:"
         ls -la android/app/upload-key-new.jks
+        echo "Build will look for keystore at:"
+        ls -la android/$(grep "storeFile=" android/key.properties | cut -d'=' -f2)
     
     - name: Build App Bundle
       run: flutter build appbundle --release
