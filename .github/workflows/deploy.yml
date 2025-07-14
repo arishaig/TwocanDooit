@@ -37,6 +37,10 @@ jobs:
     - name: Run tests
       run: flutter test
     
+    - name: Create keystore file
+      run: |
+        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-key-new.jks
+    
     - name: Create key.properties file
       run: |
         echo "storePassword=${KEYSTORE_PASSWORD:-TwocanDooit2025!}" > android/key.properties
