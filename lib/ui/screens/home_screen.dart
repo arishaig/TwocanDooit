@@ -7,7 +7,6 @@ import '../../services/audio_service.dart';
 import '../../services/routine_import_export_service.dart';
 import '../../services/storage_service.dart';
 import '../widgets/routine_card.dart';
-import '../shared/twocan_colors.dart';
 import 'routine_editor_screen.dart';
 import 'execution_screen.dart';
 import 'settings_screen.dart';
@@ -371,7 +370,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 foregroundColor: Colors.white,
               ),
               onPressed: () async {
-                Navigator.of(context).pop();
+                if (mounted) {
+                  Navigator.of(context).pop();
+                }
                 
                 final success = await StorageService.clearRoutineRunData(routine.id);
                 

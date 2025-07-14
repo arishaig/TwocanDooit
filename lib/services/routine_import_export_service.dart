@@ -175,7 +175,7 @@ class RoutineImportExportService {
   Future<String?> saveRoutinesToFile(List<Routine> routines, String fileName, {bool showInFilePicker = true}) async {
     try {
       final jsonString = exportRoutinesToJson(routines);
-      final sanitizedFileName = _sanitizeFileName('${fileName}$_fileExtension');
+      final sanitizedFileName = _sanitizeFileName('$fileName$_fileExtension');
       
       if (kIsWeb) {
         // Web platform - trigger download
@@ -203,7 +203,7 @@ class RoutineImportExportService {
       
       if (kIsWeb) {
         // For web, share as text content
-        await Share.share(
+        await SharePlus.instance.share(
           jsonString,
           subject: 'TwocanDooit Routine: ${routine.name}',
         );
@@ -214,7 +214,7 @@ class RoutineImportExportService {
         final file = File('${tempDir.path}/$fileName');
         await file.writeAsString(jsonString);
         
-        final result = await Share.shareXFiles(
+        final result = await SharePlus.instance.shareFiles(
           [XFile(file.path)],
           subject: 'TwocanDooit Routine: ${routine.name}',
           text: 'Check out this routine I created with TwocanDooit!',
@@ -228,8 +228,6 @@ class RoutineImportExportService {
             return null; // User cancelled
           case ShareResultStatus.unavailable:
             return null; // User cancelled or no app available
-          default:
-            return false; // Actual error
         }
       }
     } catch (e) {
@@ -243,11 +241,11 @@ class RoutineImportExportService {
   Future<bool?> shareRoutines(List<Routine> routines, String fileName) async {
     try {
       final jsonString = exportRoutinesToJson(routines);
-      final sanitizedFileName = _sanitizeFileName('${fileName}$_fileExtension');
+      final sanitizedFileName = _sanitizeFileName('$fileName$_fileExtension');
       
       if (kIsWeb) {
         // For web, share as text content
-        await Share.share(
+        await SharePlus.instance.share(
           jsonString,
           subject: 'TwocanDooit Routines Collection: $fileName',
         );
@@ -258,7 +256,7 @@ class RoutineImportExportService {
         final file = File('${tempDir.path}/$sanitizedFileName');
         await file.writeAsString(jsonString);
         
-        final result = await Share.shareXFiles(
+        final result = await SharePlus.instance.shareFiles(
           [XFile(file.path)],
           subject: 'TwocanDooit Routines Collection: $fileName',
           text: 'Check out these ${routines.length} routines I created with TwocanDooit!',
@@ -272,8 +270,6 @@ class RoutineImportExportService {
             return null; // User cancelled
           case ShareResultStatus.unavailable:
             return null; // User cancelled or no app available
-          default:
-            return false; // Actual error
         }
       }
     } catch (e) {
@@ -406,7 +402,7 @@ class RoutineImportExportService {
     final userContext = userRequest != null ? '''
 
 ## User Request
-${userRequest}
+$userRequest
 
 Please create a routine that addresses this specific request.
 ''' : '';
@@ -643,7 +639,7 @@ Your response should be valid JSON in this exact format:
 - **Social**: Relationship maintenance, social activities
 - **Creative**: Art, writing, music, creative projects
 - **Household**: Cleaning, maintenance, organization
-- **Learning**: Study sessions, skill development${userContext}
+- **Learning**: Study sessions, skill development$userContext
 
 Please create a routine that follows these guidelines and would be genuinely helpful for someone with ADHD. Focus on practical value, clear structure, and supportive guidance.
 ''';

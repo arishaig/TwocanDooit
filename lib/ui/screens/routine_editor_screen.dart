@@ -175,30 +175,36 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
                         ),
                       ),
                       const SizedBox(height: 8),
-                      ...AudioService.builtInMusicTrackNames.map((trackName) {
-                        return Row(
+                      RadioGroup<String>(
+                        value: _isBuiltInTrack ? _selectedMusicTrack : null,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedMusicTrack = value;
+                            _isBuiltInTrack = true;
+                          });
+                        },
+                        child: Column(
                           children: [
-                            Expanded(
-                              child: RadioListTile<String>(
-                                title: Text(trackName),
-                                value: trackName,
-                                groupValue: _isBuiltInTrack ? _selectedMusicTrack : null,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _selectedMusicTrack = value;
-                                    _isBuiltInTrack = true;
-                                  });
-                                },
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () => _togglePreview(trackName),
-                              icon: Icon(_currentlyPreviewing == trackName ? Icons.stop : Icons.play_arrow),
-                              tooltip: _currentlyPreviewing == trackName ? 'Stop preview' : 'Preview $trackName',
-                            ),
+                            ...AudioService.builtInMusicTrackNames.map((trackName) {
+                              return Row(
+                                children: [
+                                  Expanded(
+                                    child: RadioListTile<String>(
+                                      title: Text(trackName),
+                                      value: trackName,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () => _togglePreview(trackName),
+                                    icon: Icon(_currentlyPreviewing == trackName ? Icons.stop : Icons.play_arrow),
+                                    tooltip: _currentlyPreviewing == trackName ? 'Stop preview' : 'Preview $trackName',
+                                  ),
+                                ],
+                              );
+                            }),
                           ],
-                        );
-                      }),
+                        ),
+                      ),
                       const SizedBox(height: 12),
                       Row(
                         children: [
@@ -654,7 +660,7 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<StepType>(
-                value: _selectedType,
+                initialValue: _selectedType,
                 decoration: const InputDecoration(
                   labelText: 'Step Type',
                 ),
@@ -1185,43 +1191,6 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
     });
   }
 
-  void _addVariableOption() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        final controller = TextEditingController();
-        return AlertDialog(
-          title: const Text('Add Variable Option'),
-          content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              hintText: 'Enter option value',
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () {
-                if (controller.text.trim().isNotEmpty) {
-                  setState(() {
-                    _variableOptions.add(controller.text.trim());
-                  });
-                  Navigator.of(context).pop();
-                }
-              },
-              style: FilledButton.styleFrom(
-                minimumSize: const Size(80, 40),
-              ),
-              child: const Text('Add'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
 
   void _saveStep() {

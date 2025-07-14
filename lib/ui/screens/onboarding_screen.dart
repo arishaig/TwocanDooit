@@ -1,8 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/settings_provider.dart';
-import '../../models/app_settings.dart';
 import '../../services/starter_routines_service.dart';
 import '../../services/routine_service.dart';
 import 'home_screen.dart';
@@ -31,7 +29,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   // Starter routines selection
   List<StarterCategory> _availableCategories = [];
   List<StarterCategory> _additionalCategories = [];
-  Set<String> _selectedCategories = {};
+  final Set<String> _selectedCategories = {};
   bool _loadingCategories = true;
   bool _showingAdditionalCategories = false;
 
@@ -709,37 +707,35 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 24),
           Expanded(
-            child: Column(
-              children: [
-                Card(
-                  child: RadioListTile<bool>(
-                    secondary: const Icon(Icons.dark_mode),
-                    title: const Text('Dark Mode'),
-                    subtitle: const Text('Easier on the eyes, better for focus'),
-                    value: true,
-                    groupValue: _tempDarkMode,
-                    onChanged: (value) {
-                      setState(() {
-                        _tempDarkMode = value ?? true;
-                      });
-                    },
+            child: RadioGroup<bool>(
+              value: _tempDarkMode,
+              onChanged: (value) {
+                setState(() {
+                  _tempDarkMode = value ?? true;
+                });
+              },
+              child: Column(
+                children: [
+                  Card(
+                    child: RadioListTile<bool>(
+                      secondary: const Icon(Icons.dark_mode),
+                      title: const Text('Dark Mode'),
+                      subtitle: const Text('Easier on the eyes, better for focus'),
+                      value: true,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Card(
-                  child: RadioListTile<bool>(
-                    secondary: const Icon(Icons.light_mode),
-                    title: const Text('Light Mode'),
-                    subtitle: const Text('Bright and energetic'),
-                    value: false,
-                    groupValue: _tempDarkMode,
-                    onChanged: (value) {
-                      setState(() {
-                        _tempDarkMode = value ?? false;
-                      });
-                    },
+                  const SizedBox(height: 12),
+                  Card(
+                    child: RadioListTile<bool>(
+                      secondary: const Icon(Icons.light_mode),
+                      title: const Text('Light Mode'),
+                      subtitle: const Text('Bright and energetic'),
+                      value: false,
+                    ),
                   ),
-                ),
+                ],
+              ),
+            ),
                 const SizedBox(height: 24),
                 Container(
                   padding: const EdgeInsets.all(16),

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -182,7 +181,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<String>(
-                            value: _getSelectedLanguageCode(settings.ttsLanguage),
+                            initialValue: _getSelectedLanguageCode(settings.ttsLanguage),
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -213,7 +212,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             builder: (context) {
                               final selectedLanguage = _getSelectedLanguageCode(settings.ttsLanguage) ?? 'en';
                               return DropdownButtonFormField<String>(
-                                value: _getSelectedVoice(settings.ttsVoice, settings.ttsVoiceLocale, selectedLanguage),
+                                initialValue: _getSelectedVoice(settings.ttsVoice, settings.ttsVoiceLocale, selectedLanguage),
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -1114,12 +1113,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
         await routineProvider.importRoutine(routine);
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Successfully imported "${routine.name}"'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Successfully imported "${routine.name}"'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+          );
+        }
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1148,12 +1149,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
         await routineProvider.importRoutine(routine);
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Successfully imported "${routine.name}" from clipboard'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Successfully imported "${routine.name}" from clipboard'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+          );
+        }
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1412,9 +1415,11 @@ class _LLMPromptDialogState extends State<_LLMPromptDialog> {
           FilledButton.icon(
             onPressed: () async {
               await Clipboard.setData(ClipboardData(text: _generatedPrompt!));
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Prompt copied to clipboard!')),
-              );
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Prompt copied to clipboard!')),
+                );
+              }
             },
             icon: const Icon(Icons.copy, size: 16),
             label: const Text('Copy'),

@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:vibration/vibration.dart';
 import '../../models/routine.dart';
 import '../../models/step_type.dart';
 import '../../models/app_settings.dart';
@@ -112,7 +110,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                           ),
                         ),
                         Text(
-                          '${executionProvider.sessionDurationDisplay}',
+                          executionProvider.sessionDurationDisplay,
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w500,
                           ),
