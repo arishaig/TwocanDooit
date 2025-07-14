@@ -52,6 +52,13 @@ jobs:
       env:
         KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
     
+    - name: Create google-services.json
+      run: |
+        echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+        echo "Google Services JSON created successfully"
+      env:
+        GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+    
     - name: Create key.properties file
       run: |
         echo "storePassword=${KEYSTORE_PASSWORD:-TwocanDooit2025!}" > android/key.properties
