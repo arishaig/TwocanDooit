@@ -42,12 +42,12 @@ jobs:
         echo "Base64 string length: ${#KEYSTORE_BASE64}"
         echo "First 50 chars: ${KEYSTORE_BASE64:0:50}"
         echo "Creating keystore file..."
-        echo "$KEYSTORE_BASE64" | base64 -d > android/app/upload-key-new.jks
-        if [ ! -f android/app/upload-key-new.jks ]; then
+        echo "$KEYSTORE_BASE64" | base64 -d > android/upload-key-new.jks
+        if [ ! -f android/upload-key-new.jks ]; then
           echo "ERROR: Failed to create keystore file"
           exit 1
         fi
-        ls -la android/app/upload-key-new.jks
+        ls -la android/upload-key-new.jks
         echo "Keystore file created successfully"
       env:
         KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -64,7 +64,7 @@ jobs:
         echo "storePassword=${KEYSTORE_PASSWORD:-TwocanDooit2025!}" > android/key.properties
         echo "keyPassword=${KEY_PASSWORD:-TwocanDooit2025!}" >> android/key.properties
         echo "keyAlias=${KEY_ALIAS:-upload-key-new}" >> android/key.properties
-        echo "storeFile=${STORE_FILE:-app/upload-key-new.jks}" >> android/key.properties
+        echo "storeFile=${STORE_FILE:-upload-key-new.jks}" >> android/key.properties
       env:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
@@ -76,7 +76,7 @@ jobs:
         echo "Contents of key.properties:"
         cat android/key.properties
         echo "Keystore file exists:"
-        ls -la android/app/upload-key-new.jks
+        ls -la android/upload-key-new.jks
         echo "Build will look for keystore at:"
         ls -la android/$(grep "storeFile=" android/key.properties | cut -d'=' -f2)
     
