@@ -91,6 +91,7 @@ jobs:
         releaseFiles: build/app/outputs/bundle/release/app-release.aab
         track: alpha
         status: completed
+        changesNotSentForReview: true
     
     - name: Increment build number
       run: |
