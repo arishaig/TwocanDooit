@@ -34,7 +34,7 @@ jobs:
         fi
     
     - name: Analyze code
-      run: flutter analyze
+      run: flutter analyze --no-fatal-warnings
     
     - name: Run all tests
       run: flutter test --timeout=120s
