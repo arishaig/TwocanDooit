@@ -1,6 +1,7 @@
 # TwocanDooit 🐦
 
-[![Tests](https://github.com/arishaig/twocandooit/actions/workflows/pr-tests.yml/badge.svg)](https://github.com/arishaig/twocandooit/actions/workflows/pr-tests.yml)
+[![Main Tests](https://github.com/arishaig/twocandooit/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/arishaig/twocandooit/actions/workflows/tests.yml)
+[![PR Tests](https://github.com/arishaig/twocandooit/actions/workflows/pr-tests.yml/badge.svg)](https://github.com/arishaig/twocandooit/actions/workflows/pr-tests.yml)
 [![Deploy](https://github.com/arishaig/twocandooit/actions/workflows/deploy.yml/badge.svg)](https://github.com/arishaig/twocandooit/actions/workflows/deploy.yml)
 
 > *"You don't have to do it alone. Twocan do it."*

@@ -1,22 +1,17 @@
-name: PR Tests
+name: Push Tests
 
 on:
-  pull_request:
-    branches: [ main ]
+  push:
+    branches-ignore: [ main ]
+  workflow_dispatch:
 
 jobs:
-  comprehensive-test:
+  quick-test:
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-    
-    - name: Set up Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'zulu'
-        java-version: '17'
     
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
@@ -36,11 +31,5 @@ jobs:
     - name: Analyze code
       run: flutter analyze
     
-    - name: Run all tests
+    - name: Run unit tests
       run: flutter test
-    
-    - name: Build debug APK (validation)
-      run: flutter build apk --debug
-    
-    - name: Build release APK (validation)
-      run: flutter build apk --release
