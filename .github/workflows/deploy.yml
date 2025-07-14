@@ -67,3 +67,25 @@ jobs:
         releaseFiles: build/app/outputs/bundle/release/app-release.aab
         track: internal
         status: completed
+    
+    - name: Increment build number
+      run: |
+        # Get current version from pubspec.yaml
+        current_version=$(grep "version:" pubspec.yaml | sed 's/version: //')
+        version_name=$(echo $current_version | cut -d'+' -f1)
+        build_number=$(echo $current_version | cut -d'+' -f2)
+        new_build_number=$((build_number + 1))
+        new_version="${version_name}+${new_build_number}"
+        
+        # Update pubspec.yaml
+        sed -i "s/version: $current_version/version: $new_version/" pubspec.yaml
+        
+        echo "Updated version from $current_version to $new_version"
+    
+    - name: Commit and push build number increment
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add pubspec.yaml
+        git commit -m "Increment build number after successful deployment 🚀" || exit 0
+        git push
