@@ -39,11 +39,15 @@ jobs:
     
     - name: Create keystore file
       run: |
+        echo "Base64 string length: ${#KEYSTORE_BASE64}"
+        echo "First 50 chars: ${KEYSTORE_BASE64:0:50}"
+        echo "Creating keystore file..."
         echo "$KEYSTORE_BASE64" | base64 -d > android/app/upload-key-new.jks
         if [ ! -f android/app/upload-key-new.jks ]; then
           echo "ERROR: Failed to create keystore file"
           exit 1
         fi
+        ls -la android/app/upload-key-new.jks
         echo "Keystore file created successfully"
       env:
         KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
