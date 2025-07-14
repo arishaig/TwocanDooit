@@ -89,7 +89,7 @@ jobs:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
         packageName: com.arishaig.twocandooit
         releaseFiles: build/app/outputs/bundle/release/app-release.aab
-        track: internal
+        track: alpha
         status: completed
     
     - name: Increment build number
