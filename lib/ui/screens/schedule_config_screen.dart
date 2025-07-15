@@ -152,17 +152,66 @@ class _ScheduleConfigScreenState extends State<ScheduleConfigScreen> {
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const SizedBox(height: 12),
-            ...ScheduleType.values.map((type) => RadioListTile<ScheduleType>(
-              title: Text(_getScheduleTypeDisplayName(type)),
-              subtitle: Text(_getScheduleTypeDescription(type)),
-              value: type,
-              groupValue: _selectedType,
-              onChanged: (value) {
+            ...ScheduleType.values.map((type) => InkWell(
+              onTap: () {
                 setState(() {
-                  _selectedType = value!;
-                  _updateWeekdaysForType(value);
+                  _selectedType = type;
+                  _updateWeekdaysForType(type);
                 });
               },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: _selectedType == type
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.outline,
+                          width: 2,
+                        ),
+                        color: _selectedType == type
+                            ? Theme.of(context).colorScheme.primary
+                            : Colors.transparent,
+                      ),
+                      child: _selectedType == type
+                          ? Icon(
+                              Icons.check,
+                              size: 16,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            )
+                          : null,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _getScheduleTypeDisplayName(type),
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontWeight: _selectedType == type
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            _getScheduleTypeDescription(type),
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             )),
           ],
         ),
@@ -337,15 +386,13 @@ class _ScheduleConfigScreenState extends State<ScheduleConfigScreen> {
                         style: Theme.of(context).textTheme.labelMedium,
                       ),
                       const SizedBox(height: 8),
-                      DropdownButtonFormField<int>(
-                        initialValue: _snoozeMinutes,
-                        decoration: const InputDecoration(
-                          suffix: Text('minutes'),
-                        ),
+                      DropdownButton<int>(
+                        value: _snoozeMinutes,
+                        isExpanded: true,
                         items: [5, 10, 15, 20, 30]
                             .map((minutes) => DropdownMenuItem(
                                   value: minutes,
-                                  child: Text('$minutes'),
+                                  child: Text('$minutes minutes'),
                                 ))
                             .toList(),
                         onChanged: (value) {
@@ -367,15 +414,13 @@ class _ScheduleConfigScreenState extends State<ScheduleConfigScreen> {
                         style: Theme.of(context).textTheme.labelMedium,
                       ),
                       const SizedBox(height: 8),
-                      DropdownButtonFormField<int>(
-                        initialValue: _maxSnoozeCount,
-                        decoration: const InputDecoration(
-                          suffix: Text('times'),
-                        ),
+                      DropdownButton<int>(
+                        value: _maxSnoozeCount,
+                        isExpanded: true,
                         items: [1, 2, 3, 4, 5]
                             .map((count) => DropdownMenuItem(
                                   value: count,
-                                  child: Text('$count'),
+                                  child: Text('$count times'),
                                 ))
                             .toList(),
                         onChanged: (value) {
