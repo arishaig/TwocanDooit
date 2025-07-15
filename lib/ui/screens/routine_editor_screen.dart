@@ -659,7 +659,8 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<StepType>(
-                initialValue: _selectedType,
+                // ignore: deprecated_member_use
+                value: _selectedType,
                 decoration: const InputDecoration(
                   labelText: 'Step Type',
                 ),

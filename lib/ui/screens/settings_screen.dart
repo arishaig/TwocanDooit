@@ -181,7 +181,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<String>(
-                            initialValue: _getSelectedLanguageCode(settings.ttsLanguage),
+                            // ignore: deprecated_member_use
+                            value: _getSelectedLanguageCode(settings.ttsLanguage),
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -212,7 +213,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             builder: (context) {
                               final selectedLanguage = _getSelectedLanguageCode(settings.ttsLanguage) ?? 'en';
                               return DropdownButtonFormField<String>(
-                                initialValue: _getSelectedVoice(settings.ttsVoice, settings.ttsVoiceLocale, selectedLanguage),
+                                // ignore: deprecated_member_use
+                                value: _getSelectedVoice(settings.ttsVoice, settings.ttsVoiceLocale, selectedLanguage),
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
