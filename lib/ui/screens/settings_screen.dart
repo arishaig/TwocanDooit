@@ -8,6 +8,7 @@ import '../../services/tts_service.dart';
 import '../../services/routine_import_export_service.dart';
 // import '../widgets/llm_status_widget.dart';
 import 'onboarding_screen.dart';
+import 'attribution_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -644,6 +645,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Text(
                         'A cozy, ADHD-friendly routine helper with your colorful toucan sidekick. Features step-by-step guidance, interactive dice rolling, routine analytics, and gentle encouragement to help make tasks feel safe, possible, and even fun.',
                         style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 16),
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const AttributionScreen(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.copyright),
+                        label: const Text('Audio & Music Credits'),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 48),
+                        ),
                       ),
                     ],
                   ),
