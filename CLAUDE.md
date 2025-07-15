@@ -18,6 +18,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Development Workflow
 - `flutter pub get` - Always run after modifying pubspec.yaml
 - `flutter run` - Start development with hot reload
+- Always run `flutter analyze` and resolve ALL issues before considering any feature complete
+- Always run `flutter test` and ensure all tests pass before considering any feature complete
 - Use `r` in terminal for hot reload, `R` for hot restart
 
 ### Git Workflow
@@ -30,10 +32,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Branch Protection & CI/CD
 - **Protected main branch** - Uses GitHub Rulesets for branch protection
 - **Required PR workflow** - All changes must go through pull requests with approval
-- **Automated testing** - Three CI workflows ensure code quality:
-  - `Quick Tests` - Runs on main branch pushes (analysis + unit tests)
-  - `Push Tests` - Runs on feature branch pushes (analysis + unit tests)
-  - `PR Tests` - Runs on pull requests (comprehensive testing including builds)
 - **Status checks** - The `comprehensive-test` job must pass before merging PRs
 - **Automated deployment** - Successful main branch builds deploy to Play Store closed testing
 - **Build numbering** - Uses GitHub run numbers for consistent versioning
@@ -139,6 +137,7 @@ This is a Flutter app for ADHD/executive function support, built with a modular,
 - Widget tests for UI components
 - Integration tests for complete user flows
 - Test execution scenarios with different step types and configurations
+- Always create new tests as needed when creating new models, screens, or making significant changes/additions to functionality
 
 ## Recent Changes and Features
 

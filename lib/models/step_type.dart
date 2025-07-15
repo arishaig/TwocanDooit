@@ -3,7 +3,6 @@ enum StepType {
   timer,
   reps,
   randomChoice,
-  variableParameter,
 }
 
 extension StepTypeExtension on StepType {
@@ -17,8 +16,6 @@ extension StepTypeExtension on StepType {
         return 'Repetitions';
       case StepType.randomChoice:
         return 'Random Choice';
-      case StepType.variableParameter:
-        return 'Variable Parameter';
     }
   }
 
@@ -32,8 +29,6 @@ extension StepTypeExtension on StepType {
         return 'An activity with repetitions to count';
       case StepType.randomChoice:
         return 'Randomly select from multiple options';
-      case StepType.variableParameter:
-        return 'A task with random variable substitution';
     }
   }
 }

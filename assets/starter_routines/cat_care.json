@@ -22,11 +22,9 @@
         },
         {
           "id": "check-water",
-          "title": "Check water in {location}",
-          "description": "Ensure fresh, clean water",
-          "type": "variableParameter",
-          "variableName": "location",
-          "variableOptions": ["kitchen", "bathroom", "living room", "bedroom", "multiple spots"],
+          "title": "Check and refill water bowls",
+          "description": "Ensure fresh, clean water in their usual spots",
+          "type": "basic",
           "voiceEnabled": true,
           "order": 1
         },

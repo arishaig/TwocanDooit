@@ -16,11 +16,10 @@
       "steps": [
         {
           "id": "workspace-prep",
-          "title": "Prep your {workspace}",
+          "title": "Choose your workspace:",
           "description": "Set up your work area",
-          "type": "variableParameter",
-          "variableName": "workspace",
-          "variableOptions": ["desk", "table", "couch", "bed", "floor space"],
+          "type": "randomChoice",
+          "choices": ["desk", "table", "couch", "bed", "floor space"],
           "voiceEnabled": true,
           "order": 0
         },

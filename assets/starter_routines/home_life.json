@@ -42,11 +42,9 @@
         },
         {
           "id": "sort-items",
-          "title": "Sort {number} items",
-          "description": "Keep, donate, trash, or relocate",
-          "type": "variableParameter",
-          "variableName": "number",
-          "variableOptions": ["5", "10", "15", "20"],
+          "title": "Sort items in your chosen area",
+          "description": "Keep, donate, trash, or relocate - work through what's there",
+          "type": "basic",
           "voiceEnabled": true,
           "order": 3
         },
@@ -96,11 +94,10 @@
         },
         {
           "id": "choose-room",
-          "title": "Choose {room} to reset",
+          "title": "Choose room to reset:",
           "description": "Pick your focus area",
-          "type": "variableParameter",
-          "variableName": "room",
-          "variableOptions": ["living room", "bedroom", "kitchen", "bathroom", "workspace"],
+          "type": "randomChoice",
+          "choices": ["living room", "bedroom", "kitchen", "bathroom", "workspace"],
           "voiceEnabled": true,
           "order": 1
         },

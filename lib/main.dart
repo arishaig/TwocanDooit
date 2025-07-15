@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'providers/routine_provider.dart';
 import 'providers/execution_provider.dart';
 import 'providers/settings_provider.dart';
 import 'services/notification_service.dart';
+import 'services/schedule_service.dart';
 // import 'services/llm/local_llm_service.dart';
 import 'ui/screens/home_screen.dart';
 import 'ui/screens/onboarding_screen.dart';
@@ -16,6 +18,9 @@ void main() async {
   // Initialize notification service and request permissions
   await NotificationService.initialize();
   await NotificationService.requestPermissions();
+  
+  // Initialize schedule service
+  await ScheduleService().initialize();
 
   // Initialize Firebase
   try {
@@ -55,6 +60,57 @@ class _TwocanDooitAppState extends State<TwocanDooitApp> with WidgetsBindingObse
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _setupNotificationActionListener();
+  }
+  
+  /// Setup listener for notification actions
+  void _setupNotificationActionListener() {
+    NotificationService.notificationActionStream.listen((action) {
+      final parts = action.split(':');
+      if (parts.length >= 2) {
+        final actionType = parts[0];
+        final scheduleId = parts[1];
+        
+        switch (actionType) {
+          case 'start':
+            if (parts.length >= 3) {
+              final routineId = parts[2];
+              _handleStartRoutine(scheduleId, routineId);
+            }
+            break;
+          case 'snooze':
+            _handleSnoozeSchedule(scheduleId);
+            break;
+          case 'skip':
+            _handleSkipSchedule(scheduleId);
+            break;
+        }
+      }
+    });
+  }
+  
+  /// Handle start routine action
+  void _handleStartRoutine(String scheduleId, String routineId) {
+    debugPrint('Handling start routine: $scheduleId, $routineId');
+    // Mark schedule as triggered
+    ScheduleService().handleScheduleTrigger(scheduleId);
+    
+    // Navigate to routine execution
+    // This would need to be implemented with proper navigation
+    // For now, just log the action
+    debugPrint('Would navigate to routine execution for: $routineId');
+  }
+  
+  /// Handle snooze schedule action
+  void _handleSnoozeSchedule(String scheduleId) {
+    debugPrint('Handling snooze schedule: $scheduleId');
+    ScheduleService().snoozeSchedule(scheduleId);
+  }
+  
+  /// Handle skip schedule action
+  void _handleSkipSchedule(String scheduleId) {
+    debugPrint('Handling skip schedule: $scheduleId');
+    ScheduleService().skipSchedule(scheduleId);
   }
 
   @override
@@ -84,6 +140,15 @@ class _TwocanDooitAppState extends State<TwocanDooitApp> with WidgetsBindingObse
       child: Consumer<SettingsProvider>(
         builder: (context, settingsProvider, child) => MaterialApp(
           title: 'TwocanDooit',
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en', ''), // English
+            // Add more locales here as needed
+          ],
           theme: ThemeData(
             useMaterial3: true,
             colorScheme: const ColorScheme.light(

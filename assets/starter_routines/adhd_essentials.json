@@ -14,21 +14,17 @@
       "steps": [
         {
           "id": "med-location",
-          "title": "Go to {location}",
+          "title": "Go to your medication storage area",
           "description": "Head to where you keep your meds",
-          "type": "variableParameter",
-          "variableName": "location",
-          "variableOptions": ["kitchen", "bathroom", "bedroom", "medicine cabinet"],
+          "type": "basic",
           "voiceEnabled": true,
           "order": 0
         },
         {
           "id": "take-meds",
-          "title": "Take medication with {liquid}",
-          "description": "Take your morning medication",
-          "type": "variableParameter",
-          "variableName": "liquid",
-          "variableOptions": ["water", "juice", "coffee", "tea", "milk"],
+          "title": "Take your medication with water",
+          "description": "Take your morning medication with water or your preferred liquid",
+          "type": "basic",
           "voiceEnabled": true,
           "order": 1
         },

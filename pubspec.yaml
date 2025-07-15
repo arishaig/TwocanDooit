@@ -34,6 +34,11 @@ dependencies:
   # State management
   provider: ^6.1.2
   
+  # Localization
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  
   # Local storage
   shared_preferences: ^2.2.3
   
@@ -51,6 +56,9 @@ dependencies:
   
   # Local notifications for nudges
   flutter_local_notifications: ^19.3.0
+  
+  # Timezone support for scheduled notifications
+  timezone: ^0.10.1
   
   # Audio playback for tick sounds
   audioplayers: ^6.1.0
@@ -122,6 +130,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  
+  # Localization configuration
+  generate: true
 
   # To add assets to your application, add an assets section, like this:
   assets:

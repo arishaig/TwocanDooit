@@ -16,11 +16,10 @@
       "steps": [
         {
           "id": "find-position",
-          "title": "Get comfortable in {position}",
+          "title": "Get comfortable:",
           "description": "Find a comfortable position",
-          "type": "variableParameter",
-          "variableName": "position",
-          "variableOptions": ["chair", "floor", "bed", "standing", "lying down"],
+          "type": "randomChoice",
+          "choices": ["chair", "floor", "bed", "standing", "lying down"],
           "voiceEnabled": true,
           "order": 0
         },

@@ -16,11 +16,10 @@
       "steps": [
         {
           "id": "creative-space",
-          "title": "Set up in {space}",
+          "title": "Set up:",
           "description": "Choose your creative space",
-          "type": "variableParameter",
-          "variableName": "space",
-          "variableOptions": ["desk", "floor", "couch", "kitchen table", "outside"],
+          "type": "randomChoice",
+          "choices": ["desk", "floor", "couch", "kitchen table", "outside"],
           "voiceEnabled": true,
           "order": 0
         },
@@ -137,11 +136,9 @@
         },
         {
           "id": "capture-finds",
-          "title": "Capture {number} finds",
+          "title": "Document what caught your attention during your hunt",
           "description": "Document what caught your attention",
-          "type": "variableParameter",
-          "variableName": "number",
-          "variableOptions": ["3", "5", "7", "10"],
+          "type": "basic",
           "voiceEnabled": true,
           "order": 4
         },

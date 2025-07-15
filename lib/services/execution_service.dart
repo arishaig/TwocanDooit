@@ -313,18 +313,6 @@ class ExecutionService {
       case StepType.randomChoice:
         // Don't auto-select, wait for user to roll
         break;
-      case StepType.variableParameter:
-        if (currentStep.variableOptions.isNotEmpty) {
-          final variable = await selectRandomChoice(currentStep.variableOptions);
-          currentStep.selectedVariable = variable;
-          _sessionController.add(_currentSession!);
-          
-          // Announce the variable selection
-          if (_currentSettings != null && _currentSession!.routine.voiceEnabled) {
-            await TTSService.speak('Using: $variable', _currentSettings!, routine: _currentSession!.routine);
-          }
-        }
-        break;
       default:
         break;
     }

@@ -1,0 +1,187 @@
+{
+  "@@locale": "en",
+  "appTitle": "TwocanDooit",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "routines": "Routines",
+  "@routines": {
+    "description": "Label for routines section"
+  },
+  "createRoutine": "Create Routine",
+  "@createRoutine": {
+    "description": "Button text for creating a new routine"
+  },
+  "editRoutine": "Edit Routine",
+  "@editRoutine": {
+    "description": "Button text for editing a routine"
+  },
+  "deleteRoutine": "Delete Routine",
+  "@deleteRoutine": {
+    "description": "Button text for deleting a routine"
+  },
+  "routineName": "Routine Name",
+  "@routineName": {
+    "description": "Label for routine name field"
+  },
+  "description": "Description",
+  "@description": {
+    "description": "Label for description field"
+  },
+  "category": "Category",
+  "@category": {
+    "description": "Label for category field"
+  },
+  "steps": "Steps",
+  "@steps": {
+    "description": "Label for steps section"
+  },
+  "addStep": "Add Step",
+  "@addStep": {
+    "description": "Button text for adding a step"
+  },
+  "stepName": "Step Name",
+  "@stepName": {
+    "description": "Label for step name field"
+  },
+  "duration": "Duration",
+  "@duration": {
+    "description": "Label for duration field"
+  },
+  "minutes": "minutes",
+  "@minutes": {
+    "description": "Unit for minutes"
+  },
+  "seconds": "seconds",
+  "@seconds": {
+    "description": "Unit for seconds"
+  },
+  "start": "Start",
+  "@start": {
+    "description": "Button text to start routine"
+  },
+  "pause": "Pause",
+  "@pause": {
+    "description": "Button text to pause routine"
+  },
+  "resume": "Resume",
+  "@resume": {
+    "description": "Button text to resume routine"
+  },
+  "complete": "Complete",
+  "@complete": {
+    "description": "Button text to complete routine"
+  },
+  "next": "Next",
+  "@next": {
+    "description": "Button text to go to next step"
+  },
+  "previous": "Previous",
+  "@previous": {
+    "description": "Button text to go to previous step"
+  },
+  "timer": "Timer",
+  "@timer": {
+    "description": "Label for timer step type"
+  },
+  "task": "Task",
+  "@task": {
+    "description": "Label for task step type"
+  },
+  "randomChoice": "Random Choice",
+  "@randomChoice": {
+    "description": "Label for random choice step type"
+  },
+  "repetitions": "Repetitions",
+  "@repetitions": {
+    "description": "Label for repetition step type"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Button text to save"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Button text to cancel"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Button text to delete"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Button text to edit"
+  },
+  "export": "Export",
+  "@export": {
+    "description": "Button text to export"
+  },
+  "import": "Import",
+  "@import": {
+    "description": "Button text to import"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Label for settings"
+  },
+  "about": "About",
+  "@about": {
+    "description": "Label for about section"
+  },
+  "lastRun": "Last run: {timeAgo}",
+  "@lastRun": {
+    "description": "Text showing when routine was last run",
+    "placeholders": {
+      "timeAgo": {
+        "type": "String",
+        "description": "Relative time since last run"
+      }
+    }
+  },
+  "timesRun": "Run {count} times",
+  "@timesRun": {
+    "description": "Text showing how many times routine has been run",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "description": "Number of times routine has been run"
+      }
+    }
+  },
+  "completionRate": "{rate}% completion rate",
+  "@completionRate": {
+    "description": "Text showing completion rate percentage",
+    "placeholders": {
+      "rate": {
+        "type": "int",
+        "description": "Completion rate as percentage"
+      }
+    }
+  },
+  "averageTime": "Avg: {time}",
+  "@averageTime": {
+    "description": "Text showing average completion time",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "description": "Average time formatted as string"
+      }
+    }
+  },
+  "clearRunData": "Clear Run Data",
+  "@clearRunData": {
+    "description": "Button text to clear run data"
+  },
+  "clearRunDataConfirm": "Are you sure you want to clear all run data for this routine? This action cannot be undone.",
+  "@clearRunDataConfirm": {
+    "description": "Confirmation message for clearing run data"
+  },
+  "yes": "Yes",
+  "@yes": {
+    "description": "Yes button text"
+  },
+  "no": "No",
+  "@no": {
+    "description": "No button text"
+  }
+}
