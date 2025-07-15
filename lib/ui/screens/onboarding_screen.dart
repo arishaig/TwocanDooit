@@ -336,7 +336,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'We\'ll use your name to personalize your experience and make encouragement more meaningful.',
+            'We\'ll use your name to personalize your experience and make encouragement more meaningful. Providing your name is optional and it never leaves your device.',
             style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
