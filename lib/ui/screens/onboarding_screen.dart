@@ -336,7 +336,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'We\'ll use your name to personalize your experience and make encouragement more meaningful. Providing your name is optional and it never leaves your device.',
+            'We\'ll use your name to personalize your experience and make encouragement more meaningful. Providing your name is optional.',
             style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
@@ -345,7 +345,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             controller: _nameController,
             decoration: const InputDecoration(
               labelText: 'Your name',
-              hintText: 'Enter your first name',
+              hintText: 'Enter your first name or nickname',
               prefixIcon: Icon(Icons.person_outline),
             ),
             textInputAction: TextInputAction.next,
