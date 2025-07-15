@@ -707,61 +707,83 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 24),
           Expanded(
-            child: RadioGroup<bool>(
-              value: _tempDarkMode,
-              onChanged: (value) {
-                setState(() {
-                  _tempDarkMode = value ?? true;
-                });
-              },
-              child: Column(
-                children: [
-                  Card(
-                    child: RadioListTile<bool>(
-                      secondary: const Icon(Icons.dark_mode),
-                      title: const Text('Dark Mode'),
-                      subtitle: const Text('Easier on the eyes, better for focus'),
-                      value: true,
+            child: Column(
+              children: [
+                Wrap(
+                  spacing: 12,
+                  children: [
+                    ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.dark_mode, size: 20),
+                          const SizedBox(width: 8),
+                          const Text('Dark Mode'),
+                        ],
+                      ),
+                      selected: _tempDarkMode == true,
+                      onSelected: (selected) {
+                        if (selected) {
+                          setState(() {
+                            _tempDarkMode = true;
+                          });
+                        }
+                      },
                     ),
+                    ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.light_mode, size: 20),
+                          const SizedBox(width: 8),
+                          const Text('Light Mode'),
+                        ],
+                      ),
+                      selected: _tempDarkMode == false,
+                      onSelected: (selected) {
+                        if (selected) {
+                          setState(() {
+                            _tempDarkMode = false;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Easier on the eyes, better for focus (Dark) vs Bright and energetic (Light)',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
-                  const SizedBox(height: 12),
-                  Card(
-                    child: RadioListTile<bool>(
-                      secondary: const Icon(Icons.light_mode),
-                      title: const Text('Light Mode'),
-                      subtitle: const Text('Bright and energetic'),
-                      value: false,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'You can always change this later in Settings.',
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
                 ],
               ),
             ),
-                const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'You can always change this later in Settings.',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );

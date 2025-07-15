@@ -175,25 +175,25 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
                         ),
                       ),
                       const SizedBox(height: 8),
-                      RadioGroup<String>(
-                        value: _isBuiltInTrack ? _selectedMusicTrack : null,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedMusicTrack = value;
-                            _isBuiltInTrack = true;
-                          });
-                        },
-                        child: Column(
-                          children: [
-                            ...AudioService.builtInMusicTrackNames.map((trackName) {
-                              return Row(
-                                children: [
-                                  Expanded(
-                                    child: RadioListTile<String>(
-                                      title: Text(trackName),
-                                      value: trackName,
-                                    ),
+                      Column(
+                        children: [
+                          ...AudioService.builtInMusicTrackNames.map((trackName) {
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: ChoiceChip(
+                                    label: Text(trackName),
+                                    selected: _isBuiltInTrack && _selectedMusicTrack == trackName,
+                                    onSelected: (selected) {
+                                      if (selected) {
+                                        setState(() {
+                                          _selectedMusicTrack = trackName;
+                                          _isBuiltInTrack = true;
+                                        });
+                                      }
+                                    },
                                   ),
+                                ),
                                   IconButton(
                                     onPressed: () => _togglePreview(trackName),
                                     icon: Icon(_currentlyPreviewing == trackName ? Icons.stop : Icons.play_arrow),
@@ -204,7 +204,6 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
                             }),
                           ],
                         ),
-                      ),
                       const SizedBox(height: 12),
                       Row(
                         children: [

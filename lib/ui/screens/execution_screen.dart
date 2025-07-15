@@ -85,7 +85,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
               Column(
                 children: [
               // Progress indicator with larger height for mobile
-              Container(
+              SizedBox(
                 height: 6,
                 child: LinearProgressIndicator(
                   value: session.progress,
@@ -620,9 +620,11 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
           const SizedBox(height: 32),
           FilledButton.icon(
             onPressed: () async {
+              if (!mounted) return;
+              final navigator = Navigator.of(context);
               await AudioService.playGoBack(_currentSettings);
               if (mounted) {
-                Navigator.of(context).pop();
+                navigator.pop();
               }
             },
             icon: const Icon(Icons.home),
@@ -734,11 +736,14 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
           actions: [
             FilledButton(
               onPressed: () async {
+                if (!mounted) return;
+                final navigator = Navigator.of(context);
+                final executionProvider = context.read<ExecutionProvider>();
                 await AudioService.playGoBack(_currentSettings);
                 if (mounted) {
-                  context.read<ExecutionProvider>().stopExecution();
-                  Navigator.of(context).pop(); // Close dialog
-                  Navigator.of(context).pop(); // Close execution screen
+                  executionProvider.stopExecution();
+                  navigator.pop(); // Close dialog
+                  navigator.pop(); // Close execution screen
                 }
               },
               child: const Text('Exit'),

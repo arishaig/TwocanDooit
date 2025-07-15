@@ -317,23 +317,27 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _shareRoutine(BuildContext context, Routine routine) async {
+    if (!mounted) return;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final theme = Theme.of(context);
+    
     try {
       final exportService = RoutineImportExportService.instance;
       final result = await exportService.shareRoutine(routine);
       
       if (result == true && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text('Routine "${routine.name}" shared successfully!'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
+            backgroundColor: theme.colorScheme.primary,
             behavior: SnackBarBehavior.floating,
           ),
         );
       } else if (result == false && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: const Text('Failed to share routine. Please try again.'),
-            backgroundColor: Theme.of(context).colorScheme.error,
+            backgroundColor: theme.colorScheme.error,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -341,10 +345,10 @@ class _HomeScreenState extends State<HomeScreen> {
       // result == null means user cancelled, so we don't show any message
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text('Error sharing routine: ${e.toString()}'),
-            backgroundColor: Theme.of(context).colorScheme.error,
+            backgroundColor: theme.colorScheme.error,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -370,15 +374,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 foregroundColor: Colors.white,
               ),
               onPressed: () async {
-                if (mounted) {
-                  Navigator.of(context).pop();
-                }
+                if (!mounted) return;
+                final navigator = Navigator.of(context);
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
+                final theme = Theme.of(context);
+                
+                navigator.pop();
                 
                 final success = await StorageService.clearRoutineRunData(routine.id);
                 
                 if (mounted) {
                   if (success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(
                         content: Text('Run data cleared for "${routine.name}"'),
                         backgroundColor: Colors.orange,
@@ -386,10 +393,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(
                         content: const Text('Failed to clear run data. Please try again.'),
-                        backgroundColor: Theme.of(context).colorScheme.error,
+                        backgroundColor: theme.colorScheme.error,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );

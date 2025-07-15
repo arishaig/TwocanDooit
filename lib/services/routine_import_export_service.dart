@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:file_picker/file_picker.dart';
+// ignore: deprecated_member_use
 import 'package:share_plus/share_plus.dart';
 import '../models/routine.dart';
 import '../models/step.dart';
@@ -203,7 +204,8 @@ class RoutineImportExportService {
       
       if (kIsWeb) {
         // For web, share as text content
-        await SharePlus.instance.share(
+        // ignore: deprecated_member_use
+        await Share.share(
           jsonString,
           subject: 'TwocanDooit Routine: ${routine.name}',
         );
@@ -214,7 +216,8 @@ class RoutineImportExportService {
         final file = File('${tempDir.path}/$fileName');
         await file.writeAsString(jsonString);
         
-        final result = await SharePlus.instance.shareFiles(
+        // ignore: deprecated_member_use
+        final result = await Share.shareXFiles(
           [XFile(file.path)],
           subject: 'TwocanDooit Routine: ${routine.name}',
           text: 'Check out this routine I created with TwocanDooit!',
@@ -245,7 +248,8 @@ class RoutineImportExportService {
       
       if (kIsWeb) {
         // For web, share as text content
-        await SharePlus.instance.share(
+        // ignore: deprecated_member_use
+        await Share.share(
           jsonString,
           subject: 'TwocanDooit Routines Collection: $fileName',
         );
@@ -256,7 +260,8 @@ class RoutineImportExportService {
         final file = File('${tempDir.path}/$sanitizedFileName');
         await file.writeAsString(jsonString);
         
-        final result = await SharePlus.instance.shareFiles(
+        // ignore: deprecated_member_use
+        final result = await Share.shareXFiles(
           [XFile(file.path)],
           subject: 'TwocanDooit Routines Collection: $fileName',
           text: 'Check out these ${routines.length} routines I created with TwocanDooit!',

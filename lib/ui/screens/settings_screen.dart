@@ -1414,9 +1414,11 @@ class _LLMPromptDialogState extends State<_LLMPromptDialog> {
         if (_generatedPrompt != null)
           FilledButton.icon(
             onPressed: () async {
+              if (!mounted) return;
+              final scaffoldMessenger = ScaffoldMessenger.of(context);
               await Clipboard.setData(ClipboardData(text: _generatedPrompt!));
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                scaffoldMessenger.showSnackBar(
                   const SnackBar(content: Text('Prompt copied to clipboard!')),
                 );
               }

@@ -1,6 +1,4 @@
 import '../models/routine.dart';
-import '../models/step.dart';
-import '../models/step_type.dart';
 import 'storage_service.dart';
 
 class RoutineService {
