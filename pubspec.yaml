@@ -64,6 +64,9 @@ dependencies:
   # Share functionality for exporting routines
   share_plus: ^11.0.0
   
+  # URL launcher for attribution links
+  url_launcher: ^6.3.1
+  
   # Note: LLM inference handled by Firebase AI service
 
   # The following adds the Cupertino Icons font to your application.

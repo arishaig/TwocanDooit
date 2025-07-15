@@ -1,0 +1,90 @@
+MIT License
+
+Copyright (c) 2024 TwocanDooit
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+================================================================================
+THIRD-PARTY AUDIO CONTENT LICENSES
+================================================================================
+
+This application includes audio content from third parties with the following
+licenses and attributions:
+
+COMMERCIALLY COMPATIBLE CONTENT:
+--------------------------------
+
+1. Roll Dice Sounds by Bw2801
+   - Source: https://freesound.org/s/647921/, https://freesound.org/s/647922/,
+            https://freesound.org/s/647923/, https://freesound.org/s/647924/
+   - License: Creative Commons Attribution 4.0
+   - License URL: https://creativecommons.org/licenses/by/4.0/
+
+2. EDM Myst Soundscape Cinematic by szegvari
+   - Source: https://freesound.org/s/593786/
+   - License: Creative Commons Zero (CC0)
+   - License URL: https://creativecommons.org/publicdomain/zero/1.0/
+
+NON-COMMERCIAL CONTENT (COMPLIANT FOR THIS PROJECT):
+----------------------------------------------------
+
+TwocanDooit is a free, open-source application with no monetization, ads, or
+commercial use. The following NonCommercial assets are legally used:
+
+3. Button Click Sound by Mellau
+   - Source: https://freesound.org/s/506054/
+   - License: Creative Commons Attribution NonCommercial 4.0
+   - License URL: https://creativecommons.org/licenses/by-nc/4.0/
+   - Status: COMPLIANT (Non-commercial app)
+
+4. Binaural Beats Alpha to Delta by WIM
+   - Source: https://freesound.org/s/676878/
+   - License: Creative Commons Attribution NonCommercial 4.0
+   - License URL: https://creativecommons.org/licenses/by-nc/4.0/
+   - Status: COMPLIANT (Non-commercial app)
+
+5. Meditation by SergeQuadrado
+   - Source: https://freesound.org/s/655395/
+   - License: Creative Commons Attribution NonCommercial 4.0
+   - License URL: https://creativecommons.org/licenses/by-nc/4.0/
+   - Status: COMPLIANT (Non-commercial app)
+
+COMPLIANCE REQUIREMENTS:
+------------------------
+
+1. Attribution licenses (CC BY): Credit is provided in the application's
+   attribution screen accessible via Settings > About > Audio & Music Credits.
+
+2. NonCommercial licenses (CC BY-NC): Legal compliance is maintained as this
+   application is distributed free of charge with no monetization, advertising,
+   or commercial use.
+
+3. Open Source: This application is released under the MIT License with proper
+   attribution to all third-party content creators.
+
+4. Fork/Modification Requirements: Any forks or modifications of this application
+   must maintain these license requirements and attributions. If you wish to
+   commercialize a fork, you must replace the NonCommercial assets first.
+
+PROJECT STATUS: Non-commercial, open-source, legally compliant.
+
+For questions about licensing, please contact the respective creators through
+the links provided in the application's attribution screen.
+
+================================================================================
