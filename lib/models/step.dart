@@ -26,10 +26,6 @@ class Step {
   List<double>? choiceWeights; // null means equal weights, otherwise same length as choices
   String? selectedChoice;
   
-  // Variable parameter properties
-  String variableName;
-  List<String> variableOptions;
-  String? selectedVariable;
   
   // Completion state
   bool isCompleted;
@@ -52,9 +48,6 @@ class Step {
     this.choices = const [],
     this.choiceWeights,
     this.selectedChoice,
-    this.variableName = '',
-    this.variableOptions = const [],
-    this.selectedVariable,
     this.isCompleted = false,
     this.voiceEnabled = true,
   }) : id = id ?? const Uuid().v4();
@@ -73,9 +66,6 @@ class Step {
     List<String>? choices,
     List<double>? choiceWeights,
     String? selectedChoice,
-    String? variableName,
-    List<String>? variableOptions,
-    String? selectedVariable,
     bool? isCompleted,
     bool? voiceEnabled,
   }) {
@@ -94,9 +84,6 @@ class Step {
       choices: choices ?? this.choices,
       choiceWeights: choiceWeights ?? this.choiceWeights,
       selectedChoice: selectedChoice ?? this.selectedChoice,
-      variableName: variableName ?? this.variableName,
-      variableOptions: variableOptions ?? this.variableOptions,
-      selectedVariable: selectedVariable ?? this.selectedVariable,
       isCompleted: isCompleted ?? this.isCompleted,
       voiceEnabled: voiceEnabled ?? this.voiceEnabled,
     );
@@ -110,7 +97,6 @@ class Step {
     isCompleted = false;
     repsCompleted = 0;
     selectedChoice = null;
-    selectedVariable = null;
     
     // Reset random reps to unrolled state
     if (randomizeReps) {
@@ -175,11 +161,6 @@ class Step {
           return '$title → $selectedChoice';
         }
         return '$title (${choices.length} options)';
-      case StepType.variableParameter:
-        if (selectedVariable != null) {
-          return '$title ($variableName: $selectedVariable)';
-        }
-        return '$title ($variableName: ${variableOptions.length} options)';
       case StepType.basic:
         return title;
     }
@@ -201,9 +182,6 @@ class Step {
       'choices': choices,
       'choiceWeights': choiceWeights,
       'selectedChoice': selectedChoice,
-      'variableName': variableName,
-      'variableOptions': variableOptions,
-      'selectedVariable': selectedVariable,
       'isCompleted': isCompleted,
       'voiceEnabled': voiceEnabled,
     };
@@ -259,12 +237,6 @@ class Step {
           selectedChoice: json['selectedChoice'],
         );
 
-      case StepType.variableParameter:
-        return baseStep.copyWith(
-          variableName: json['variableName'] ?? '',
-          variableOptions: List<String>.from(json['variableOptions'] ?? []),
-          selectedVariable: json['selectedVariable'],
-        );
 
     }
   }

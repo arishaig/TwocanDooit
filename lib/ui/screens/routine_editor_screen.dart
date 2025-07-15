@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../models/routine.dart';
+import '../../models/routine_schedule.dart';
 import '../../models/step.dart' as model_step;
 import '../../models/step_type.dart';
 import '../../providers/routine_provider.dart';
 import '../../services/audio_service.dart';
 import '../../services/category_service.dart';
+import '../../services/schedule_service.dart';
 import '../widgets/category_input_field.dart';
+import 'routine_schedules_screen.dart';
 
 class RoutineEditorScreen extends StatefulWidget {
   final Routine? routine;
@@ -264,6 +267,129 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
               ),
             ],
             const SizedBox(height: 24),
+            
+            // Schedules section
+            if (_isEditing) ...[
+              Row(
+                children: [
+                  Text(
+                    'Schedules',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const Spacer(),
+                  OutlinedButton.icon(
+                    onPressed: _manageSchedules,
+                    icon: const Icon(Icons.schedule),
+                    label: const Text('Manage'),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(120, 48),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.schedule,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Routine Reminders',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Set up notifications to remind you when to do this routine.',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      StreamBuilder<List<RoutineSchedule>>(
+                        stream: ScheduleService().schedulesStream.map(
+                          (allSchedules) => allSchedules
+                              .where((schedule) => schedule.routineId == widget.routine!.id)
+                              .toList(),
+                        ),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          }
+                          
+                          if (!snapshot.hasData) {
+                            return const CircularProgressIndicator();
+                          }
+                          
+                          final schedules = snapshot.data!;
+                          
+                          if (schedules.isEmpty) {
+                            return Text(
+                              'No schedules set up yet. Tap "Manage" to create your first schedule.',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                            );
+                          }
+                          
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              for (final schedule in schedules.take(3)) ...[
+                                Row(
+                                  children: [
+                                    Icon(
+                                      schedule.isEnabled ? Icons.check_circle : Icons.circle_outlined,
+                                      size: 16,
+                                      color: schedule.isEnabled 
+                                          ? Theme.of(context).colorScheme.primary
+                                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        schedule.displayText,
+                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          color: schedule.isEnabled
+                                              ? Theme.of(context).colorScheme.onSurface
+                                              : Theme.of(context).colorScheme.onSurfaceVariant,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (schedule != schedules.last) const SizedBox(height: 4),
+                              ],
+                              if (schedules.length > 3) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  'and ${schedules.length - 3} more...',
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+            
             Row(
               children: [
                 Text(
@@ -402,8 +528,6 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
         return Icons.repeat;
       case StepType.randomChoice:
         return Icons.casino;
-      case StepType.variableParameter:
-        return Icons.tune;
     }
   }
 
@@ -416,6 +540,18 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
             _steps.add(step);
           });
         },
+      ),
+    );
+  }
+
+  void _manageSchedules() {
+    if (widget.routine == null) return;
+    
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => RoutineSchedulesScreen(
+          routine: widget.routine!,
+        ),
       ),
     );
   }
@@ -582,8 +718,6 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
   late List<double> _choiceWeights;
   late bool _useWeights;
   String _selectedPreset = '';
-  late String _variableName;
-  late List<String> _variableOptions;
   late bool _voiceEnabled;
 
   @override
@@ -605,8 +739,6 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
     _choiceWeights = step?.choiceWeights != null 
         ? List.from(step!.choiceWeights!) 
         : [];
-    _variableName = step?.variableName ?? '';
-    _variableOptions = List.from(step?.variableOptions ?? []);
     _voiceEnabled = step?.voiceEnabled ?? true;
     
     // Ensure weights list matches choices list
@@ -1218,8 +1350,6 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
       repsMax: _repsMax,
       choices: _choices,
       choiceWeights: _useWeights && _choiceWeights.isNotEmpty ? List.from(_choiceWeights) : null,
-      variableName: _variableName,
-      variableOptions: _variableOptions,
       voiceEnabled: _voiceEnabled,
     );
 

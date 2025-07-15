@@ -35,11 +35,9 @@
         },
         {
           "id": "morning-hydrate",
-          "title": "Hydrate with {temperature} water",
+          "title": "Drink water to start your day",
           "description": "Start your day with hydration",
-          "type": "variableParameter",
-          "variableName": "temperature",
-          "variableOptions": ["cold", "room temp", "warm", "hot"],
+          "type": "basic",
           "voiceEnabled": true,
           "order": 2
         },
@@ -92,11 +90,10 @@
         },
         {
           "id": "evening-tidy",
-          "title": "5-minute tidy",
-          "description": "Quick pickup of {area}",
-          "type": "variableParameter",
-          "variableName": "area",
-          "variableOptions": ["living room", "bedroom", "kitchen", "bathroom", "workspace"],
+          "title": "5-minute tidy:",
+          "description": "Quick pickup of area",
+          "type": "randomChoice",
+          "choices": ["living room", "bedroom", "kitchen", "bathroom", "workspace"],
           "voiceEnabled": true,
           "order": 1
         },

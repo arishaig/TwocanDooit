@@ -648,8 +648,6 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
         return Icons.repeat;
       case StepType.randomChoice:
         return Icons.casino;
-      case StepType.variableParameter:
-        return Icons.tune;
     }
   }
 

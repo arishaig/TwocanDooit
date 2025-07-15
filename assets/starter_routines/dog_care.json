@@ -30,11 +30,9 @@
         },
         {
           "id": "water-check",
-          "title": "Fresh water in {location}",
-          "description": "Refill water bowls",
-          "type": "variableParameter",
-          "variableName": "location",
-          "variableOptions": ["kitchen", "outside", "crate", "multiple bowls"],
+          "title": "Refill water bowls",
+          "description": "Check and refill water bowls in their usual locations",
+          "type": "basic",
           "voiceEnabled": true,
           "order": 2
         },
@@ -142,11 +140,10 @@
         },
         {
           "id": "brushing-fur-type",
-          "title": "Brush {fur_type} coat",
+          "title": "Brush coat type:",
           "description": "Thorough brushing session",
-          "type": "variableParameter",
-          "variableName": "fur_type",
-          "variableOptions": ["short", "long", "double", "curly", "wire"],
+          "type": "randomChoice",
+          "choices": ["short", "long", "double", "curly", "wire"],
           "voiceEnabled": true,
           "order": 2
         },

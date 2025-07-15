@@ -101,11 +101,9 @@
         },
         {
           "id": "selfcare-location",
-          "title": "Go to {location}",
+          "title": "Move to a comfortable, quiet space",
           "description": "Move to a comfortable space",
-          "type": "variableParameter",
-          "variableName": "location",
-          "variableOptions": ["bathroom", "bedroom", "cozy chair", "outside", "quiet corner"],
+          "type": "basic",
           "voiceEnabled": true,
           "order": 1
         },
