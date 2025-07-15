@@ -33,14 +33,17 @@ jobs:
           cp lib/firebase_options_stub.dart lib/firebase_options.dart
         fi
     
+    - name: Create google-services.json for CI
+      run: |
+        if [ ! -f "android/app/google-services.json" ]; then
+          echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > android/app/google-services.json
+        fi
+    
     - name: Analyze code
-      run: flutter analyze --no-fatal-warnings || true
+      run: flutter analyze --no-fatal-warnings
     
     - name: Run all tests
       run: flutter test --timeout=120s
     
     - name: Build debug APK (validation)
       run: flutter build apk --debug
-    
-    - name: Build release APK (validation)
-      run: flutter build apk --release

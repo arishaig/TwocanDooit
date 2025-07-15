@@ -27,6 +27,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Rollback capability** - Regular commits enable easy rollback if issues arise
 - **End of session** - Commit all changes before ending development sessions
 
+### Branch Protection & CI/CD
+- **Protected main branch** - Uses GitHub Rulesets for branch protection
+- **Required PR workflow** - All changes must go through pull requests with approval
+- **Automated testing** - Three CI workflows ensure code quality:
+  - `Quick Tests` - Runs on main branch pushes (analysis + unit tests)
+  - `Push Tests` - Runs on feature branch pushes (analysis + unit tests)
+  - `PR Tests` - Runs on pull requests (comprehensive testing including builds)
+- **Status checks** - The `comprehensive-test` job must pass before merging PRs
+- **Automated deployment** - Successful main branch builds deploy to Play Store closed testing
+- **Build numbering** - Uses GitHub run numbers for consistent versioning
+
 ## Project Architecture
 
 ### Core Architecture
@@ -131,7 +142,17 @@ This is a Flutter app for ADHD/executive function support, built with a modular,
 
 ## Recent Changes and Features
 
-### Routine Tracking & Analytics (Latest)
+### CI/CD Pipeline & Branch Protection (Latest)
+- **GitHub Actions Workflows**: Comprehensive CI/CD pipeline with three workflows
+  - Quick Tests (main branch), Push Tests (feature branches), PR Tests (pull requests)
+  - Automated Play Store deployment with GitHub run number versioning
+- **GitHub Rulesets**: Modern branch protection using Rulesets instead of classic rules
+  - Protected main branch requiring PR approval and conversation resolution
+  - Status checks integration (when available) for comprehensive testing
+- **Automated Deployment**: Successful main branch builds automatically deploy to Play Store closed testing track
+- **Build Management**: GitHub run numbers replace manual build incrementing for clean git history
+
+### Routine Tracking & Analytics
 - **Individual Run Tracking**: Each routine execution is recorded with detailed metrics
 - **Analytics Computed Properties**: Routines now provide `timesRun`, `lastRunAt`, `averageRunTime`, and `completionRate`
 - **UI Integration**: Routine cards display "last run" information with relative time formatting

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/routine.dart';
 import '../models/routine_run.dart';
@@ -29,7 +30,7 @@ class StorageService {
           .map((json) => Routine.fromJson(json))
           .toList();
     } catch (e) {
-      print('Error loading routines: $e');
+      debugPrint('Error loading routines: $e');
       return [];
     }
   }
@@ -42,7 +43,7 @@ class StorageService {
       );
       return await _prefs?.setString(_routinesKey, routinesJson) ?? false;
     } catch (e) {
-      print('Error saving routines: $e');
+      debugPrint('Error saving routines: $e');
       return false;
     }
   }
@@ -59,7 +60,7 @@ class StorageService {
     try {
       return Map<String, dynamic>.from(jsonDecode(settingsJson));
     } catch (e) {
-      print('Error loading settings: $e');
+      debugPrint('Error loading settings: $e');
       return {};
     }
   }
@@ -70,7 +71,7 @@ class StorageService {
       final String settingsJson = jsonEncode(settings);
       return await _prefs?.setString(_settingsKey, settingsJson) ?? false;
     } catch (e) {
-      print('Error saving settings: $e');
+      debugPrint('Error saving settings: $e');
       return false;
     }
   }
@@ -97,7 +98,7 @@ class StorageService {
       final runsJson = jsonEncode(updatedRuns.map((r) => r.toJson()).toList());
       return await _prefs?.setString(key, runsJson) ?? false;
     } catch (e) {
-      print('Error saving routine run: $e');
+      debugPrint('Error saving routine run: $e');
       return false;
     }
   }
@@ -114,7 +115,7 @@ class StorageService {
       final List<dynamic> runsList = jsonDecode(runsJson);
       return runsList.map((json) => RoutineRun.fromJson(json)).toList();
     } catch (e) {
-      print('Error loading routine runs for $routineId: $e');
+      debugPrint('Error loading routine runs for $routineId: $e');
       return [];
     }
   }
@@ -141,7 +142,7 @@ class StorageService {
       allRuns.sort((a, b) => b.startTime.compareTo(a.startTime));
       return allRuns;
     } catch (e) {
-      print('Error loading all routine runs: $e');
+      debugPrint('Error loading all routine runs: $e');
       return [];
     }
   }
@@ -154,7 +155,7 @@ class StorageService {
       await _prefs?.remove(key);
       return true;
     } catch (e) {
-      print('Error deleting routine runs for $routineId: $e');
+      debugPrint('Error deleting routine runs for $routineId: $e');
       return false;
     }
   }
@@ -219,7 +220,7 @@ class StorageService {
       
       return true;
     } catch (e) {
-      print('Error clearing data: $e');
+      debugPrint('Error clearing data: $e');
       return false;
     }
   }

@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';
 import 'package:twocandooit/providers/routine_provider.dart';
 import 'package:twocandooit/providers/settings_provider.dart';
 import 'package:twocandooit/providers/execution_provider.dart';
 import 'package:twocandooit/models/routine.dart';
-import 'package:twocandooit/models/step.dart' as DooitStep;
+import 'package:twocandooit/models/step.dart' as dooit_step;
 import 'package:twocandooit/models/step_type.dart';
 import 'package:twocandooit/models/app_settings.dart';
 
@@ -130,19 +129,19 @@ class TestHelpers {
     );
 
     if (includeSteps) {
-      routine.addStep(DooitStep.Step(
+      routine.addStep(dooit_step.Step(
         title: 'Basic Step',
         type: StepType.basic,
         description: 'A simple test step',
       ));
       
-      routine.addStep(DooitStep.Step(
+      routine.addStep(dooit_step.Step(
         title: 'Timer Step',
         type: StepType.timer,
         timerDuration: 30, // Short duration for tests
       ));
       
-      routine.addStep(DooitStep.Step(
+      routine.addStep(dooit_step.Step(
         title: 'Reps Step',
         type: StepType.reps,
         repsTarget: 5, // Small number for tests
@@ -206,13 +205,13 @@ class TestHelpers {
       description: 'A routine with random elements',
     );
 
-    routine.addStep(DooitStep.Step(
+    routine.addStep(dooit_step.Step(
       title: 'Random Choice',
       type: StepType.randomChoice,
       choices: ['Option A', 'Option B', 'Option C'],
     ));
 
-    routine.addStep(DooitStep.Step(
+    routine.addStep(dooit_step.Step(
       title: 'Random Reps',
       type: StepType.reps,
       randomizeReps: true,

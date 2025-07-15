@@ -25,7 +25,7 @@ enum DieType {
     switch (this) {
       case DieType.d4:
         // Triangular container
-        return Container(
+        return SizedBox(
           width: 120,
           height: 120,
           child: CustomPaint(
@@ -54,7 +54,7 @@ enum DieType {
       
       case DieType.d8:
         // Diamond/octagon container
-        return Container(
+        return SizedBox(
           width: 120,
           height: 120,
           child: CustomPaint(
@@ -69,7 +69,7 @@ enum DieType {
       
       case DieType.d10:
         // Pentagon container
-        return Container(
+        return SizedBox(
           width: 120,
           height: 120,
           child: CustomPaint(
@@ -204,7 +204,7 @@ class _DiceWidgetState extends State<DiceWidget>
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: (Theme.of(context).filledButtonTheme.style?.foregroundColor?.resolve({}) ?? Colors.white).withOpacity(0.9),
+                      color: (Theme.of(context).filledButtonTheme.style?.foregroundColor?.resolve({}) ?? Colors.white).withValues(alpha: 0.9),
                       letterSpacing: 1.5,
                     ),
                   ),
@@ -225,7 +225,7 @@ class _DiceWidgetState extends State<DiceWidget>
       borderColor: Colors.transparent,
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.25),
+          color: Colors.black.withValues(alpha: 0.25),
           blurRadius: 16,
           offset: const Offset(0, 8),
         ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:twocandooit/ui/widgets/routine_card.dart';
 import 'package:twocandooit/models/routine.dart';
-import 'package:twocandooit/models/step.dart' as DooitStep;
+import 'package:twocandooit/models/step.dart' as dooit_step;
 import 'package:twocandooit/models/step_type.dart';
 
 void main() {
@@ -18,9 +18,9 @@ void main() {
       );
       
       // Add some steps for testing
-      testRoutine.addStep(DooitStep.Step(title: 'Brush Teeth', type: StepType.basic));
-      testRoutine.addStep(DooitStep.Step(title: 'Exercise', type: StepType.timer, timerDuration: 1800));
-      testRoutine.addStep(DooitStep.Step(title: 'Push-ups', type: StepType.reps, repsTarget: 20));
+      testRoutine.addStep(dooit_step.Step(title: 'Brush Teeth', type: StepType.basic));
+      testRoutine.addStep(dooit_step.Step(title: 'Exercise', type: StepType.timer, timerDuration: 1800));
+      testRoutine.addStep(dooit_step.Step(title: 'Push-ups', type: StepType.reps, repsTarget: 20));
     });
 
     testWidgets('should display routine information correctly', (WidgetTester tester) async {
@@ -119,17 +119,14 @@ void main() {
     });
 
     testWidgets('should show menu button and handle actions', (WidgetTester tester) async {
-      bool editCalled = false;
-      bool deleteCalled = false;
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: RoutineCard(
               routine: testRoutine,
               onTap: () {},
-              onEdit: () => editCalled = true,
-              onDelete: () => deleteCalled = true,
+              onEdit: () {},
+              onDelete: () {},
             ),
           ),
         ),

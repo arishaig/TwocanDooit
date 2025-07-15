@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:file_picker/file_picker.dart';
+// ignore: deprecated_member_use
 import 'package:share_plus/share_plus.dart';
 import '../models/routine.dart';
 import '../models/step.dart';
@@ -175,7 +176,7 @@ class RoutineImportExportService {
   Future<String?> saveRoutinesToFile(List<Routine> routines, String fileName, {bool showInFilePicker = true}) async {
     try {
       final jsonString = exportRoutinesToJson(routines);
-      final sanitizedFileName = _sanitizeFileName('${fileName}$_fileExtension');
+      final sanitizedFileName = _sanitizeFileName('$fileName$_fileExtension');
       
       if (kIsWeb) {
         // Web platform - trigger download
@@ -203,6 +204,7 @@ class RoutineImportExportService {
       
       if (kIsWeb) {
         // For web, share as text content
+        // ignore: deprecated_member_use
         await Share.share(
           jsonString,
           subject: 'TwocanDooit Routine: ${routine.name}',
@@ -214,6 +216,7 @@ class RoutineImportExportService {
         final file = File('${tempDir.path}/$fileName');
         await file.writeAsString(jsonString);
         
+        // ignore: deprecated_member_use
         final result = await Share.shareXFiles(
           [XFile(file.path)],
           subject: 'TwocanDooit Routine: ${routine.name}',
@@ -228,8 +231,6 @@ class RoutineImportExportService {
             return null; // User cancelled
           case ShareResultStatus.unavailable:
             return null; // User cancelled or no app available
-          default:
-            return false; // Actual error
         }
       }
     } catch (e) {
@@ -243,10 +244,11 @@ class RoutineImportExportService {
   Future<bool?> shareRoutines(List<Routine> routines, String fileName) async {
     try {
       final jsonString = exportRoutinesToJson(routines);
-      final sanitizedFileName = _sanitizeFileName('${fileName}$_fileExtension');
+      final sanitizedFileName = _sanitizeFileName('$fileName$_fileExtension');
       
       if (kIsWeb) {
         // For web, share as text content
+        // ignore: deprecated_member_use
         await Share.share(
           jsonString,
           subject: 'TwocanDooit Routines Collection: $fileName',
@@ -258,6 +260,7 @@ class RoutineImportExportService {
         final file = File('${tempDir.path}/$sanitizedFileName');
         await file.writeAsString(jsonString);
         
+        // ignore: deprecated_member_use
         final result = await Share.shareXFiles(
           [XFile(file.path)],
           subject: 'TwocanDooit Routines Collection: $fileName',
@@ -272,8 +275,6 @@ class RoutineImportExportService {
             return null; // User cancelled
           case ShareResultStatus.unavailable:
             return null; // User cancelled or no app available
-          default:
-            return false; // Actual error
         }
       }
     } catch (e) {
@@ -406,7 +407,7 @@ class RoutineImportExportService {
     final userContext = userRequest != null ? '''
 
 ## User Request
-${userRequest}
+$userRequest
 
 Please create a routine that addresses this specific request.
 ''' : '';
@@ -643,7 +644,7 @@ Your response should be valid JSON in this exact format:
 - **Social**: Relationship maintenance, social activities
 - **Creative**: Art, writing, music, creative projects
 - **Household**: Cleaning, maintenance, organization
-- **Learning**: Study sessions, skill development${userContext}
+- **Learning**: Study sessions, skill development$userContext
 
 Please create a routine that follows these guidelines and would be genuinely helpful for someone with ADHD. Focus on practical value, clear structure, and supportive guidance.
 ''';

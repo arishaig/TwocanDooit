@@ -17,24 +17,24 @@ class SettingsProvider with ChangeNotifier {
   }
 
   Future<void> _initializeSettings() async {
-    print('Settings: Starting initialization, loading = true');
+    debugPrint('Settings: Starting initialization, loading = true');
     _setLoading(true);
     try {
       final settingsData = await StorageService.loadSettings();
-      print('Settings: Loaded data: ${settingsData.toString()}');
+      debugPrint('Settings: Loaded data: ${settingsData.toString()}');
       _settings = settingsData.isNotEmpty 
           ? AppSettings.fromJson(settingsData)
           : const AppSettings();
-      print('Settings: Final settings - hasCompletedOnboarding: ${_settings.hasCompletedOnboarding}, isDarkMode: ${_settings.isDarkMode}');
+      debugPrint('Settings: Final settings - hasCompletedOnboarding: ${_settings.hasCompletedOnboarding}, isDarkMode: ${_settings.isDarkMode}');
       _error = null;
       
       // Initialize TTS with current settings
       await TTSService.configure(_settings);
     } catch (e) {
-      print('Settings: Error loading: $e');
+      debugPrint('Settings: Error loading: $e');
       _error = 'Failed to load settings: $e';
     } finally {
-      print('Settings: Finished initialization, loading = false');
+      debugPrint('Settings: Finished initialization, loading = false');
       _setLoading(false);
     }
   }

@@ -163,13 +163,13 @@ class Step {
       case StepType.timer:
         final minutes = timerDuration ~/ 60;
         final seconds = timerDuration % 60;
-        return '$title (${minutes}:${seconds.toString().padLeft(2, '0')})';
+        return '$title ($minutes:${seconds.toString().padLeft(2, '0')})';
       case StepType.reps:
         final durationText = repDurationSeconds != null ? ' (${repDurationSeconds}s each)' : '';
         if (randomizeReps) {
-          return '$title (${repsCompleted}/$repsTarget random)$durationText';
+          return '$title ($repsCompleted/$repsTarget random)$durationText';
         }
-        return '$title (${repsCompleted}/${repsTarget})$durationText';
+        return '$title ($repsCompleted/$repsTarget)$durationText';
       case StepType.randomChoice:
         if (selectedChoice != null) {
           return '$title → $selectedChoice';
@@ -181,7 +181,6 @@ class Step {
         }
         return '$title ($variableName: ${variableOptions.length} options)';
       case StepType.basic:
-      default:
         return title;
     }
   }
@@ -267,8 +266,6 @@ class Step {
           selectedVariable: json['selectedVariable'],
         );
 
-      default:
-        return baseStep;
     }
   }
 }

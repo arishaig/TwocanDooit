@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:vibration/vibration.dart';
 import '../../models/routine.dart';
 import '../../models/step_type.dart';
 import '../../models/app_settings.dart';
@@ -87,11 +85,11 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
               Column(
                 children: [
               // Progress indicator with larger height for mobile
-              Container(
+              SizedBox(
                 height: 6,
                 child: LinearProgressIndicator(
                   value: session.progress,
-                  backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 ),
               ),
               
@@ -99,7 +97,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
-                color: Theme.of(context).colorScheme.surfaceVariant,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 child: Column(
                   children: [
                     Row(
@@ -112,7 +110,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                           ),
                         ),
                         Text(
-                          '${executionProvider.sessionDurationDisplay}',
+                          executionProvider.sessionDurationDisplay,
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w500,
                           ),
@@ -123,7 +121,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                     LinearProgressIndicator(
                       value: (session.currentStepIndex + 1) / session.routine.steps.length,
                       backgroundColor: Colors.transparent,
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
                     ),
                   ],
                 ),
@@ -477,7 +475,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
             Icon(
               Icons.task_alt,
               size: 80,
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             Text(
@@ -588,7 +586,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
             height: 200,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
             ),
             child: Center(
               child: Image.asset(
@@ -622,8 +620,12 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
           const SizedBox(height: 32),
           FilledButton.icon(
             onPressed: () async {
+              if (!mounted) return;
+              final navigator = Navigator.of(context);
               await AudioService.playGoBack(_currentSettings);
-              Navigator.of(context).pop();
+              if (mounted) {
+                navigator.pop();
+              }
             },
             icon: const Icon(Icons.home),
             label: const Text('Back to Home'),
@@ -734,10 +736,15 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
           actions: [
             FilledButton(
               onPressed: () async {
+                if (!mounted) return;
+                final navigator = Navigator.of(context);
+                final executionProvider = context.read<ExecutionProvider>();
                 await AudioService.playGoBack(_currentSettings);
-                context.read<ExecutionProvider>().stopExecution();
-                Navigator.of(context).pop(); // Close dialog
-                Navigator.of(context).pop(); // Close execution screen
+                if (mounted) {
+                  executionProvider.stopExecution();
+                  navigator.pop(); // Close dialog
+                  navigator.pop(); // Close execution screen
+                }
               },
               child: const Text('Exit'),
             ),
@@ -776,7 +783,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                     colors: [
-                      Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                       Colors.transparent,
                     ],
                   ),
@@ -785,13 +792,13 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
                       borderRadius: const BorderRadius.only(
                         topRight: Radius.circular(12),
                         bottomRight: Radius.circular(12),
                       ),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
@@ -824,7 +831,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                     begin: Alignment.centerRight,
                     end: Alignment.centerLeft,
                     colors: [
-                      Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                       Colors.transparent,
                     ],
                   ),
@@ -833,13 +840,13 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(12),
                         bottomLeft: Radius.circular(12),
                       ),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),

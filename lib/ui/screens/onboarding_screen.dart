@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/settings_provider.dart';
-import '../../models/app_settings.dart';
 import '../../services/starter_routines_service.dart';
 import '../../services/routine_service.dart';
 import 'home_screen.dart';
@@ -30,7 +29,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   // Starter routines selection
   List<StarterCategory> _availableCategories = [];
   List<StarterCategory> _additionalCategories = [];
-  Set<String> _selectedCategories = {};
+  final Set<String> _selectedCategories = {};
   bool _loadingCategories = true;
   bool _showingAdditionalCategories = false;
 
@@ -91,7 +90,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           await RoutineService.saveStarterRoutines(starterRoutines);
         }
       } catch (e) {
-        print('Error loading starter routines: $e');
+        debugPrint('Error loading starter routines: $e');
         // Continue with onboarding even if starter routines fail to load
       }
     }
@@ -128,7 +127,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         });
       }
     } catch (e) {
-      print('Error loading starter categories: $e');
+      debugPrint('Error loading starter categories: $e');
       if (mounted) {
         setState(() {
           _loadingCategories = false;
@@ -171,7 +170,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             // Linear progress indicator
             LinearProgressIndicator(
               value: (_currentPage + 1) / 6,
-              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
             
             // Page content
@@ -459,7 +458,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           decoration: BoxDecoration(
             color: isPrimary 
                 ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.surfaceVariant,
+                : Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -618,7 +617,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -710,61 +709,81 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Expanded(
             child: Column(
               children: [
-                Card(
-                  child: RadioListTile<bool>(
-                    secondary: const Icon(Icons.dark_mode),
-                    title: const Text('Dark Mode'),
-                    subtitle: const Text('Easier on the eyes, better for focus'),
-                    value: true,
-                    groupValue: _tempDarkMode,
-                    onChanged: (value) {
-                      setState(() {
-                        _tempDarkMode = value ?? true;
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Card(
-                  child: RadioListTile<bool>(
-                    secondary: const Icon(Icons.light_mode),
-                    title: const Text('Light Mode'),
-                    subtitle: const Text('Bright and energetic'),
-                    value: false,
-                    groupValue: _tempDarkMode,
-                    onChanged: (value) {
-                      setState(() {
-                        _tempDarkMode = value ?? false;
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: Theme.of(context).colorScheme.primary,
+                Wrap(
+                  spacing: 12,
+                  children: [
+                    ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.dark_mode, size: 20),
+                          const SizedBox(width: 8),
+                          const Text('Dark Mode'),
+                        ],
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'You can always change this later in Settings.',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
+                      selected: _tempDarkMode == true,
+                      onSelected: (selected) {
+                        if (selected) {
+                          setState(() {
+                            _tempDarkMode = true;
+                          });
+                        }
+                      },
+                    ),
+                    ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.light_mode, size: 20),
+                          const SizedBox(width: 8),
+                          const Text('Light Mode'),
+                        ],
                       ),
-                    ],
+                      selected: _tempDarkMode == false,
+                      onSelected: (selected) {
+                        if (selected) {
+                          setState(() {
+                            _tempDarkMode = false;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Easier on the eyes, better for focus (Dark) vs Bright and energetic (Light)',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
           ),
+          const SizedBox(height: 24),
+          Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'You can always change this later in Settings.',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -832,7 +851,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceVariant,
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(

@@ -24,7 +24,7 @@ void main() async {
     );
   } catch (e) {
     // Firebase initialization failed - this is expected in test environments
-    print('Firebase initialization skipped: $e');
+    debugPrint('Firebase initialization skipped: $e');
   }
   
   // Initialize Local AI service (on-device Gemma model)
@@ -65,7 +65,7 @@ class _TwocanDooitAppState extends State<TwocanDooitApp> with WidgetsBindingObse
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print('App lifecycle changed to: $state');
+    debugPrint('App lifecycle changed to: $state');
     _currentState = state;
     if (state == AppLifecycleState.resumed) {
       // App regained focus - dismiss nudge notifications
@@ -95,7 +95,7 @@ class _TwocanDooitAppState extends State<TwocanDooitApp> with WidgetsBindingObse
               onSurface: Color(0xFF2B2B2B),      // 🌑 Charcoal Text
               onPrimary: Color(0xFFFFF7ED),      // White text on Toucan Blue
               onSecondary: Color(0xFF2B2B2B),    // Charcoal text on Beak Orange
-              surfaceVariant: Color(0xFFF5F5F5), // Light variant
+              surfaceContainerHighest: Color(0xFFF5F5F5), // Light variant
               outline: Color(0xFFE0E0E0),        // Subtle borders
             ),
           // Mobile-friendly card theme
@@ -180,7 +180,7 @@ class _TwocanDooitAppState extends State<TwocanDooitApp> with WidgetsBindingObse
               onSurface: Color(0xFFFFF7ED),      // Light text
               onPrimary: Color(0xFFFFF7ED),      // White text on Toucan Blue
               onSecondary: Color(0xFF2B2B2B),    // Charcoal text on Beak Orange
-              surfaceVariant: Color(0xFF2A2A2A), // Dark variant
+              surfaceContainerHighest: Color(0xFF2A2A2A), // Dark variant
               outline: Color(0xFF404040),        // Subtle dark borders
             ),
             // Mobile-friendly card theme for dark mode
@@ -261,7 +261,7 @@ class _TwocanDooitAppState extends State<TwocanDooitApp> with WidgetsBindingObse
                   ),
                 )
               : () {
-                  print('Main: isLoading: ${settingsProvider.isLoading}, hasCompletedOnboarding: ${settingsProvider.settings.hasCompletedOnboarding}');
+                  debugPrint('Main: isLoading: ${settingsProvider.isLoading}, hasCompletedOnboarding: ${settingsProvider.settings.hasCompletedOnboarding}');
                   return settingsProvider.settings.hasCompletedOnboarding 
                       ? const HomeScreen()
                       : const OnboardingScreen();

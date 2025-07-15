@@ -7,7 +7,6 @@ import '../../services/audio_service.dart';
 import '../../services/routine_import_export_service.dart';
 import '../../services/storage_service.dart';
 import '../widgets/routine_card.dart';
-import '../shared/twocan_colors.dart';
 import 'routine_editor_screen.dart';
 import 'execution_screen.dart';
 import 'settings_screen.dart';
@@ -90,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     fontSize: 14, 
                     fontWeight: FontWeight.normal,
-                    color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
+                    color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9),
                   ),
                 ),
               ],
@@ -162,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     height: 120,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(60),
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                     ),
                     child: Center(
                       child: Image.asset(
@@ -237,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -251,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return Icon(
                           Icons.thumb_up,
                           size: 160,
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                         );
                       },
                     ),
@@ -274,33 +273,39 @@ class _HomeScreenState extends State<HomeScreen> {
     final settings = context.read<SettingsProvider>().settings;
     await AudioService.playButtonClick(settings);
     
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const RoutineEditorScreen(),
-      ),
-    );
+    if (context.mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => const RoutineEditorScreen(),
+        ),
+      );
+    }
   }
 
   void _editRoutine(BuildContext context, Routine routine) async {
     final settings = context.read<SettingsProvider>().settings;
     await AudioService.playButtonClick(settings);
     
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => RoutineEditorScreen(routine: routine),
-      ),
-    );
+    if (context.mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => RoutineEditorScreen(routine: routine),
+        ),
+      );
+    }
   }
 
   void _startRoutine(BuildContext context, Routine routine) async {
     final settings = context.read<SettingsProvider>().settings;
     await AudioService.playButtonClick(settings);
     
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ExecutionScreen(routine: routine),
-      ),
-    );
+    if (context.mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => ExecutionScreen(routine: routine),
+        ),
+      );
+    }
   }
 
   void _navigateToSettings(BuildContext context) async {
@@ -312,23 +317,27 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _shareRoutine(BuildContext context, Routine routine) async {
+    if (!mounted) return;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final theme = Theme.of(context);
+    
     try {
       final exportService = RoutineImportExportService.instance;
       final result = await exportService.shareRoutine(routine);
       
       if (result == true && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text('Routine "${routine.name}" shared successfully!'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
+            backgroundColor: theme.colorScheme.primary,
             behavior: SnackBarBehavior.floating,
           ),
         );
       } else if (result == false && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: const Text('Failed to share routine. Please try again.'),
-            backgroundColor: Theme.of(context).colorScheme.error,
+            backgroundColor: theme.colorScheme.error,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -336,10 +345,10 @@ class _HomeScreenState extends State<HomeScreen> {
       // result == null means user cancelled, so we don't show any message
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text('Error sharing routine: ${e.toString()}'),
-            backgroundColor: Theme.of(context).colorScheme.error,
+            backgroundColor: theme.colorScheme.error,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -365,13 +374,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 foregroundColor: Colors.white,
               ),
               onPressed: () async {
-                Navigator.of(context).pop();
+                if (!mounted) return;
+                final navigator = Navigator.of(context);
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
+                final theme = Theme.of(context);
+                
+                navigator.pop();
                 
                 final success = await StorageService.clearRoutineRunData(routine.id);
                 
                 if (mounted) {
                   if (success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(
                         content: Text('Run data cleared for "${routine.name}"'),
                         backgroundColor: Colors.orange,
@@ -379,10 +393,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(
                         content: const Text('Failed to clear run data. Please try again.'),
-                        backgroundColor: Theme.of(context).colorScheme.error,
+                        backgroundColor: theme.colorScheme.error,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );

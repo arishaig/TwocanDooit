@@ -175,30 +175,35 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
                         ),
                       ),
                       const SizedBox(height: 8),
-                      ...AudioService.builtInMusicTrackNames.map((trackName) {
-                        return Row(
-                          children: [
-                            Expanded(
-                              child: RadioListTile<String>(
-                                title: Text(trackName),
-                                value: trackName,
-                                groupValue: _isBuiltInTrack ? _selectedMusicTrack : null,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _selectedMusicTrack = value;
-                                    _isBuiltInTrack = true;
-                                  });
-                                },
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () => _togglePreview(trackName),
-                              icon: Icon(_currentlyPreviewing == trackName ? Icons.stop : Icons.play_arrow),
-                              tooltip: _currentlyPreviewing == trackName ? 'Stop preview' : 'Preview $trackName',
-                            ),
+                      Column(
+                        children: [
+                          ...AudioService.builtInMusicTrackNames.map((trackName) {
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: ChoiceChip(
+                                    label: Text(trackName),
+                                    selected: _isBuiltInTrack && _selectedMusicTrack == trackName,
+                                    onSelected: (selected) {
+                                      if (selected) {
+                                        setState(() {
+                                          _selectedMusicTrack = trackName;
+                                          _isBuiltInTrack = true;
+                                        });
+                                      }
+                                    },
+                                  ),
+                                ),
+                                  IconButton(
+                                    onPressed: () => _togglePreview(trackName),
+                                    icon: Icon(_currentlyPreviewing == trackName ? Icons.stop : Icons.play_arrow),
+                                    tooltip: _currentlyPreviewing == trackName ? 'Stop preview' : 'Preview $trackName',
+                                  ),
+                                ],
+                              );
+                            }),
                           ],
-                        );
-                      }),
+                        ),
                       const SizedBox(height: 12),
                       Row(
                         children: [
@@ -222,7 +227,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
                           width: double.infinity,
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surfaceVariant,
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Row(
@@ -354,7 +359,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -654,6 +659,7 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<StepType>(
+                // ignore: deprecated_member_use
                 value: _selectedType,
                 decoration: const InputDecoration(
                   labelText: 'Step Type',
@@ -943,16 +949,16 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                         ),
                       ),
                       child: Text(
                         _getPresetDescription(_selectedPreset),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
                         ),
                       ),
                     ),
@@ -968,10 +974,10 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
                     margin: const EdgeInsets.only(bottom: 8),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Column(
@@ -1185,43 +1191,6 @@ class _StepEditorDialogState extends State<_StepEditorDialog> {
     });
   }
 
-  void _addVariableOption() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        final controller = TextEditingController();
-        return AlertDialog(
-          title: const Text('Add Variable Option'),
-          content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              hintText: 'Enter option value',
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () {
-                if (controller.text.trim().isNotEmpty) {
-                  setState(() {
-                    _variableOptions.add(controller.text.trim());
-                  });
-                  Navigator.of(context).pop();
-                }
-              },
-              style: FilledButton.styleFrom(
-                minimumSize: const Size(80, 40),
-              ),
-              child: const Text('Add'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
 
   void _saveStep() {

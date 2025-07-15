@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import '../models/routine.dart';
 import '../models/step.dart';
 import '../models/step_type.dart';
@@ -343,7 +344,7 @@ class ExecutionService {
       
       // Play countdown sound when 5 seconds remaining
       if (_remainingSeconds == 5 && _currentSettings != null) {
-        print('Starting countdown sound for last 5 seconds');
+        debugPrint('Starting countdown sound for last 5 seconds');
         AudioService.playCountdown(_currentSettings!);
       }
       
@@ -356,10 +357,10 @@ class ExecutionService {
         
         // Send notification if app is not in foreground
         if (currentStep != null && !TwocanDooitApp.isAppInForeground) {
-          print('App is in background, sending timer completion notification for: ${currentStep.title}');
+          debugPrint('App is in background, sending timer completion notification for: ${currentStep.title}');
           NotificationService.showTimerCompletedNotification(currentStep.title);
         } else {
-          print('App is in foreground, skipping notification');
+          debugPrint('App is in foreground, skipping notification');
         }
         
         // Announce timer completion

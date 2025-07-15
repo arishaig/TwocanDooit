@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/routine.dart';
 
@@ -31,7 +32,7 @@ class CategoryService {
       
       return sortedEntries.map((entry) => entry.key).toList();
     } catch (e) {
-      print('Error loading categories: $e');
+      debugPrint('Error loading categories: $e');
       return [];
     }
   }
@@ -83,7 +84,7 @@ class CategoryService {
       await prefs.setString(_categoriesKey, jsonEncode(categories));
       await _updateCategoryStats();
     } catch (e) {
-      print('Error recording category usage: $e');
+      debugPrint('Error recording category usage: $e');
     }
   }
 
@@ -104,7 +105,7 @@ class CategoryService {
       await prefs.setString(_categoriesKey, jsonEncode(categories));
       await _updateCategoryStats();
     } catch (e) {
-      print('Error removing category: $e');
+      debugPrint('Error removing category: $e');
     }
   }
 
@@ -118,7 +119,7 @@ class CategoryService {
       final categoriesData = jsonDecode(categoriesJson) as Map<String, dynamic>;
       return Map<String, int>.from(categoriesData);
     } catch (e) {
-      print('Error loading category stats: $e');
+      debugPrint('Error loading category stats: $e');
       return {};
     }
   }
@@ -137,7 +138,7 @@ class CategoryService {
         'lastUpdated': DateTime.now().toIso8601String(),
       }));
     } catch (e) {
-      print('Error updating category stats: $e');
+      debugPrint('Error updating category stats: $e');
     }
   }
 
@@ -172,7 +173,7 @@ class CategoryService {
       await prefs.setString(_categoriesKey, jsonEncode(categories));
       await _updateCategoryStats();
     } catch (e) {
-      print('Error cleaning up categories: $e');
+      debugPrint('Error cleaning up categories: $e');
     }
   }
 
@@ -183,7 +184,7 @@ class CategoryService {
       await prefs.remove(_categoriesKey);
       await prefs.remove(_categoryStatsKey);
     } catch (e) {
-      print('Error resetting categories: $e');
+      debugPrint('Error resetting categories: $e');
     }
   }
 }

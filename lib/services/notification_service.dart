@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../models/app_settings.dart';
 import '../models/step.dart';
@@ -32,7 +33,7 @@ class NotificationService {
     );
 
     _isInitialized = true;
-    print('Notification service initialized');
+    debugPrint('Notification service initialized');
   }
 
   static Future<bool> requestPermissions() async {
@@ -41,31 +42,31 @@ class NotificationService {
     // Request permissions for Android 13+
     final androidPlugin = _notifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
     if (androidPlugin != null) {
-      print('Requesting Android notification permissions...');
+      debugPrint('Requesting Android notification permissions...');
       final granted = await androidPlugin.requestNotificationsPermission();
-      print('Android notification permissions granted: $granted');
+      debugPrint('Android notification permissions granted: $granted');
       return granted ?? false;
     }
     
     // Request permissions for iOS
     final iosPlugin = _notifications.resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
     if (iosPlugin != null) {
-      print('Requesting iOS notification permissions...');
+      debugPrint('Requesting iOS notification permissions...');
       final granted = await iosPlugin.requestPermissions(
         alert: true,
         badge: true,
         sound: true,
       );
-      print('iOS notification permissions granted: $granted');
+      debugPrint('iOS notification permissions granted: $granted');
       return granted ?? false;
     }
     
-    print('No platform-specific notification plugin found, assuming permissions granted');
+    debugPrint('No platform-specific notification plugin found, assuming permissions granted');
     return true; // Assume granted for other platforms
   }
 
   static void _onNotificationTapped(NotificationResponse response) {
-    print('Notification tapped: ${response.payload}');
+    debugPrint('Notification tapped: ${response.payload}');
     // Handle notification tap - could navigate back to execution screen
   }
 
@@ -76,16 +77,16 @@ class NotificationService {
     stopNudgeTimer(); // Clear any existing timer
     _nudgeCount = 0;
     
-    print('Starting nudge timer: ${settings.nudgeIntervalMinutes} minutes');
+    debugPrint('Starting nudge timer: ${settings.nudgeIntervalMinutes} minutes');
     
     _nudgeTimer = Timer.periodic(
       Duration(minutes: settings.nudgeIntervalMinutes),
       (timer) {
         _nudgeCount++;
-        print('Nudge timer fired: count $_nudgeCount');
+        debugPrint('Nudge timer fired: count $_nudgeCount');
         
         if (_nudgeCount >= settings.maxNudgeCount) {
-          print('Max nudge count reached, stopping timer');
+          debugPrint('Max nudge count reached, stopping timer');
           stopNudgeTimer();
           return;
         }
@@ -101,7 +102,7 @@ class NotificationService {
     _nudgeCount = 0;
     // Don't automatically dismiss - let user see the notification
     // _dismissNudgeNotification();
-    print('Nudge timer stopped');
+    debugPrint('Nudge timer stopped');
   }
 
   static Future<void> _showNudgeNotification(Step step, int nudgeCount) async {
@@ -138,13 +139,13 @@ class NotificationService {
       payload: 'nudge_${step.id}',
     );
 
-    print('Nudge notification shown: $title - $body');
+    debugPrint('Nudge notification shown: $title - $body');
   }
 
   static Future<void> dismissNudgeNotification() async {
     if (_isInitialized) {
       await _notifications.cancel(_nudgeNotificationId);
-      print('Nudge notification dismissed');
+      debugPrint('Nudge notification dismissed');
     }
   }
 
@@ -182,7 +183,7 @@ class NotificationService {
       details,
     );
     
-    print('Timer completion notification shown: $stepTitle');
+    debugPrint('Timer completion notification shown: $stepTitle');
   }
 
   static Future<void> showRoutineCompletedNotification(String routineName) async {
@@ -242,7 +243,7 @@ class NotificationService {
       details,
     );
     
-    print('Test notification sent');
+    debugPrint('Test notification sent');
   }
 
   static Future<void> dispose() async {

@@ -43,7 +43,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       _availableLanguages = await TTSService.getLanguages();
     } catch (e) {
-      print('Failed to load TTS languages: $e');
+      debugPrint('Failed to load TTS languages: $e');
     } finally {
       setState(() => _isLoadingLanguages = false);
     }
@@ -54,7 +54,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       _availableVoices = await TTSService.getVoices();
     } catch (e) {
-      print('Failed to load TTS voices: $e');
+      debugPrint('Failed to load TTS voices: $e');
     } finally {
       setState(() => _isLoadingVoices = false);
     }
@@ -181,6 +181,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<String>(
+                            // ignore: deprecated_member_use
                             value: _getSelectedLanguageCode(settings.ttsLanguage),
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -212,6 +213,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             builder: (context) {
                               final selectedLanguage = _getSelectedLanguageCode(settings.ttsLanguage) ?? 'en';
                               return DropdownButtonFormField<String>(
+                                // ignore: deprecated_member_use
                                 value: _getSelectedVoice(settings.ttsVoice, settings.ttsVoiceLocale, selectedLanguage),
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
@@ -1089,18 +1091,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
       return;
     }
     
-    print('Test TTS button pressed');
-    print('TTS Enabled: ${settings.ttsEnabled}');
-    print('TTS Rate: ${settings.ttsRate}');
-    print('TTS Language: ${settings.ttsLanguage}');
-    print('TTS Voice: ${settings.ttsVoice}');
-    print('Test Text: $testText');
+    debugPrint('Test TTS button pressed');
+    debugPrint('TTS Enabled: ${settings.ttsEnabled}');
+    debugPrint('TTS Rate: ${settings.ttsRate}');
+    debugPrint('TTS Language: ${settings.ttsLanguage}');
+    debugPrint('TTS Voice: ${settings.ttsVoice}');
+    debugPrint('Test Text: $testText');
     
     await TTSService.speak(
       testText,
       settings,
     );
-    print('TTS speak call completed');
+    debugPrint('TTS speak call completed');
   }
 
   // Import/Export Methods
@@ -1113,12 +1115,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
         await routineProvider.importRoutine(routine);
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Successfully imported "${routine.name}"'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Successfully imported "${routine.name}"'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+          );
+        }
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1147,12 +1151,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
         await routineProvider.importRoutine(routine);
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Successfully imported "${routine.name}" from clipboard'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Successfully imported "${routine.name}" from clipboard'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+          );
+        }
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1372,7 +1378,7 @@ class _LLMPromptDialogState extends State<_LLMPromptDialog> {
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Theme.of(context).colorScheme.outline),
                   ),
@@ -1410,10 +1416,14 @@ class _LLMPromptDialogState extends State<_LLMPromptDialog> {
         if (_generatedPrompt != null)
           FilledButton.icon(
             onPressed: () async {
+              if (!mounted) return;
+              final scaffoldMessenger = ScaffoldMessenger.of(context);
               await Clipboard.setData(ClipboardData(text: _generatedPrompt!));
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Prompt copied to clipboard!')),
-              );
+              if (mounted) {
+                scaffoldMessenger.showSnackBar(
+                  const SnackBar(content: Text('Prompt copied to clipboard!')),
+                );
+              }
             },
             icon: const Icon(Icons.copy, size: 16),
             label: const Text('Copy'),
