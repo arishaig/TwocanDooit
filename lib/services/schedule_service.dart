@@ -12,15 +12,18 @@ import 'notification_service.dart';
 class ScheduleService {
   static final ScheduleService _instance = ScheduleService._internal();
   factory ScheduleService() => _instance;
-  ScheduleService._internal();
+  ScheduleService._internal() {
+    _schedulesController = StreamController<List<RoutineSchedule>>.broadcast();
+    // Add initial empty data to ensure stream has a value
+    _schedulesController.add(_schedules);
+  }
 
   static const String _scheduleStorageKey = 'routine_schedules';
   static const int _maxNotificationsPerSchedule = 30; // Queue next 30 notifications
   static const int _notificationIdBase = 10000; // Base ID for schedule notifications
 
   final List<RoutineSchedule> _schedules = [];
-  final StreamController<List<RoutineSchedule>> _schedulesController = 
-      StreamController<List<RoutineSchedule>>.broadcast();
+  late final StreamController<List<RoutineSchedule>> _schedulesController;
 
   Stream<List<RoutineSchedule>> get schedulesStream => _schedulesController.stream;
   List<RoutineSchedule> get schedules => List.unmodifiable(_schedules);
@@ -56,11 +59,13 @@ class ScheduleService {
         final List<dynamic> jsonList = jsonDecode(schedulesJson);
         _schedules.clear();
         _schedules.addAll(jsonList.map((json) => RoutineSchedule.fromJson(json)));
-        _schedulesController.add(_schedules);
       } catch (e) {
         debugPrint('Error loading schedules: $e');
       }
     }
+    
+    // Always emit initial data to ensure stream has a value
+    _schedulesController.add(_schedules);
   }
 
   /// Save schedules to storage

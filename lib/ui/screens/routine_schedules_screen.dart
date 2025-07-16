@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../models/routine.dart';
 import '../../models/routine_schedule.dart';
@@ -18,16 +19,62 @@ class RoutineSchedulesScreen extends StatefulWidget {
 }
 
 class _RoutineSchedulesScreenState extends State<RoutineSchedulesScreen> {
-  late Stream<List<RoutineSchedule>> _schedulesStream;
   final ScheduleService _scheduleService = ScheduleService();
+  late StreamSubscription<List<RoutineSchedule>> _subscription;
 
   @override
   void initState() {
     super.initState();
-    _schedulesStream = _scheduleService.schedulesStream.map(
-      (allSchedules) => allSchedules
+    // Listen to service updates and rebuild UI when data changes
+    _subscription = _scheduleService.schedulesStream.listen((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+
+  List<RoutineSchedule> get _filteredSchedules {
+    try {
+      final allSchedules = _scheduleService.schedules;
+      final filtered = allSchedules
           .where((schedule) => schedule.routineId == widget.routine.id)
-          .toList(),
+          .toList();
+      debugPrint('RoutineSchedulesScreen - _filteredSchedules: ${allSchedules.length} total, ${filtered.length} filtered for routine ${widget.routine.id}');
+      return filtered;
+    } catch (e) {
+      debugPrint('RoutineSchedulesScreen - Error getting filtered schedules: $e');
+      return [];
+    }
+  }
+
+  Widget _buildSchedulesList() {
+    final schedules = _filteredSchedules;
+    
+    debugPrint('RoutineSchedulesScreen - _buildSchedulesList: ${schedules.length} schedules');
+    
+    if (schedules.isEmpty) {
+      debugPrint('RoutineSchedulesScreen - Showing empty state');
+      return _buildEmptyState();
+    }
+
+    debugPrint('RoutineSchedulesScreen - Building schedule list with ${schedules.length} items');
+    return ListView.builder(
+      itemCount: schedules.length,
+      itemBuilder: (context, index) {
+        final schedule = schedules[index];
+        return ScheduleListTile(
+          schedule: schedule,
+          onEdit: () => _editSchedule(schedule),
+          onToggle: (enabled) => _toggleSchedule(schedule, enabled),
+          onDelete: () => _deleteSchedule(schedule),
+        );
+      },
     );
   }
 
@@ -47,41 +94,7 @@ class _RoutineSchedulesScreenState extends State<RoutineSchedulesScreen> {
         children: [
           _buildHeader(),
           Expanded(
-            child: StreamBuilder<List<RoutineSchedule>>(
-              stream: _schedulesStream,
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                }
-
-                if (!snapshot.hasData) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-
-                final schedules = snapshot.data!;
-
-                if (schedules.isEmpty) {
-                  return _buildEmptyState();
-                }
-
-                return ListView.builder(
-                  itemCount: schedules.length,
-                  itemBuilder: (context, index) {
-                    final schedule = schedules[index];
-                    return ScheduleListTile(
-                      schedule: schedule,
-                      onEdit: () => _editSchedule(schedule),
-                      onToggle: (enabled) => _toggleSchedule(schedule, enabled),
-                      onDelete: () => _deleteSchedule(schedule),
-                    );
-                  },
-                );
-              },
-            ),
+            child: _buildSchedulesList(),
           ),
         ],
       ),

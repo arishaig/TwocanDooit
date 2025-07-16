@@ -9,8 +9,12 @@ import 'services/schedule_service.dart';
 // import 'services/llm/local_llm_service.dart';
 import 'ui/screens/home_screen.dart';
 import 'ui/screens/onboarding_screen.dart';
+import 'ui/screens/execution_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+
+// Global navigator key for deep linking
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -90,15 +94,39 @@ class _TwocanDooitAppState extends State<TwocanDooitApp> with WidgetsBindingObse
   }
   
   /// Handle start routine action
-  void _handleStartRoutine(String scheduleId, String routineId) {
+  void _handleStartRoutine(String scheduleId, String routineId) async {
     debugPrint('Handling start routine: $scheduleId, $routineId');
+    
     // Mark schedule as triggered
     ScheduleService().handleScheduleTrigger(scheduleId);
     
-    // Navigate to routine execution
-    // This would need to be implemented with proper navigation
-    // For now, just log the action
-    debugPrint('Would navigate to routine execution for: $routineId');
+    // Get the navigator context
+    final navigator = navigatorKey.currentState;
+    if (navigator == null) {
+      debugPrint('Navigator not available');
+      return;
+    }
+    
+    // Get the routine provider to find the routine
+    final context = navigator.context;
+    final routineProvider = context.read<RoutineProvider>();
+    
+    // Find the routine by ID
+    final routine = routineProvider.routines.firstWhere(
+      (r) => r.id == routineId,
+      orElse: () => throw Exception('Routine not found: $routineId'),
+    );
+    
+    // Navigate to the execution screen
+    try {
+      await navigator.push(
+        MaterialPageRoute(
+          builder: (context) => ExecutionScreen(routine: routine),
+        ),
+      );
+    } catch (e) {
+      debugPrint('Error navigating to execution screen: $e');
+    }
   }
   
   /// Handle snooze schedule action
@@ -140,6 +168,7 @@ class _TwocanDooitAppState extends State<TwocanDooitApp> with WidgetsBindingObse
       child: Consumer<SettingsProvider>(
         builder: (context, settingsProvider, child) => MaterialApp(
           title: 'TwocanDooit',
+          navigatorKey: navigatorKey,
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
