@@ -38,6 +38,10 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
   late final FocusNode _nameFocusNode;
   late final FocusNode _descriptionFocusNode;
   bool _isTopFieldsFocused = false;
+  
+  // Schedule service for routine reminders
+  final ScheduleService _scheduleService = ScheduleService();
+  late StreamSubscription<List<RoutineSchedule>> _scheduleSubscription;
 
   bool get _isEditing => widget.routine != null;
 
@@ -61,6 +65,13 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
     
     _nameFocusNode.addListener(_onFocusChange);
     _descriptionFocusNode.addListener(_onFocusChange);
+    
+    // Listen to schedule updates and rebuild UI when data changes
+    _scheduleSubscription = _scheduleService.schedulesStream.listen((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
   
   void _onFocusChange() {
@@ -75,9 +86,70 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
     _descriptionController.dispose();
     _nameFocusNode.dispose();
     _descriptionFocusNode.dispose();
+    _scheduleSubscription.cancel();
     // Stop any playing preview
     AudioService.stopBackgroundMusic();
     super.dispose();
+  }
+  
+  List<RoutineSchedule> get _filteredSchedules {
+    if (widget.routine == null) return [];
+    return _scheduleService.schedules
+        .where((schedule) => schedule.routineId == widget.routine!.id)
+        .toList();
+  }
+  
+  Widget _buildSchedulesList() {
+    final schedules = _filteredSchedules;
+    
+    if (schedules.isEmpty) {
+      return Text(
+        'No schedules set up yet. Tap "Manage" to create your first schedule.',
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      );
+    }
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (final schedule in schedules.take(3)) ...[
+          Row(
+            children: [
+              Icon(
+                schedule.isEnabled ? Icons.check_circle : Icons.circle_outlined,
+                size: 16,
+                color: schedule.isEnabled 
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  schedule.displayText,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: schedule.isEnabled
+                        ? Theme.of(context).colorScheme.onSurface
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (schedule != schedules.last) const SizedBox(height: 4),
+        ],
+        if (schedules.length > 3) ...[
+          const SizedBox(height: 4),
+          Text(
+            'and ${schedules.length - 3} more...',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ],
+    );
   }
 
   @override
@@ -316,73 +388,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
                         ),
                       ),
                       const SizedBox(height: 12),
-                      StreamBuilder<List<RoutineSchedule>>(
-                        stream: ScheduleService().schedulesStream.map(
-                          (allSchedules) => allSchedules
-                              .where((schedule) => schedule.routineId == widget.routine!.id)
-                              .toList(),
-                        ),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          }
-                          
-                          if (!snapshot.hasData) {
-                            return const CircularProgressIndicator();
-                          }
-                          
-                          final schedules = snapshot.data!;
-                          
-                          if (schedules.isEmpty) {
-                            return Text(
-                              'No schedules set up yet. Tap "Manage" to create your first schedule.',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              ),
-                            );
-                          }
-                          
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              for (final schedule in schedules.take(3)) ...[
-                                Row(
-                                  children: [
-                                    Icon(
-                                      schedule.isEnabled ? Icons.check_circle : Icons.circle_outlined,
-                                      size: 16,
-                                      color: schedule.isEnabled 
-                                          ? Theme.of(context).colorScheme.primary
-                                          : Theme.of(context).colorScheme.onSurfaceVariant,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        schedule.displayText,
-                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                          color: schedule.isEnabled
-                                              ? Theme.of(context).colorScheme.onSurface
-                                              : Theme.of(context).colorScheme.onSurfaceVariant,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                if (schedule != schedules.last) const SizedBox(height: 4),
-                              ],
-                              if (schedules.length > 3) ...[
-                                const SizedBox(height: 4),
-                                Text(
-                                  'and ${schedules.length - 3} more...',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ],
-                          );
-                        },
-                      ),
+                      _buildSchedulesList(),
                     ],
                   ),
                 ),
