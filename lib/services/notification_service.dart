@@ -322,7 +322,7 @@ class NotificationService {
       body,
       scheduledTime,
       details,
-      androidScheduleMode: AndroidScheduleMode.alarmClock,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       payload: payload,
     );
 
