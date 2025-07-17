@@ -46,6 +46,17 @@ Your cheerleader, planner, and snack reminder-er all rolled into one adorable ca
 - **Voice Announcements**: Text-to-speech with Twocan's encouraging personality
 - **High Visual Contrast + Soft Edges**: Gentle gradients, curves, and whitespace
 
+### ♿ Accessibility & Comfort Features
+- **Reduced Animations**: Minimize moving elements and transitions for sensory sensitivity
+- **Focus Mode**: Hide distracting elements during routine execution
+- **Simplified Interface**: Larger text and cleaner layouts for better readability
+- **Customizable Feedback**: Toggle audio and haptic feedback independently
+- **Smart Mascot**: Twocan moves to avoid covering content, or stays static when preferred
+- **Tabbed Settings**: Organized, less overwhelming interface for preferences
+- **Plain Language**: Clear, jargon-free instructions and error messages
+- **Flexible Navigation**: Multiple ways to navigate (buttons, gestures, voice)
+- **Sensory Considerations**: Muted color palette and customizable sound options
+
 ### 🌟 Advanced Features
 - **Weighted Randomization**: Customize probability distributions for random choices
 - **Smart UI**: Navigation elements hide during focused interactions
@@ -144,13 +155,127 @@ TwocanDooit follows Flutter best practices with Twocan's cozy approach:
 - `flutter clean` - Clean build artifacts
 - `flutter pub outdated` - Check for dependency updates
 
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**Build fails with "No Firebase configuration found"**
+- For development: Firebase stub files are automatically created by CI
+- For production: Add your own `google-services.json` and `firebase_options.dart`
+
+**"No such file or directory" errors**
+- Run `flutter clean && flutter pub get` to reset dependencies
+- Ensure you're using Flutter version 3.32.6 or higher
+
+**App crashes on first run**
+- Check that sample data loaded correctly
+- Clear app data and restart to reload sample routines
+
+**Audio/TTS not working**
+- Check device volume settings
+- Verify permissions for audio playback
+- Try different TTS voices in Settings
+
+**Performance issues**
+- Disable animations in Accessibility settings
+- Clear routine run data to reduce stored data
+- Restart app if timers seem stuck
+
+### Getting Help
+
+- Check [Issues](https://github.com/arishaig/twocandooit/issues) for known problems
+- Review the `CLAUDE.md` file for technical details
+- Create a new issue with device info and error logs
+
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+We welcome contributions from developers who want to help make TwocanDooit even better for neurodivergent users! 
+
+### Quick Start for Contributors
+
+1. **Fork and Clone**
+   ```bash
+   git clone https://github.com/yourusername/twocandooit.git
+   cd twocandooit
+   ```
+
+2. **Set Up Development Environment**
+   ```bash
+   flutter pub get
+   flutter analyze  # Must pass with zero warnings
+   flutter test     # All tests must pass
+   ```
+
+3. **Create Feature Branch**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+4. **Make Your Changes**
+   - Follow the existing code style and patterns
+   - Add tests for new functionality
+   - Update documentation as needed
+   - Ensure accessibility considerations are maintained
+
+5. **Test Your Changes**
+   ```bash
+   flutter analyze  # Must have zero warnings
+   flutter test     # All tests must pass
+   flutter build apk --debug  # Must build successfully
+   ```
+
+6. **Submit Pull Request**
+   - Provide clear description of changes
+   - Reference any related issues
+   - Include screenshots for UI changes
+   - Ensure CI passes
+
+### Development Guidelines
+
+- **Code Quality**: All code must pass `flutter analyze` with zero warnings
+- **Testing**: New features require unit tests; UI changes need widget tests
+- **Accessibility**: Maintain ADHD-friendly design principles
+- **Documentation**: Update relevant docs and comments
+- **Git**: Use clear, descriptive commit messages
+
+### What We're Looking For
+
+- **Accessibility improvements** for neurodiverse users
+- **Bug fixes** and performance optimizations
+- **New step types** or routine features
+- **Documentation** improvements
+- **Testing** enhancements
+- **Localization** support
+
+### Getting Help
+
+- Check existing issues and discussions
+- Review the `CLAUDE.md` file for technical architecture details
+- Ask questions in pull request comments
+- Follow the existing code patterns and naming conventions
+
+### Code of Conduct
+
+We maintain a welcoming, supportive environment that reflects Twocan's encouraging spirit. Please be kind, patient, and constructive in all interactions.
+
+### Accessibility-First Development
+
+When contributing to TwocanDooit, please keep these principles in mind:
+
+- **Cognitive Load**: Minimize mental effort required to understand and use features
+- **Clear Language**: Use simple, direct language in all user-facing text
+- **Visual Hierarchy**: Ensure important information stands out clearly
+- **Flexible Navigation**: Provide multiple ways to accomplish tasks
+- **Error Prevention**: Design to prevent mistakes rather than just handle them
+- **Consistent Patterns**: Follow established UI patterns throughout the app
+
+### Testing with Neurodivergent Users
+
+When possible, test your changes with:
+- Users who have ADHD
+- People with executive function challenges
+- Those who use assistive technologies
+- Users with different sensory sensitivities
 
 ## 🧠 Design Philosophy
 

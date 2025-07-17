@@ -243,7 +243,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Timer running...',
+              'Timer is counting down...',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ],
@@ -274,7 +274,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Rolling for reps...',
+                    'Rolling for number of reps...',
                     style: Theme.of(context).textTheme.titleMedium,
                     textAlign: TextAlign.center,
                   ),
@@ -396,7 +396,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Rolling dice...',
+                  'Rolling to make a choice...',
                   style: Theme.of(context).textTheme.titleMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -503,7 +503,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Complete this task when ready',
+              'Tap "Next Step" when you\'re done',
               style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
