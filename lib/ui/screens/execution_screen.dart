@@ -145,8 +145,12 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                 ],
               ),
               
-              // Floating Action Buttons for Navigation
-              _buildNavigationFABs(context, executionProvider, session, currentStep),
+              // Navigation elements (respects accessibility settings)
+              Consumer<SettingsProvider>(
+                builder: (context, settingsProvider, child) {
+                  return _buildNavigationFABs(context, executionProvider, session, currentStep, settingsProvider.settings);
+                },
+              ),
             ],
           );
         },
@@ -258,10 +262,15 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (isRolling) ...[
-                  DiceWidget(
-                    isRolling: true,
-                    result: null,
-                    optionCount: optionCount,
+                  Consumer<SettingsProvider>(
+                    builder: (context, settingsProvider, child) {
+                      return DiceWidget(
+                        isRolling: true,
+                        result: null,
+                        optionCount: optionCount,
+                        reducedAnimations: settingsProvider.settings.reducedAnimations,
+                      );
+                    },
                   ),
                   const SizedBox(height: 24),
                   Text(
@@ -270,10 +279,15 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                     textAlign: TextAlign.center,
                   ),
                 ] else ...[
-                  DiceWidget(
-                    isRolling: false,
-                    result: null,
-                    optionCount: optionCount,
+                  Consumer<SettingsProvider>(
+                    builder: (context, settingsProvider, child) {
+                      return DiceWidget(
+                        isRolling: false,
+                        result: null,
+                        optionCount: optionCount,
+                        reducedAnimations: settingsProvider.settings.reducedAnimations,
+                      );
+                    },
                   ),
                   const SizedBox(height: 24),
                   Text(
@@ -370,10 +384,15 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
             children: [
               if (isRolling) ...[
                 // Show rolling animation whether it's initial roll or reroll
-                DiceWidget(
-                  isRolling: true,
-                  result: null,
-                  optionCount: currentStep.choices.length,
+                Consumer<SettingsProvider>(
+                  builder: (context, settingsProvider, child) {
+                    return DiceWidget(
+                      isRolling: true,
+                      result: null,
+                      optionCount: currentStep.choices.length,
+                      reducedAnimations: settingsProvider.settings.reducedAnimations,
+                    );
+                  },
                 ),
                 const SizedBox(height: 24),
                 Text(
@@ -431,10 +450,15 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                   children: [
                     GestureDetector(
                       onTap: () => _reroll(context, currentStep, executionProvider),
-                      child: DiceWidget(
-                        isRolling: false,
-                        result: currentStep.choices.indexOf(currentStep.selectedChoice!) + 1,
-                        optionCount: currentStep.choices.length,
+                      child: Consumer<SettingsProvider>(
+                        builder: (context, settingsProvider, child) {
+                          return DiceWidget(
+                            isRolling: false,
+                            result: currentStep.choices.indexOf(currentStep.selectedChoice!) + 1,
+                            optionCount: currentStep.choices.length,
+                            reducedAnimations: settingsProvider.settings.reducedAnimations,
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -752,110 +776,95 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
     );
   }
 
-  Widget _buildNavigationFABs(BuildContext context, ExecutionProvider executionProvider, dynamic session, dynamic currentStep) {
-    // Don't show FABs during dice animations or timer countdowns
-    final shouldHideFABs = executionProvider.isRolling || 
-                          (currentStep.type == StepType.timer && executionProvider.remainingSeconds <= 5 && executionProvider.remainingSeconds > 0);
+  Widget _buildNavigationFABs(BuildContext context, ExecutionProvider executionProvider, dynamic session, dynamic currentStep, AppSettings settings) {
+    // Don't show navigation during dice animations or timer countdowns
+    final shouldHideNavigation = executionProvider.isRolling || 
+                                (currentStep.type == StepType.timer && executionProvider.remainingSeconds <= 5 && executionProvider.remainingSeconds > 0);
     
-    if (shouldHideFABs) {
+    if (shouldHideNavigation) {
       return const SizedBox.shrink();
     }
     
+    // If focus mode is enabled, use simplified navigation at the bottom
+    if (settings.focusMode) {
+      return Positioned(
+        bottom: 16,
+        left: 16,
+        right: 16,
+        child: Card(
+          elevation: 4,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                if (session.currentStepIndex > 0)
+                  IconButton(
+                    onPressed: () async {
+                      await AudioService.playSubtleClick(_currentSettings);
+                      await executionProvider.previousStep(settings: _currentSettings);
+                    },
+                    icon: const Icon(Icons.arrow_back),
+                    tooltip: 'Previous Step',
+                  )
+                else
+                  const SizedBox(width: 48),
+                  
+                Text(
+                  '${session.currentStepIndex + 1} / ${session.routine.steps.length}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                
+                if (session.currentStepIndex < session.routine.steps.length - 1)
+                  IconButton(
+                    onPressed: () async {
+                      await AudioService.playSubtleClick(_currentSettings);
+                      await executionProvider.nextStep(settings: _currentSettings);
+                    },
+                    icon: const Icon(Icons.arrow_forward),
+                    tooltip: 'Next Step',
+                  )
+                else
+                  const SizedBox(width: 48),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    
+    // Default navigation for non-focus mode (simpler than before)
     return Stack(
       children: [
-        // Left side tap zone - Previous Step
+        // Left navigation button
         if (session.currentStepIndex > 0)
           Positioned(
-            left: 0,
-            top: 0,
-            bottom: 0,
-            child: GestureDetector(
-              onTap: () async {
+            left: 16,
+            top: MediaQuery.of(context).size.height * 0.4,
+            child: FloatingActionButton.small(
+              heroTag: 'prev_step',
+              onPressed: () async {
                 await AudioService.playSubtleClick(_currentSettings);
                 await executionProvider.previousStep(settings: _currentSettings);
               },
-              child: Container(
-                width: 80, // Wide tap zone
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                      Colors.transparent,
-                    ],
-                  ),
-                ),
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
-                      borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(12),
-                        bottomRight: Radius.circular(12),
-                      ),
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.chevron_left,
-                      color: Theme.of(context).colorScheme.primary,
-                      size: 24,
-                    ),
-                  ),
-                ),
-              ),
+              tooltip: 'Previous Step',
+              child: const Icon(Icons.arrow_back),
             ),
           ),
         
-        // Right side tap zone - Next Step  
+        // Right navigation button
         if (session.currentStepIndex < session.routine.steps.length - 1)
           Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            child: GestureDetector(
-              onTap: () async {
+            right: 16,
+            top: MediaQuery.of(context).size.height * 0.4,
+            child: FloatingActionButton.small(
+              heroTag: 'next_step',
+              onPressed: () async {
                 await AudioService.playSubtleClick(_currentSettings);
                 await executionProvider.nextStep(settings: _currentSettings);
               },
-              child: Container(
-                width: 80, // Wide tap zone
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.centerRight,
-                    end: Alignment.centerLeft,
-                    colors: [
-                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                      Colors.transparent,
-                    ],
-                  ),
-                ),
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        bottomLeft: Radius.circular(12),
-                      ),
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.chevron_right,
-                      color: Theme.of(context).colorScheme.primary,
-                      size: 24,
-                    ),
-                  ),
-                ),
-              ),
+              tooltip: 'Next Step',
+              child: const Icon(Icons.arrow_forward),
             ),
           ),
       ],

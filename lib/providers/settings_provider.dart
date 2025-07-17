@@ -124,6 +124,18 @@ class SettingsProvider with ChangeNotifier {
     await updateSettings(_settings.copyWith(isDarkMode: isDarkMode));
   }
 
+  Future<void> updateReducedAnimations(bool enabled) async {
+    await updateSettings(_settings.copyWith(reducedAnimations: enabled));
+  }
+
+  Future<void> updateFocusMode(bool enabled) async {
+    await updateSettings(_settings.copyWith(focusMode: enabled));
+  }
+
+  Future<void> updateSimplifiedUI(bool enabled) async {
+    await updateSettings(_settings.copyWith(simplifiedUI: enabled));
+  }
+
   Future<void> updateUserName(String userName) async {
     await updateSettings(_settings.copyWith(userName: userName));
   }

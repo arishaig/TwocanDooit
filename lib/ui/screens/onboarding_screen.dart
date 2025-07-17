@@ -25,6 +25,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool _tempAudioFeedback = true;
   bool _tempHapticFeedback = true;
   bool _tempDarkMode = true;
+  bool _tempReducedAnimations = false;
+  bool _tempFocusMode = false;
+  bool _tempSimplifiedUI = false;
   
   // Starter routines selection
   List<StarterCategory> _availableCategories = [];
@@ -76,6 +79,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         audioFeedbackEnabled: _tempAudioFeedback,
         hapticFeedbackEnabled: _tempHapticFeedback,
         isDarkMode: _tempDarkMode,
+        reducedAnimations: _tempReducedAnimations,
+        focusMode: _tempFocusMode,
+        simplifiedUI: _tempSimplifiedUI,
         hasCompletedOnboarding: true,
       ),
     );
@@ -160,7 +166,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   const Spacer(),
                   Text(
-                    '${_currentPage + 1} of 6',
+                    '${_currentPage + 1} of 7',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],
@@ -169,7 +175,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             
             // Linear progress indicator
             LinearProgressIndicator(
-              value: (_currentPage + 1) / 6,
+              value: (_currentPage + 1) / 7,
               backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
             
@@ -609,6 +615,48 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     onChanged: (value) {
                       setState(() {
                         _tempTtsEnabled = value;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Card(
+                  child: SwitchListTile(
+                    secondary: const Icon(Icons.animation),
+                    title: const Text('Reduced Animations'),
+                    subtitle: const Text('Minimize moving elements and transitions'),
+                    value: _tempReducedAnimations,
+                    onChanged: (value) {
+                      setState(() {
+                        _tempReducedAnimations = value;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Card(
+                  child: SwitchListTile(
+                    secondary: const Icon(Icons.center_focus_strong),
+                    title: const Text('Focus Mode'),
+                    subtitle: const Text('Hide distracting elements during routines'),
+                    value: _tempFocusMode,
+                    onChanged: (value) {
+                      setState(() {
+                        _tempFocusMode = value;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Card(
+                  child: SwitchListTile(
+                    secondary: const Icon(Icons.text_increase),
+                    title: const Text('Simplified Interface'),
+                    subtitle: const Text('Use larger text and simpler layouts'),
+                    value: _tempSimplifiedUI,
+                    onChanged: (value) {
+                      setState(() {
+                        _tempSimplifiedUI = value;
                       });
                     },
                   ),

@@ -104,12 +104,14 @@ class DiceWidget extends StatefulWidget {
   final bool isRolling;
   final int? result;
   final int optionCount;
+  final bool reducedAnimations;
 
   const DiceWidget({
     super.key,
     this.isRolling = false,
     this.result,
     this.optionCount = 6,
+    this.reducedAnimations = false,
   });
 
   static DieType getDieTypeForOptions(int optionCount) {
@@ -142,7 +144,13 @@ class _DiceWidgetState extends State<DiceWidget>
   void didUpdateWidget(DiceWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isRolling && !oldWidget.isRolling) {
-      _controller.repeat();
+      if (widget.reducedAnimations) {
+        // Very minimal animation for reduced animations mode
+        _controller.duration = const Duration(milliseconds: 200);
+        _controller.forward();
+      } else {
+        _controller.repeat();
+      }
     } else if (!widget.isRolling && oldWidget.isRolling) {
       _controller.stop();
     }
@@ -163,7 +171,7 @@ class _DiceWidgetState extends State<DiceWidget>
             animation: _controller,
             builder: (context, child) {
               return Transform.rotate(
-                angle: _controller.value * 6.28, // Full rotation
+                angle: widget.reducedAnimations ? 0 : _controller.value * 6.28, // No rotation in reduced animations mode
                 child: SvgPicture.asset(
                   dieType.assetPath,
                   width: 56,

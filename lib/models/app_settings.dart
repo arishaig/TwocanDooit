@@ -19,6 +19,11 @@ class AppSettings {
   // Theme settings
   final bool isDarkMode;
   
+  // Accessibility settings
+  final bool reducedAnimations;
+  final bool focusMode;
+  final bool simplifiedUI;
+  
   // User preferences
   final String userName;
   final bool hasCompletedOnboarding;
@@ -37,6 +42,9 @@ class AppSettings {
     this.audioFeedbackEnabled = true,
     this.hapticFeedbackEnabled = true,
     this.isDarkMode = true,
+    this.reducedAnimations = false,
+    this.focusMode = false,
+    this.simplifiedUI = false,
     this.userName = '',
     this.hasCompletedOnboarding = false,
   });
@@ -55,6 +63,9 @@ class AppSettings {
     bool? audioFeedbackEnabled,
     bool? hapticFeedbackEnabled,
     bool? isDarkMode,
+    bool? reducedAnimations,
+    bool? focusMode,
+    bool? simplifiedUI,
     String? userName,
     bool? hasCompletedOnboarding,
   }) {
@@ -72,6 +83,9 @@ class AppSettings {
       audioFeedbackEnabled: audioFeedbackEnabled ?? this.audioFeedbackEnabled,
       hapticFeedbackEnabled: hapticFeedbackEnabled ?? this.hapticFeedbackEnabled,
       isDarkMode: isDarkMode ?? this.isDarkMode,
+      reducedAnimations: reducedAnimations ?? this.reducedAnimations,
+      focusMode: focusMode ?? this.focusMode,
+      simplifiedUI: simplifiedUI ?? this.simplifiedUI,
       userName: userName ?? this.userName,
       hasCompletedOnboarding: hasCompletedOnboarding ?? this.hasCompletedOnboarding,
     );
@@ -92,6 +106,9 @@ class AppSettings {
       'audioFeedbackEnabled': audioFeedbackEnabled,
       'hapticFeedbackEnabled': hapticFeedbackEnabled,
       'isDarkMode': isDarkMode,
+      'reducedAnimations': reducedAnimations,
+      'focusMode': focusMode,
+      'simplifiedUI': simplifiedUI,
       'userName': userName,
       'hasCompletedOnboarding': hasCompletedOnboarding,
     };
@@ -112,6 +129,9 @@ class AppSettings {
       audioFeedbackEnabled: json['audioFeedbackEnabled'] ?? true,
       hapticFeedbackEnabled: json['hapticFeedbackEnabled'] ?? true,
       isDarkMode: json['isDarkMode'] ?? true,
+      reducedAnimations: json['reducedAnimations'] ?? false,
+      focusMode: json['focusMode'] ?? false,
+      simplifiedUI: json['simplifiedUI'] ?? false,
       userName: json['userName'] ?? '',
       hasCompletedOnboarding: json['hasCompletedOnboarding'] ?? false,
     );
