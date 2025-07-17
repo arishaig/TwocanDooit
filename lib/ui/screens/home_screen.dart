@@ -9,7 +9,7 @@ import '../../services/storage_service.dart';
 import '../widgets/routine_card.dart';
 import 'routine_editor_screen.dart';
 import 'execution_screen.dart';
-import 'settings_screen.dart';
+import 'settings_screen_tabbed.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -223,39 +223,85 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
-              // Animated Twocan thumbs up
-              AnimatedPositioned(
-                duration: const Duration(milliseconds: 800),
-                curve: Curves.easeInOutBack,
-                bottom: _isAtTop ? 20 : null,
-                top: _isAtTop ? null : 20,
-                left: 20,
-                child: IgnorePointer(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+              // Twocan mascot (respects accessibility settings)
+              Consumer<SettingsProvider>(
+                builder: (context, settingsProvider, child) {
+                  final settings = settingsProvider.settings;
+                  
+                  // Hide mascot completely only in focus mode
+                  if (settings.focusMode) {
+                    return const SizedBox.shrink();
+                  }
+                  
+                  // For reduced animations, show static mascot in safe bottom position
+                  if (settings.reducedAnimations) {
+                    return Positioned(
+                      bottom: 20,
+                      left: 20,
+                      child: IgnorePointer(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Image.asset(
+                            'assets/twocan/twocan_thumbs_up.png',
+                            width: 160,
+                            height: 160,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                Icons.thumb_up,
+                                size: 160,
+                                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
+                              );
+                            },
+                          ),
                         ),
-                      ],
+                      ),
+                    );
+                  }
+                  
+                  // Full animation for default mode
+                  return AnimatedPositioned(
+                    duration: const Duration(milliseconds: 800),
+                    curve: Curves.easeInOutBack,
+                    bottom: _isAtTop ? 20 : null,
+                    top: _isAtTop ? null : 20,
+                    left: 20,
+                    child: IgnorePointer(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Image.asset(
+                          'assets/twocan/twocan_thumbs_up.png',
+                          width: 160,
+                          height: 160,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              Icons.thumb_up,
+                              size: 160,
+                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
+                            );
+                          },
+                        ),
+                      ),
                     ),
-                    child: Image.asset(
-                      'assets/twocan/twocan_thumbs_up.png',
-                      width: 160,
-                      height: 160,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Icon(
-                          Icons.thumb_up,
-                          size: 160,
-                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
-                        );
-                      },
-                    ),
-                  ),
-                ),
+                  );
+                },
               ),
             ],
           );
@@ -311,7 +357,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _navigateToSettings(BuildContext context) async {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const SettingsScreen(),
+        builder: (context) => const SettingsScreenTabbed(),
       ),
     );
   }
