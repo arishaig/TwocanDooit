@@ -545,8 +545,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Card(
                   child: SwitchListTile(
                     secondary: const Icon(Icons.vibration),
-                    title: const Text('Haptic Feedback'),
-                    subtitle: const Text('Vibration for interactions'),
+                    title: const Text('Vibration'),
+                    subtitle: const Text('Phone vibrates when you tap buttons'),
                     value: _tempHapticFeedback,
                     onChanged: (value) {
                       setState(() {
@@ -559,8 +559,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Card(
                   child: SwitchListTile(
                     secondary: const Icon(Icons.notifications_active),
-                    title: const Text('Nudge Notifications'),
-                    subtitle: const Text('Gentle reminders when stuck'),
+                    title: const Text('Gentle Reminders'),
+                    subtitle: const Text('Helpful nudges when you\'re stuck on a step'),
                     value: _tempNudgeEnabled,
                     onChanged: (value) {
                       setState(() {
@@ -609,8 +609,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Card(
                   child: SwitchListTile(
                     secondary: const Icon(Icons.record_voice_over),
-                    title: const Text('Text-to-Speech'),
-                    subtitle: const Text('Read step instructions aloud when hands are busy'),
+                    title: const Text('Read Steps Aloud'),
+                    subtitle: const Text('Speak step instructions when your hands are busy'),
                     value: _tempTtsEnabled,
                     onChanged: (value) {
                       setState(() {
@@ -623,8 +623,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Card(
                   child: SwitchListTile(
                     secondary: const Icon(Icons.animation),
-                    title: const Text('Reduced Animations'),
-                    subtitle: const Text('Minimize moving elements and transitions'),
+                    title: const Text('Less Movement'),
+                    subtitle: const Text('Reduce animations and moving elements'),
                     value: _tempReducedAnimations,
                     onChanged: (value) {
                       setState(() {
@@ -638,7 +638,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: SwitchListTile(
                     secondary: const Icon(Icons.center_focus_strong),
                     title: const Text('Focus Mode'),
-                    subtitle: const Text('Hide distracting elements during routines'),
+                    subtitle: const Text('Hide extra buttons and elements during routines'),
                     value: _tempFocusMode,
                     onChanged: (value) {
                       setState(() {
@@ -651,8 +651,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Card(
                   child: SwitchListTile(
                     secondary: const Icon(Icons.text_increase),
-                    title: const Text('Simplified Interface'),
-                    subtitle: const Text('Use larger text and simpler layouts'),
+                    title: const Text('Bigger Text'),
+                    subtitle: const Text('Use larger text and cleaner layouts'),
                     value: _tempSimplifiedUI,
                     onChanged: (value) {
                       setState(() {

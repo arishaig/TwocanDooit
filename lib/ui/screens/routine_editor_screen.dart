@@ -211,7 +211,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
             const SizedBox(height: 16),
             SwitchListTile(
               title: const Text('Voice Announcements'),
-              subtitle: const Text('Read steps aloud during execution'),
+              subtitle: const Text('Read steps aloud while doing this routine'),
               value: _voiceEnabled,
               onChanged: (value) {
                 setState(() {
@@ -222,7 +222,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> with TickerPr
             const SizedBox(height: 16),
             SwitchListTile(
               title: const Text('Background Music'),
-              subtitle: const Text('Play music during routine execution'),
+              subtitle: const Text('Play music while doing this routine'),
               value: _musicEnabled,
               onChanged: (value) {
                 setState(() {

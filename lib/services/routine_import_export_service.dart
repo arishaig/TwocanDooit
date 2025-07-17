@@ -289,7 +289,7 @@ class RoutineImportExportService {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['json'],
-        dialogTitle: 'Import Routine',
+        dialogTitle: 'Choose a routine file to import',
       );
 
       if (result?.files.single.path != null) {
@@ -316,7 +316,7 @@ class RoutineImportExportService {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['json'],
-        dialogTitle: 'Import Routines',
+        dialogTitle: 'Choose a routine file to import',
       );
 
       if (result?.files.single.path != null) {
@@ -754,7 +754,7 @@ Please create a routine that follows these guidelines and would be genuinely hel
   Future<String?> _saveFileWithPicker(String content, String fileName) async {
     try {
       final result = await FilePicker.platform.saveFile(
-        dialogTitle: 'Save Routine Export',
+        dialogTitle: 'Save routine file',
         fileName: fileName,
         type: FileType.custom,
         allowedExtensions: ['json'],

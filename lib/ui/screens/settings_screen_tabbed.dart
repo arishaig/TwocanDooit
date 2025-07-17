@@ -138,8 +138,8 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
                 const SizedBox(height: 20),
                 
                 SwitchListTile(
-                  title: const Text('Reduced Animations'),
-                  subtitle: const Text('Minimize moving elements and transitions'),
+                  title: const Text('Less Movement'),
+                  subtitle: const Text('Reduce animations and moving elements'),
                   value: settings.reducedAnimations,
                   onChanged: (value) {
                     settingsProvider.updateReducedAnimations(value);
@@ -148,7 +148,7 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
                 
                 SwitchListTile(
                   title: const Text('Focus Mode'),
-                  subtitle: const Text('Hide distracting elements during routines'),
+                  subtitle: const Text('Hide extra buttons and elements during routines'),
                   value: settings.focusMode,
                   onChanged: (value) {
                     settingsProvider.updateFocusMode(value);
@@ -156,8 +156,8 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
                 ),
                 
                 SwitchListTile(
-                  title: const Text('Simplified Interface'),
-                  subtitle: const Text('Use larger text and simpler layouts'),
+                  title: const Text('Bigger Text'),
+                  subtitle: const Text('Use larger text and cleaner layouts'),
                   value: settings.simplifiedUI,
                   onChanged: (value) {
                     settingsProvider.updateSimplifiedUI(value);
@@ -295,8 +295,8 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
                 ),
                 
                 SwitchListTile(
-                  title: const Text('Haptic Feedback'),
-                  subtitle: const Text('Vibrate for interactions and completions'),
+                  title: const Text('Vibration'),
+                  subtitle: const Text('Phone vibrates when you tap buttons'),
                   value: settings.hapticFeedbackEnabled,
                   onChanged: (value) {
                     settingsProvider.updateHapticFeedbackEnabled(value);
@@ -329,7 +329,7 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Text-to-Speech',
+                      'Read Steps Aloud',
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -346,7 +346,7 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
                 const SizedBox(height: 20),
                 
                 SwitchListTile(
-                  title: const Text('Enable Text-to-Speech'),
+                  title: const Text('Read Steps Aloud'),
                   subtitle: const Text('Automatically read step instructions'),
                   value: settings.ttsEnabled,
                   onChanged: (value) {
@@ -681,7 +681,7 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
                       child: FilledButton.icon(
                         onPressed: _importRoutineFromFile,
                         icon: const Icon(Icons.file_upload),
-                        label: const Text('From File'),
+                        label: const Text('Choose File'),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -691,7 +691,7 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
                         icon: const Icon(Icons.content_paste),
                         label: const FittedBox(
                           fit: BoxFit.scaleDown,
-                          child: Text('From Clipboard'),
+                          child: Text('From Copied Text'),
                         ),
                       ),
                     ),
@@ -718,7 +718,7 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
                   child: FilledButton.icon(
                     onPressed: _generateLLMPrompt,
                     icon: const Icon(Icons.psychology, size: 16),
-                    label: const Text('Generate LLM Prompt'),
+                    label: const Text('Get AI Creation Prompt'),
                   ),
                 ),
                 
@@ -1035,7 +1035,7 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Failed to import routine. Please check the file format.'),
+            content: const Text('Could not import routine. Please check that the file is a valid routine file.'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -1116,7 +1116,7 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
       } else if (result == false && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Failed to share routines. Please try again.'),
+            content: const Text('Could not share routines. Please try again.'),
             backgroundColor: Theme.of(context).colorScheme.error,
             behavior: SnackBarBehavior.floating,
           ),
