@@ -49,6 +49,7 @@ class ExecutionService {
   static ExecutionSession? _currentSession;
   static RoutineRun? _currentRun;
   static Timer? _timer;
+  static Timer? _sessionTimer;
   static int _remainingSeconds = 0;
   static AppSettings? _currentSettings;
   static DateTime? _pauseStartTime;
@@ -89,6 +90,9 @@ class ExecutionService {
     _currentSession = ExecutionSession(routine: routine);
     _sessionController.add(_currentSession!);
     _eventController.add('Routine started: ${routine.name}');
+    
+    // Start session duration timer to update elapsed time display
+    _startSessionTimer();
     
     // Start background music if enabled
     if (routine.musicEnabled && routine.musicTrack != null) {
@@ -151,6 +155,7 @@ class ExecutionService {
     
     _currentSession!.currentStepIndex++;
     _timer?.cancel();
+    await AudioService.stopCountdown(); // Stop countdown sound if playing
     NotificationService.stopNudgeTimer();
     
     // Update run progress
@@ -195,6 +200,7 @@ class ExecutionService {
     
     _currentSession!.currentStepIndex--;
     _timer?.cancel();
+    await AudioService.stopCountdown(); // Stop countdown sound if playing
     NotificationService.stopNudgeTimer();
     
     final currentStep = _currentSession!.currentStep;
@@ -214,6 +220,8 @@ class ExecutionService {
     
     _timer?.cancel();
     _timer = null;
+    _sessionTimer?.cancel();
+    _sessionTimer = null;
     await AudioService.stopCountdown(); // Stop countdown sound if playing
     await AudioService.stopBackgroundMusic(); // Stop background music if playing
     _currentSession = null;
@@ -361,8 +369,21 @@ class ExecutionService {
     });
   }
 
+  static void _startSessionTimer() {
+    _sessionTimer?.cancel(); // Cancel any existing session timer
+    
+    // Emit session updates every second to keep elapsed time display current
+    _sessionTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_currentSession != null && !(_currentSession?.isPaused ?? false)) {
+        // Only emit if session is active and not paused
+        _sessionController.add(_currentSession!);
+      }
+    });
+  }
+
   static void dispose() {
     _timer?.cancel();
+    _sessionTimer?.cancel();
     NotificationService.dispose();
     AudioService.dispose();
     _sessionController.close();

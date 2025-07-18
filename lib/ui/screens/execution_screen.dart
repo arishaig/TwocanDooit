@@ -24,6 +24,8 @@ class ExecutionScreen extends StatefulWidget {
 class _ExecutionScreenState extends State<ExecutionScreen> {
   bool _showRollResult = false;
   Timer? _rollResultTimer;
+  bool _tutorialShowing = false;
+  bool _showChoicesDetails = false;
   
   // Helper method to get current settings
   AppSettings get _currentSettings => context.read<SettingsProvider>().settings;
@@ -35,9 +37,13 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
       final settings = context.read<SettingsProvider>().settings;
       context.read<ExecutionProvider>().startRoutine(widget.routine, settings: settings);
     });
+    
   }
 
   void _showTutorialIfNeeded(BuildContext context, currentStep) {
+    // Prevent multiple tutorials from being shown
+    if (_tutorialShowing) return;
+    
     final settingsProvider = context.read<SettingsProvider>();
     final settings = settingsProvider.settings;
     
@@ -66,6 +72,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
     }
     
     if (shouldShowTutorial) {
+      _tutorialShowing = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           showDialog(
@@ -76,6 +83,9 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
               onDismiss: () {
                 Navigator.of(context).pop();
                 _markTutorialAsSeen(settingsProvider, currentStep.type, isRandomReps);
+                setState(() {
+                  _tutorialShowing = false;
+                });
               },
             ),
           );
@@ -223,9 +233,39 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                   return _buildNavigationFABs(context, executionProvider, session, currentStep, settingsProvider.settings);
                 },
               ),
+              
+              // Music control button
+              _buildMusicControl(),
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildMusicControl() {
+    // Only show if music is playing
+    if (!AudioService.isMusicPlaying) {
+      return const SizedBox.shrink();
+    }
+
+    return Positioned(
+      top: 100, // Add padding from step progress bar
+      right: 16, // Keep on right side
+      child: FloatingActionButton.small(
+        heroTag: 'music_control',
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+        onPressed: () async {
+          await AudioService.toggleMusicMute();
+          // Trigger immediate UI update
+          setState(() {});
+        },
+        tooltip: AudioService.isMusicMuted ? 'Unmute Music' : 'Mute Music',
+        child: Icon(
+          AudioService.isMusicMuted ? Icons.music_off : Icons.music_note,
+          size: 20,
+        ),
       ),
     );
   }
@@ -268,13 +308,11 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                 textAlign: TextAlign.center,
               ),
             ],
-            const SizedBox(height: 32),
+            const SizedBox(height: 16),
             
             // Step-specific content
             Expanded(
-              child: Center(
-                child: _buildTypeSpecificContent(context, currentStep, executionProvider),
-              ),
+              child: _buildTypeSpecificContent(context, currentStep, executionProvider),
             ),
           ],
         ),
@@ -485,35 +523,74 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                       width: 2,
                     ),
                   ),
-                  child: Column(
-                    children: [
-                      SvgPicture.asset(
-                        DiceWidget.getDieTypeForOptions(currentStep.choices.length).assetPath,
-                        width: 48,
-                        height: 48,
-                        colorFilter: ColorFilter.mode(
-                          Theme.of(context).colorScheme.primary,
-                          BlendMode.srcIn,
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        // Main content area - centered
+                        Expanded(
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Tap to roll',
+                                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 16),
+                                SvgPicture.asset(
+                                  DiceWidget.getDieTypeForOptions(currentStep.choices.length).assetPath,
+                                  width: 48,
+                                  height: 48,
+                                  colorFilter: ColorFilter.mode(
+                                    Theme.of(context).colorScheme.primary,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Tap anywhere to roll',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.w600,
+                        // Bottom section - toggle
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _showChoicesDetails = !_showChoicesDetails;
+                            });
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                _showChoicesDetails ? Icons.expand_less : Icons.expand_more,
+                                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                _showChoicesDetails ? 'Hide choices' : 'Show choices',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Choose from: ${currentStep.choices.join(', ')}',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                        if (_showChoicesDetails) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            'Choose from: ${currentStep.choices.join(', ')}',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.onPrimaryContainer,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
               ] else ...[
