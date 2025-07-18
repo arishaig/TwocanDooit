@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/settings_provider.dart';
+import '../../providers/routine_provider.dart';
 import '../../services/starter_routines_service.dart';
 import '../../services/routine_service.dart';
 import 'home_screen.dart';
@@ -69,6 +70,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Future<void> _completeOnboarding() async {
     final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
+    final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
     
     // Apply all the temporary settings
     await settingsProvider.updateSettings(
@@ -94,6 +96,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         if (starterRoutines.isNotEmpty) {
           // Save the starter routines to storage
           await RoutineService.saveStarterRoutines(starterRoutines);
+          // Reload routines in the provider so they appear immediately in the UI
+          await routineProvider.loadRoutines();
         }
       } catch (e) {
         debugPrint('Error loading starter routines: $e');
