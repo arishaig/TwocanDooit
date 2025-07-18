@@ -10,6 +10,7 @@ import '../../providers/execution_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../services/audio_service.dart';
 import '../widgets/dice_widget.dart';
+import '../widgets/step_tutorial_dialog.dart';
 
 class ExecutionScreen extends StatefulWidget {
   final Routine routine;
@@ -34,6 +35,74 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
       final settings = context.read<SettingsProvider>().settings;
       context.read<ExecutionProvider>().startRoutine(widget.routine, settings: settings);
     });
+  }
+
+  void _showTutorialIfNeeded(BuildContext context, currentStep) {
+    final settingsProvider = context.read<SettingsProvider>();
+    final settings = settingsProvider.settings;
+    
+    bool shouldShowTutorial = false;
+    bool isRandomReps = false;
+    
+    switch (currentStep.type) {
+      case StepType.basic:
+        shouldShowTutorial = !settings.hasSeenBasicStepTutorial;
+        break;
+      case StepType.timer:
+        shouldShowTutorial = !settings.hasSeenTimerStepTutorial;
+        break;
+      case StepType.reps:
+        if (currentStep.randomizeReps) {
+          shouldShowTutorial = !settings.hasSeenRandomRepsStepTutorial;
+          isRandomReps = true;
+        } else {
+          shouldShowTutorial = !settings.hasSeenRepsStepTutorial;
+          isRandomReps = false;
+        }
+        break;
+      case StepType.randomChoice:
+        shouldShowTutorial = !settings.hasSeenRandomChoiceStepTutorial;
+        break;
+    }
+    
+    if (shouldShowTutorial) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => StepTutorialDialog(
+              stepType: currentStep.type,
+              isRandomReps: isRandomReps,
+              onDismiss: () {
+                Navigator.of(context).pop();
+                _markTutorialAsSeen(settingsProvider, currentStep.type, isRandomReps);
+              },
+            ),
+          );
+        }
+      });
+    }
+  }
+  
+  void _markTutorialAsSeen(SettingsProvider settingsProvider, StepType stepType, bool isRandomReps) {
+    switch (stepType) {
+      case StepType.basic:
+        settingsProvider.markBasicStepTutorialSeen();
+        break;
+      case StepType.timer:
+        settingsProvider.markTimerStepTutorialSeen();
+        break;
+      case StepType.reps:
+        if (isRandomReps) {
+          settingsProvider.markRandomRepsStepTutorialSeen();
+        } else {
+          settingsProvider.markRepsStepTutorialSeen();
+        }
+        break;
+      case StepType.randomChoice:
+        settingsProvider.markRandomChoiceStepTutorialSeen();
+        break;
+    }
   }
 
   @override
@@ -79,6 +148,9 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
               child: Text('No current step'),
             );
           }
+
+          // Check if we need to show a tutorial for this step type
+          _showTutorialIfNeeded(context, currentStep);
 
           return Stack(
             children: [

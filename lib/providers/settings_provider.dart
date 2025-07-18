@@ -148,6 +148,37 @@ class SettingsProvider with ChangeNotifier {
     await updateSettings(_settings.copyWith(hasCompletedOnboarding: false));
   }
 
+  // Tutorial state methods
+  Future<void> markBasicStepTutorialSeen() async {
+    await updateSettings(_settings.copyWith(hasSeenBasicStepTutorial: true));
+  }
+
+  Future<void> markTimerStepTutorialSeen() async {
+    await updateSettings(_settings.copyWith(hasSeenTimerStepTutorial: true));
+  }
+
+  Future<void> markRepsStepTutorialSeen() async {
+    await updateSettings(_settings.copyWith(hasSeenRepsStepTutorial: true));
+  }
+
+  Future<void> markRandomRepsStepTutorialSeen() async {
+    await updateSettings(_settings.copyWith(hasSeenRandomRepsStepTutorial: true));
+  }
+
+  Future<void> markRandomChoiceStepTutorialSeen() async {
+    await updateSettings(_settings.copyWith(hasSeenRandomChoiceStepTutorial: true));
+  }
+
+  Future<void> resetAllTutorials() async {
+    await updateSettings(_settings.copyWith(
+      hasSeenBasicStepTutorial: false,
+      hasSeenTimerStepTutorial: false,
+      hasSeenRepsStepTutorial: false,
+      hasSeenRandomRepsStepTutorial: false,
+      hasSeenRandomChoiceStepTutorial: false,
+    ));
+  }
+
   void clearError() {
     _error = null;
     notifyListeners();

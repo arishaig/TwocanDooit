@@ -737,8 +737,156 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
             ),
           ),
         ),
+        
+        const SizedBox(height: 16),
+        
+        // Tutorial Management Card
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.school,
+                      size: 28,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Tutorial Management',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Manage step type tutorial preferences',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                
+                // Tutorial Status
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Tutorial Status',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      _buildTutorialStatusItem('Basic Steps', settings.hasSeenBasicStepTutorial),
+                      _buildTutorialStatusItem('Timer Steps', settings.hasSeenTimerStepTutorial),
+                      _buildTutorialStatusItem('Reps Steps', settings.hasSeenRepsStepTutorial),
+                      _buildTutorialStatusItem('Random Reps', settings.hasSeenRandomRepsStepTutorial),
+                      _buildTutorialStatusItem('Random Choice', settings.hasSeenRandomChoiceStepTutorial),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Reset Button
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => _resetTutorials(context, settingsProvider),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Reset All Tutorials'),
+                  ),
+                ),
+                
+                const SizedBox(height: 8),
+                
+                Text(
+                  'Resetting tutorials will show them again when you encounter each step type.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
+  }
+
+  // Tutorial helper methods
+  Widget _buildTutorialStatusItem(String label, bool hasSeenTutorial) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(
+            hasSeenTutorial ? Icons.check_circle : Icons.circle_outlined,
+            size: 16,
+            color: hasSeenTutorial 
+                ? Colors.green
+                : Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const Spacer(),
+          Text(
+            hasSeenTutorial ? 'Seen' : 'Not seen',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Future<void> _resetTutorials(BuildContext context, SettingsProvider settingsProvider) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset All Tutorials'),
+        content: const Text(
+          'This will reset all tutorial preferences. You\'ll see tutorials again when you encounter each step type for the first time.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Reset'),
+          ),
+        ],
+      ),
+    );
+    
+    if (confirmed == true) {
+      await settingsProvider.resetAllTutorials();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('All tutorials have been reset'),
+          ),
+        );
+      }
+    }
   }
 
   // TTS Helper methods (copied from original settings screen)
