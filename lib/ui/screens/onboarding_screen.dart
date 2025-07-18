@@ -608,11 +608,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 24),
           Expanded(
-            child: Column(
-              children: [
-                Card(
-                  child: SwitchListTile(
-                    secondary: const Icon(Icons.record_voice_over),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Card(
+                    child: SwitchListTile(
+                      secondary: const Icon(Icons.record_voice_over),
                     title: const Text('Read Steps Aloud'),
                     subtitle: const Text('Speak step instructions when your hands are busy'),
                     value: _tempTtsEnabled,
@@ -724,7 +725,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ],
                   ),
                 ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
