@@ -1,3 +1,9 @@
+enum AppThemeMode {
+  system,
+  light,
+  dark,
+}
+
 class AppSettings {
   final bool ttsEnabled;
   final double ttsRate;
@@ -17,16 +23,28 @@ class AppSettings {
   final bool hapticFeedbackEnabled;
   
   // Theme settings
-  final bool isDarkMode;
+  final AppThemeMode themeMode;
   
   // Accessibility settings
   final bool reducedAnimations;
   final bool focusMode;
   final bool simplifiedUI;
   
+  // Shake detection settings
+  final bool shakeToRollEnabled;
+  final double shakeInitialSensitivity;
+  final double shakeRerollSensitivity;
+  
   // User preferences
   final String userName;
   final bool hasCompletedOnboarding;
+  
+  // Tutorial state tracking
+  final bool hasSeenBasicStepTutorial;
+  final bool hasSeenTimerStepTutorial;
+  final bool hasSeenRepsStepTutorial;
+  final bool hasSeenRandomRepsStepTutorial;
+  final bool hasSeenRandomChoiceStepTutorial;
 
   const AppSettings({
     this.ttsEnabled = false,
@@ -41,12 +59,20 @@ class AppSettings {
     this.maxNudgeCount = 3,
     this.audioFeedbackEnabled = true,
     this.hapticFeedbackEnabled = true,
-    this.isDarkMode = true,
+    this.themeMode = AppThemeMode.system,
     this.reducedAnimations = false,
     this.focusMode = false,
     this.simplifiedUI = false,
+    this.shakeToRollEnabled = true,
+    this.shakeInitialSensitivity = 15.0,
+    this.shakeRerollSensitivity = 20.0,
     this.userName = '',
     this.hasCompletedOnboarding = false,
+    this.hasSeenBasicStepTutorial = false,
+    this.hasSeenTimerStepTutorial = false,
+    this.hasSeenRepsStepTutorial = false,
+    this.hasSeenRandomRepsStepTutorial = false,
+    this.hasSeenRandomChoiceStepTutorial = false,
   });
 
   AppSettings copyWith({
@@ -62,12 +88,20 @@ class AppSettings {
     int? maxNudgeCount,
     bool? audioFeedbackEnabled,
     bool? hapticFeedbackEnabled,
-    bool? isDarkMode,
+    AppThemeMode? themeMode,
     bool? reducedAnimations,
     bool? focusMode,
     bool? simplifiedUI,
+    bool? shakeToRollEnabled,
+    double? shakeInitialSensitivity,
+    double? shakeRerollSensitivity,
     String? userName,
     bool? hasCompletedOnboarding,
+    bool? hasSeenBasicStepTutorial,
+    bool? hasSeenTimerStepTutorial,
+    bool? hasSeenRepsStepTutorial,
+    bool? hasSeenRandomRepsStepTutorial,
+    bool? hasSeenRandomChoiceStepTutorial,
   }) {
     return AppSettings(
       ttsEnabled: ttsEnabled ?? this.ttsEnabled,
@@ -82,12 +116,20 @@ class AppSettings {
       maxNudgeCount: maxNudgeCount ?? this.maxNudgeCount,
       audioFeedbackEnabled: audioFeedbackEnabled ?? this.audioFeedbackEnabled,
       hapticFeedbackEnabled: hapticFeedbackEnabled ?? this.hapticFeedbackEnabled,
-      isDarkMode: isDarkMode ?? this.isDarkMode,
+      themeMode: themeMode ?? this.themeMode,
       reducedAnimations: reducedAnimations ?? this.reducedAnimations,
       focusMode: focusMode ?? this.focusMode,
       simplifiedUI: simplifiedUI ?? this.simplifiedUI,
+      shakeToRollEnabled: shakeToRollEnabled ?? this.shakeToRollEnabled,
+      shakeInitialSensitivity: shakeInitialSensitivity ?? this.shakeInitialSensitivity,
+      shakeRerollSensitivity: shakeRerollSensitivity ?? this.shakeRerollSensitivity,
       userName: userName ?? this.userName,
       hasCompletedOnboarding: hasCompletedOnboarding ?? this.hasCompletedOnboarding,
+      hasSeenBasicStepTutorial: hasSeenBasicStepTutorial ?? this.hasSeenBasicStepTutorial,
+      hasSeenTimerStepTutorial: hasSeenTimerStepTutorial ?? this.hasSeenTimerStepTutorial,
+      hasSeenRepsStepTutorial: hasSeenRepsStepTutorial ?? this.hasSeenRepsStepTutorial,
+      hasSeenRandomRepsStepTutorial: hasSeenRandomRepsStepTutorial ?? this.hasSeenRandomRepsStepTutorial,
+      hasSeenRandomChoiceStepTutorial: hasSeenRandomChoiceStepTutorial ?? this.hasSeenRandomChoiceStepTutorial,
     );
   }
 
@@ -105,12 +147,20 @@ class AppSettings {
       'maxNudgeCount': maxNudgeCount,
       'audioFeedbackEnabled': audioFeedbackEnabled,
       'hapticFeedbackEnabled': hapticFeedbackEnabled,
-      'isDarkMode': isDarkMode,
+      'themeMode': themeMode.name,
       'reducedAnimations': reducedAnimations,
       'focusMode': focusMode,
       'simplifiedUI': simplifiedUI,
+      'shakeToRollEnabled': shakeToRollEnabled,
+      'shakeInitialSensitivity': shakeInitialSensitivity,
+      'shakeRerollSensitivity': shakeRerollSensitivity,
       'userName': userName,
       'hasCompletedOnboarding': hasCompletedOnboarding,
+      'hasSeenBasicStepTutorial': hasSeenBasicStepTutorial,
+      'hasSeenTimerStepTutorial': hasSeenTimerStepTutorial,
+      'hasSeenRepsStepTutorial': hasSeenRepsStepTutorial,
+      'hasSeenRandomRepsStepTutorial': hasSeenRandomRepsStepTutorial,
+      'hasSeenRandomChoiceStepTutorial': hasSeenRandomChoiceStepTutorial,
     };
   }
 
@@ -128,13 +178,47 @@ class AppSettings {
       maxNudgeCount: _parseInt(json['maxNudgeCount'], 3),
       audioFeedbackEnabled: json['audioFeedbackEnabled'] ?? true,
       hapticFeedbackEnabled: json['hapticFeedbackEnabled'] ?? true,
-      isDarkMode: json['isDarkMode'] ?? true,
+      themeMode: _parseThemeMode(json['themeMode'], json['isDarkMode']),
       reducedAnimations: json['reducedAnimations'] ?? false,
       focusMode: json['focusMode'] ?? false,
       simplifiedUI: json['simplifiedUI'] ?? false,
+      shakeToRollEnabled: json['shakeToRollEnabled'] ?? true,
+      shakeInitialSensitivity: (json['shakeInitialSensitivity'] ?? 15.0).toDouble(),
+      shakeRerollSensitivity: (json['shakeRerollSensitivity'] ?? 20.0).toDouble(),
       userName: json['userName'] ?? '',
       hasCompletedOnboarding: json['hasCompletedOnboarding'] ?? false,
+      hasSeenBasicStepTutorial: json['hasSeenBasicStepTutorial'] ?? false,
+      hasSeenTimerStepTutorial: json['hasSeenTimerStepTutorial'] ?? false,
+      hasSeenRepsStepTutorial: json['hasSeenRepsStepTutorial'] ?? false,
+      hasSeenRandomRepsStepTutorial: json['hasSeenRandomRepsStepTutorial'] ?? false,
+      hasSeenRandomChoiceStepTutorial: json['hasSeenRandomChoiceStepTutorial'] ?? false,
     );
+  }
+
+  static AppThemeMode _parseThemeMode(dynamic themeModeValue, dynamic legacyIsDarkMode) {
+    // If we have the new themeMode value, use it
+    if (themeModeValue is String) {
+      switch (themeModeValue) {
+        case 'system':
+          return AppThemeMode.system;
+        case 'light':
+          return AppThemeMode.light;
+        case 'dark':
+          return AppThemeMode.dark;
+        default:
+          return AppThemeMode.system;
+      }
+    }
+    
+    // Legacy migration: convert old isDarkMode boolean to new enum
+    if (legacyIsDarkMode != null) {
+      if (legacyIsDarkMode is bool) {
+        return legacyIsDarkMode ? AppThemeMode.dark : AppThemeMode.light;
+      }
+    }
+    
+    // Default to system theme
+    return AppThemeMode.system;
   }
 
   static double _parseDouble(dynamic value, double defaultValue) {

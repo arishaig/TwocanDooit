@@ -27,8 +27,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<SettingsProvider>().loadSettings();
-      context.read<RoutineProvider>().loadRoutines();
+      // Settings are already loaded in SettingsProvider constructor
+      // Only load routines if they haven't been loaded yet
+      final routineProvider = context.read<RoutineProvider>();
+      if (routineProvider.routines.isEmpty && !routineProvider.isLoading) {
+        routineProvider.loadRoutines();
+      }
     });
     
     // Listen to scroll changes

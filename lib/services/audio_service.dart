@@ -254,6 +254,10 @@ class AudioService {
       }
       
       debugPrint('Started background music: $trackName at volume: $volume, state: ${_musicPlayer!.state}');
+      
+      // Reset mute state when starting new music
+      _isMusicMuted = false;
+      _previousMusicVolume = volume;
     } catch (e) {
       debugPrint('Failed to start background music: $e');
     }
@@ -274,6 +278,8 @@ class AudioService {
       }
       
       await _musicPlayer!.stop();
+      // Reset mute state when music fades out
+      _isMusicMuted = false;
       debugPrint('Background music faded out');
     } catch (e) {
       debugPrint('Failed to fade out background music: $e');
@@ -283,6 +289,8 @@ class AudioService {
   static Future<void> stopBackgroundMusic() async {
     try {
       await _musicPlayer?.stop();
+      // Reset mute state when music stops
+      _isMusicMuted = false;
       debugPrint('Background music stopped');
     } catch (e) {
       debugPrint('Failed to stop background music: $e');
@@ -322,6 +330,44 @@ class AudioService {
 
   static bool get isMusicPlaying {
     return _musicPlayer?.state == PlayerState.playing;
+  }
+
+  static bool _isMusicMuted = false;
+  static double _previousMusicVolume = 0.3;
+
+  static bool get isMusicMuted => _isMusicMuted;
+
+  static Future<void> muteMusic() async {
+    try {
+      if (_musicPlayer == null || !isMusicPlaying) return;
+      
+      // Store current volume before muting (use the volume we set when starting music)
+      await _musicPlayer!.setVolume(0.0);
+      _isMusicMuted = true;
+      debugPrint('Music muted, previous volume: $_previousMusicVolume');
+    } catch (e) {
+      debugPrint('Failed to mute music: $e');
+    }
+  }
+
+  static Future<void> unmuteMusic() async {
+    try {
+      if (_musicPlayer == null || !isMusicPlaying) return;
+      
+      await _musicPlayer!.setVolume(_previousMusicVolume);
+      _isMusicMuted = false;
+      debugPrint('Music unmuted, restored volume: $_previousMusicVolume');
+    } catch (e) {
+      debugPrint('Failed to unmute music: $e');
+    }
+  }
+
+  static Future<void> toggleMusicMute() async {
+    if (_isMusicMuted) {
+      await unmuteMusic();
+    } else {
+      await muteMusic();
+    }
   }
 
   static void dispose() {

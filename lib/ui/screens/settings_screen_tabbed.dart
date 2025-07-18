@@ -306,6 +306,130 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
             ),
           ),
         ),
+        
+        const SizedBox(height: 16),
+        
+        // Shake Detection Section
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.vibration,
+                      size: 28,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Shake Detection',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Control how the app responds to device shaking',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                
+                SwitchListTile(
+                  title: const Text('Shake to Roll'),
+                  subtitle: const Text('Shake device to roll dice'),
+                  value: settings.shakeToRollEnabled,
+                  onChanged: (value) {
+                    settingsProvider.updateShakeToRollEnabled(value);
+                  },
+                ),
+                
+                if (settings.shakeToRollEnabled) ...[
+                  const SizedBox(height: 16),
+                  
+                  Text(
+                    'Initial Roll Sensitivity',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Text('Firm'),
+                      Expanded(
+                        child: Slider(
+                          value: settings.shakeInitialSensitivity,
+                          min: 10.0,
+                          max: 20.0,
+                          divisions: 10,
+                          label: settings.shakeInitialSensitivity.toStringAsFixed(1),
+                          onChanged: (value) {
+                            settingsProvider.updateShakeInitialSensitivity(value);
+                          },
+                        ),
+                      ),
+                      const Text('Gentle'),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  Text(
+                    'Reroll Sensitivity',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Text('Firm'),
+                      Expanded(
+                        child: Slider(
+                          value: settings.shakeRerollSensitivity,
+                          min: 18.0,
+                          max: 28.0,
+                          divisions: 10,
+                          label: settings.shakeRerollSensitivity.toStringAsFixed(1),
+                          onChanged: (value) {
+                            settingsProvider.updateShakeRerollSensitivity(value);
+                          },
+                        ),
+                      ),
+                      const Text('Gentle'),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Reset to defaults button
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        settingsProvider.updateShakeInitialSensitivity(15.0);
+                        settingsProvider.updateShakeRerollSensitivity(20.0);
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Reset to Defaults'),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 8),
+                  Text(
+                    'Higher sensitivity prevents accidental rerolls',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -549,35 +673,86 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
                 ),
                 const SizedBox(height: 20),
                 
-                SwitchListTile(
-                  title: const Text('Dark Mode'),
-                  subtitle: const Text('Use dark theme colors'),
-                  value: settings.isDarkMode,
-                  onChanged: (value) {
-                    settingsProvider.updateThemeMode(value);
-                  },
-                ),
-                
-                const SizedBox(height: 16),
-                
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const OnboardingScreen(canSkip: false),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Restart Setup Wizard'),
+                // Theme Mode Selection
+                Text(
+                  'Theme',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.brightness_auto, size: 16),
+                          const SizedBox(width: 6),
+                          const Text('System'),
+                        ],
+                      ),
+                      selected: settings.themeMode == AppThemeMode.system,
+                      onSelected: (selected) {
+                        if (selected) {
+                          settingsProvider.updateThemeMode(AppThemeMode.system);
+                        }
+                      },
+                    ),
+                    ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.light_mode, size: 16),
+                          const SizedBox(width: 6),
+                          const Text('Light'),
+                        ],
+                      ),
+                      selected: settings.themeMode == AppThemeMode.light,
+                      onSelected: (selected) {
+                        if (selected) {
+                          settingsProvider.updateThemeMode(AppThemeMode.light);
+                        }
+                      },
+                    ),
+                    ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.dark_mode, size: 16),
+                          const SizedBox(width: 6),
+                          const Text('Dark'),
+                        ],
+                      ),
+                      selected: settings.themeMode == AppThemeMode.dark,
+                      onSelected: (selected) {
+                        if (selected) {
+                          settingsProvider.updateThemeMode(AppThemeMode.dark);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 8),
+                Text(
+                  settings.themeMode == AppThemeMode.system 
+                      ? 'Follows your device\'s system settings'
+                      : settings.themeMode == AppThemeMode.dark
+                          ? 'Easier on the eyes, better for focus'
+                          : 'Bright and energetic',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                
               ],
             ),
           ),
         ),
+        
         
         const SizedBox(height: 16),
         
@@ -737,8 +912,219 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
             ),
           ),
         ),
+        
+        const SizedBox(height: 16),
+        
+        // App Settings Card
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.settings,
+                      size: 28,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'App Settings',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Manage app configuration and initial setup',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                
+                // Restart Setup Wizard Button
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const OnboardingScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.replay),
+                    label: const Text('Restart Setup Wizard'),
+                  ),
+                ),
+                
+                const SizedBox(height: 8),
+                
+                Text(
+                  'This will take you through the initial setup process again.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        
+        const SizedBox(height: 16),
+        
+        // Tutorial Management Card
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.school,
+                      size: 28,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Tutorial Management',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Manage step type tutorial preferences',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                
+                // Tutorial Status
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Tutorial Status',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      _buildTutorialStatusItem('Basic Steps', settings.hasSeenBasicStepTutorial),
+                      _buildTutorialStatusItem('Timer Steps', settings.hasSeenTimerStepTutorial),
+                      _buildTutorialStatusItem('Reps Steps', settings.hasSeenRepsStepTutorial),
+                      _buildTutorialStatusItem('Random Reps', settings.hasSeenRandomRepsStepTutorial),
+                      _buildTutorialStatusItem('Random Choice', settings.hasSeenRandomChoiceStepTutorial),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Reset Button
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => _resetTutorials(context, settingsProvider),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Reset All Tutorials'),
+                  ),
+                ),
+                
+                const SizedBox(height: 8),
+                
+                Text(
+                  'Resetting tutorials will show them again when you encounter each step type.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
+  }
+
+  // Tutorial helper methods
+  Widget _buildTutorialStatusItem(String label, bool hasSeenTutorial) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(
+            hasSeenTutorial ? Icons.check_circle : Icons.circle_outlined,
+            size: 16,
+            color: hasSeenTutorial 
+                ? Colors.green
+                : Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const Spacer(),
+          Text(
+            hasSeenTutorial ? 'Seen' : 'Not seen',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Future<void> _resetTutorials(BuildContext context, SettingsProvider settingsProvider) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset All Tutorials'),
+        content: const Text(
+          'This will reset all tutorial preferences. You\'ll see tutorials again when you encounter each step type for the first time.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Reset'),
+          ),
+        ],
+      ),
+    );
+    
+    if (confirmed == true) {
+      await settingsProvider.resetAllTutorials();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('All tutorials have been reset'),
+          ),
+        );
+      }
+    }
   }
 
   // TTS Helper methods (copied from original settings screen)

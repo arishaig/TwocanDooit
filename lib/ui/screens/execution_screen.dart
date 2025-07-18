@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import '../../models/routine.dart';
 import '../../models/step_type.dart';
 import '../../models/app_settings.dart';
@@ -10,6 +12,7 @@ import '../../providers/execution_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../services/audio_service.dart';
 import '../widgets/dice_widget.dart';
+import '../widgets/step_tutorial_dialog.dart';
 
 class ExecutionScreen extends StatefulWidget {
   final Routine routine;
@@ -23,6 +26,10 @@ class ExecutionScreen extends StatefulWidget {
 class _ExecutionScreenState extends State<ExecutionScreen> {
   bool _showRollResult = false;
   Timer? _rollResultTimer;
+  bool _tutorialShowing = false;
+  bool _showChoicesDetails = false;
+  StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
+  DateTime? _lastShakeTime;
   
   // Helper method to get current settings
   AppSettings get _currentSettings => context.read<SettingsProvider>().settings;
@@ -30,15 +37,185 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
   @override
   void initState() {
     super.initState();
+    
+    // Initialize accelerometer listener for shake detection
+    _accelerometerSubscription = accelerometerEventStream().listen((AccelerometerEvent event) {
+      _handleAccelerometerData(event);
+    });
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = context.read<SettingsProvider>().settings;
       context.read<ExecutionProvider>().startRoutine(widget.routine, settings: settings);
     });
   }
 
+  void _showTutorialIfNeeded(BuildContext context, currentStep) {
+    // Prevent multiple tutorials from being shown
+    if (_tutorialShowing) return;
+    
+    final settingsProvider = context.read<SettingsProvider>();
+    final settings = settingsProvider.settings;
+    
+    bool shouldShowTutorial = false;
+    bool isRandomReps = false;
+    
+    switch (currentStep.type) {
+      case StepType.basic:
+        shouldShowTutorial = !settings.hasSeenBasicStepTutorial;
+        break;
+      case StepType.timer:
+        shouldShowTutorial = !settings.hasSeenTimerStepTutorial;
+        break;
+      case StepType.reps:
+        if (currentStep.randomizeReps) {
+          shouldShowTutorial = !settings.hasSeenRandomRepsStepTutorial;
+          isRandomReps = true;
+        } else {
+          shouldShowTutorial = !settings.hasSeenRepsStepTutorial;
+          isRandomReps = false;
+        }
+        break;
+      case StepType.randomChoice:
+        shouldShowTutorial = !settings.hasSeenRandomChoiceStepTutorial;
+        break;
+    }
+    
+    if (shouldShowTutorial) {
+      _tutorialShowing = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => StepTutorialDialog(
+              stepType: currentStep.type,
+              isRandomReps: isRandomReps,
+              onDismiss: () {
+                Navigator.of(context).pop();
+                _markTutorialAsSeen(settingsProvider, currentStep.type, isRandomReps);
+                setState(() {
+                  _tutorialShowing = false;
+                });
+              },
+            ),
+          );
+        }
+      });
+    }
+  }
+  
+  void _markTutorialAsSeen(SettingsProvider settingsProvider, StepType stepType, bool isRandomReps) {
+    switch (stepType) {
+      case StepType.basic:
+        settingsProvider.markBasicStepTutorialSeen();
+        break;
+      case StepType.timer:
+        settingsProvider.markTimerStepTutorialSeen();
+        break;
+      case StepType.reps:
+        if (isRandomReps) {
+          settingsProvider.markRandomRepsStepTutorialSeen();
+        } else {
+          settingsProvider.markRepsStepTutorialSeen();
+        }
+        break;
+      case StepType.randomChoice:
+        settingsProvider.markRandomChoiceStepTutorialSeen();
+        break;
+    }
+  }
+
+  void _handleAccelerometerData(AccelerometerEvent event) {
+    if (!mounted) return;
+    
+    // Check if shake detection is enabled
+    final settings = _currentSettings;
+    if (!settings.shakeToRollEnabled) {
+      return;
+    }
+    
+    // Calculate the magnitude of acceleration
+    final double magnitude = sqrt(event.x * event.x + event.y * event.y + event.z * event.z);
+    
+    // Determine appropriate shake threshold based on whether it's an initial roll or reroll
+    final executionProvider = context.read<ExecutionProvider>();
+    final session = executionProvider.currentSession;
+    final currentStep = session?.currentStep;
+    
+    // Convert sensitivity to threshold (higher sensitivity = lower threshold = easier to trigger)
+    double shakeThreshold = 30.0 - settings.shakeInitialSensitivity; // Invert: higher sensitivity = lower threshold
+    
+    if (currentStep != null) {
+      // Check if this would be a reroll (less sensitive threshold needed)
+      final isReroll = (currentStep.type == StepType.randomChoice && currentStep.selectedChoice != null) ||
+                       (currentStep.type == StepType.reps && currentStep.randomizeReps && currentStep.repsTarget != currentStep.repsMin);
+      
+      if (isReroll) {
+        shakeThreshold = 46.0 - settings.shakeRerollSensitivity; // Invert: higher sensitivity = lower threshold
+      }
+    }
+    
+    // Check if shake is strong enough and enough time has passed since last shake
+    final now = DateTime.now();
+    if (magnitude > shakeThreshold && 
+        (_lastShakeTime == null || now.difference(_lastShakeTime!).inMilliseconds > 1000)) {
+      
+      debugPrint('Shake detected! Magnitude: $magnitude (threshold: $shakeThreshold)');
+      _lastShakeTime = now;
+      _handleShakeDetected();
+    }
+  }
+
+  void _handleShakeDetected() {
+    if (!mounted) return;
+    
+    final executionProvider = context.read<ExecutionProvider>();
+    final session = executionProvider.currentSession;
+    
+    if (session == null) {
+      debugPrint('Shake ignored: No active session');
+      return;
+    }
+    
+    final currentStep = session.currentStep;
+    if (currentStep == null) {
+      debugPrint('Shake ignored: No current step');
+      return;
+    }
+    
+    // Check if we should respond to shake for random choice steps
+    final shouldRollForRandomChoice = currentStep.type == StepType.randomChoice && 
+                                     !executionProvider.isRolling;
+    
+    // Check if we should respond to shake for random reps steps
+    final shouldRollForRandomReps = currentStep.type == StepType.reps &&
+                                   currentStep.randomizeReps &&
+                                   !executionProvider.isRolling;
+    
+    if (shouldRollForRandomChoice) {
+      if (currentStep.selectedChoice == null) {
+        debugPrint('Shake triggered random choice roll');
+        _rollForChoice(context, currentStep, executionProvider);
+      } else {
+        debugPrint('Shake triggered random choice reroll');
+        _reroll(context, currentStep, executionProvider);
+      }
+    } else if (shouldRollForRandomReps) {
+      if (currentStep.repsTarget == currentStep.repsMin) {
+        debugPrint('Shake triggered random reps roll');
+        _rollForReps(context, currentStep, executionProvider);
+      } else {
+        debugPrint('Shake triggered random reps reroll');
+        _rerollReps(context, currentStep, executionProvider);
+      }
+    } else {
+      debugPrint('Shake ignored: Not on rollable step or already rolling');
+    }
+  }
+
   @override
   void dispose() {
     _rollResultTimer?.cancel();
+    _accelerometerSubscription?.cancel();
     super.dispose();
   }
 
@@ -79,6 +256,9 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
               child: Text('No current step'),
             );
           }
+
+          // Check if we need to show a tutorial for this step type
+          _showTutorialIfNeeded(context, currentStep);
 
           return Stack(
             children: [
@@ -151,9 +331,39 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                   return _buildNavigationFABs(context, executionProvider, session, currentStep, settingsProvider.settings);
                 },
               ),
+              
+              // Music control button
+              _buildMusicControl(),
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildMusicControl() {
+    // Only show if music is playing
+    if (!AudioService.isMusicPlaying) {
+      return const SizedBox.shrink();
+    }
+
+    return Positioned(
+      top: 100, // Add padding from step progress bar
+      right: 16, // Keep on right side
+      child: FloatingActionButton.small(
+        heroTag: 'music_control',
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+        onPressed: () async {
+          await AudioService.toggleMusicMute();
+          // Trigger immediate UI update
+          setState(() {});
+        },
+        tooltip: AudioService.isMusicMuted ? 'Unmute Music' : 'Mute Music',
+        child: Icon(
+          AudioService.isMusicMuted ? Icons.music_off : Icons.music_note,
+          size: 20,
+        ),
       ),
     );
   }
@@ -196,13 +406,11 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                 textAlign: TextAlign.center,
               ),
             ],
-            const SizedBox(height: 32),
+            const SizedBox(height: 16),
             
             // Step-specific content
             Expanded(
-              child: Center(
-                child: _buildTypeSpecificContent(context, currentStep, executionProvider),
-              ),
+              child: _buildTypeSpecificContent(context, currentStep, executionProvider),
             ),
           ],
         ),
@@ -297,7 +505,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Tap the dice to roll',
+                    'Tap the dice or shake device to roll',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -371,6 +579,31 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                     minimumSize: const Size(200, 56),
                   ),
                 ),
+                // Add reroll option for random reps steps
+                if (currentStep.randomizeReps) ...[
+                  const SizedBox(height: 16),
+                  GestureDetector(
+                    onTap: () => _rerollReps(context, currentStep, executionProvider),
+                    child: Consumer<SettingsProvider>(
+                      builder: (context, settingsProvider, child) {
+                        return DiceWidget(
+                          isRolling: false,
+                          result: currentStep.repsTarget - currentStep.repsMin + 1,
+                          optionCount: currentStep.repsMax - currentStep.repsMin + 1,
+                          reducedAnimations: settingsProvider.settings.reducedAnimations,
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Tap the dice to reroll or shake device',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
             ],
             ),
           );
@@ -413,35 +646,83 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                       width: 2,
                     ),
                   ),
-                  child: Column(
-                    children: [
-                      SvgPicture.asset(
-                        DiceWidget.getDieTypeForOptions(currentStep.choices.length).assetPath,
-                        width: 48,
-                        height: 48,
-                        colorFilter: ColorFilter.mode(
-                          Theme.of(context).colorScheme.primary,
-                          BlendMode.srcIn,
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        // Main content area - centered
+                        Expanded(
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Tap to roll',
+                                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'or shake device',
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 16),
+                                SvgPicture.asset(
+                                  DiceWidget.getDieTypeForOptions(currentStep.choices.length).assetPath,
+                                  width: 48,
+                                  height: 48,
+                                  colorFilter: ColorFilter.mode(
+                                    Theme.of(context).colorScheme.primary,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Tap anywhere to roll',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.w600,
+                        // Bottom section - toggle
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _showChoicesDetails = !_showChoicesDetails;
+                            });
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                _showChoicesDetails ? Icons.expand_less : Icons.expand_more,
+                                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                _showChoicesDetails ? 'Hide choices' : 'Show choices',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Choose from: ${currentStep.choices.join(', ')}',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                        if (_showChoicesDetails) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            'Choose from: ${currentStep.choices.join(', ')}',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.onPrimaryContainer,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
               ] else ...[
@@ -477,7 +758,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Tap the dice to reroll',
+                      'Tap the dice to reroll or shake device',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -736,6 +1017,39 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
     
     // Force UI update
     setState(() {});
+  }
+
+  Future<void> _rerollReps(BuildContext context, currentStep, ExecutionProvider executionProvider) async {
+    // Play dice roll sound
+    await AudioService.playDiceRoll(_currentSettings);
+    
+    // Set rolling state
+    executionProvider.setRolling(true);
+    
+    // Add delay for animation
+    await Future.delayed(const Duration(milliseconds: 1500));
+    
+    // Roll new reps value
+    final reps = await executionProvider.selectRandomReps(currentStep.repsMin, currentStep.repsMax);
+    currentStep.repsTarget = reps;
+    currentStep.repsCompleted = 0; // Reset completed count
+    
+    executionProvider.setRolling(false);
+    
+    // Show the roll result animation
+    setState(() {
+      _showRollResult = true;
+    });
+    
+    // Hide the roll result after 2.5 seconds and transition to rep counting
+    _rollResultTimer?.cancel();
+    _rollResultTimer = Timer(const Duration(milliseconds: 2500), () {
+      if (mounted) {
+        setState(() {
+          _showRollResult = false;
+        });
+      }
+    });
   }
 
   void _showExitDialog(BuildContext context) {

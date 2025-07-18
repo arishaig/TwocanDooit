@@ -19,7 +19,7 @@ void main() {
         expect(settings.maxNudgeCount, equals(3));
         expect(settings.audioFeedbackEnabled, isTrue);
         expect(settings.hapticFeedbackEnabled, isTrue);
-        expect(settings.isDarkMode, isTrue);
+        expect(settings.themeMode, equals(AppThemeMode.system));
         expect(settings.userName, equals(''));
         expect(settings.hasCompletedOnboarding, isFalse);
       });
@@ -38,7 +38,7 @@ void main() {
           maxNudgeCount: 5,
           audioFeedbackEnabled: false,
           hapticFeedbackEnabled: false,
-          isDarkMode: false,
+          themeMode: AppThemeMode.dark,
           userName: 'Test User',
           hasCompletedOnboarding: true,
         );
@@ -55,7 +55,7 @@ void main() {
         expect(settings.maxNudgeCount, equals(5));
         expect(settings.audioFeedbackEnabled, isFalse);
         expect(settings.hapticFeedbackEnabled, isFalse);
-        expect(settings.isDarkMode, isFalse);
+        expect(settings.themeMode, equals(AppThemeMode.dark));
         expect(settings.userName, equals('Test User'));
         expect(settings.hasCompletedOnboarding, isTrue);
       });
@@ -85,7 +85,7 @@ void main() {
         
         // Other settings should remain unchanged
         expect(updatedSettings.nudgeEnabled, equals(originalSettings.nudgeEnabled));
-        expect(updatedSettings.isDarkMode, equals(originalSettings.isDarkMode));
+        expect(updatedSettings.themeMode, equals(originalSettings.themeMode));
         expect(updatedSettings.userName, equals(originalSettings.userName));
       });
 
@@ -127,10 +127,10 @@ void main() {
         const originalSettings = AppSettings();
         
         final updatedSettings = originalSettings.copyWith(
-          isDarkMode: false,
+          themeMode: AppThemeMode.light,
         );
         
-        expect(updatedSettings.isDarkMode, isFalse);
+        expect(updatedSettings.themeMode, equals(AppThemeMode.light));
         
         // Other settings should remain unchanged
         expect(updatedSettings.ttsEnabled, equals(originalSettings.ttsEnabled));
@@ -150,7 +150,7 @@ void main() {
         
         // Other settings should remain unchanged
         expect(updatedSettings.ttsEnabled, equals(originalSettings.ttsEnabled));
-        expect(updatedSettings.isDarkMode, equals(originalSettings.isDarkMode));
+        expect(updatedSettings.themeMode, equals(originalSettings.themeMode));
       });
 
       test('should preserve original values when not specified', () {
@@ -158,7 +158,7 @@ void main() {
           ttsEnabled: true,
           ttsRate: 0.7,
           userName: 'Original User',
-          isDarkMode: false,
+          themeMode: AppThemeMode.dark,
         );
         
         final updatedSettings = originalSettings.copyWith(
@@ -168,7 +168,7 @@ void main() {
         expect(updatedSettings.ttsEnabled, isFalse);
         expect(updatedSettings.ttsRate, equals(0.7));
         expect(updatedSettings.userName, equals('Original User'));
-        expect(updatedSettings.isDarkMode, isFalse);
+        expect(updatedSettings.themeMode, equals(AppThemeMode.dark));
       });
 
       test('should handle null values correctly', () {
@@ -203,7 +203,7 @@ void main() {
           maxNudgeCount: 5,
           audioFeedbackEnabled: false,
           hapticFeedbackEnabled: false,
-          isDarkMode: false,
+          themeMode: AppThemeMode.light,
           userName: 'Test User',
           hasCompletedOnboarding: true,
         );
@@ -222,7 +222,7 @@ void main() {
         expect(json['maxNudgeCount'], equals(5));
         expect(json['audioFeedbackEnabled'], isFalse);
         expect(json['hapticFeedbackEnabled'], isFalse);
-        expect(json['isDarkMode'], isFalse);
+        expect(json['themeMode'], equals('light'));
         expect(json['userName'], equals('Test User'));
         expect(json['hasCompletedOnboarding'], isTrue);
       });
@@ -253,7 +253,7 @@ void main() {
           'maxNudgeCount': 5,
           'audioFeedbackEnabled': false,
           'hapticFeedbackEnabled': false,
-          'isDarkMode': false,
+          'themeMode': 'dark',
           'userName': 'Test User',
           'hasCompletedOnboarding': true,
         };
@@ -272,7 +272,7 @@ void main() {
         expect(settings.maxNudgeCount, equals(5));
         expect(settings.audioFeedbackEnabled, isFalse);
         expect(settings.hapticFeedbackEnabled, isFalse);
-        expect(settings.isDarkMode, isFalse);
+        expect(settings.themeMode, equals(AppThemeMode.dark));
         expect(settings.userName, equals('Test User'));
         expect(settings.hasCompletedOnboarding, isTrue);
       });
@@ -306,9 +306,19 @@ void main() {
         expect(settings.maxNudgeCount, equals(3));
         expect(settings.audioFeedbackEnabled, isTrue);
         expect(settings.hapticFeedbackEnabled, isTrue);
-        expect(settings.isDarkMode, isTrue);
+        expect(settings.themeMode, equals(AppThemeMode.system));
         expect(settings.userName, equals(''));
         expect(settings.hasCompletedOnboarding, isFalse);
+      });
+
+      test('should handle legacy isDarkMode field migration', () {
+        final json = {
+          'isDarkMode': true,
+        };
+        
+        final settings = AppSettings.fromJson(json);
+        
+        expect(settings.themeMode, equals(AppThemeMode.dark));
       });
 
       test('should handle type conversion for numeric fields', () {
@@ -343,7 +353,7 @@ void main() {
           maxNudgeCount: 7,
           audioFeedbackEnabled: false,
           hapticFeedbackEnabled: false,
-          isDarkMode: false,
+          themeMode: AppThemeMode.light,
           userName: 'Round Trip User',
           hasCompletedOnboarding: true,
         );
@@ -363,7 +373,7 @@ void main() {
         expect(deserializedSettings.maxNudgeCount, equals(originalSettings.maxNudgeCount));
         expect(deserializedSettings.audioFeedbackEnabled, equals(originalSettings.audioFeedbackEnabled));
         expect(deserializedSettings.hapticFeedbackEnabled, equals(originalSettings.hapticFeedbackEnabled));
-        expect(deserializedSettings.isDarkMode, equals(originalSettings.isDarkMode));
+        expect(deserializedSettings.themeMode, equals(originalSettings.themeMode));
         expect(deserializedSettings.userName, equals(originalSettings.userName));
         expect(deserializedSettings.hasCompletedOnboarding, equals(originalSettings.hasCompletedOnboarding));
       });

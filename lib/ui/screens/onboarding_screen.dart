@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/settings_provider.dart';
+import '../../providers/routine_provider.dart';
 import '../../services/starter_routines_service.dart';
 import '../../services/routine_service.dart';
+import '../../models/app_settings.dart';
 import 'home_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -24,7 +26,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool _tempNudgeEnabled = true;
   bool _tempAudioFeedback = true;
   bool _tempHapticFeedback = true;
-  bool _tempDarkMode = true;
+  AppThemeMode _tempThemeMode = AppThemeMode.system;
   bool _tempReducedAnimations = false;
   bool _tempFocusMode = false;
   bool _tempSimplifiedUI = false;
@@ -40,6 +42,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void initState() {
     super.initState();
     _loadStarterCategories();
+    
+    // Initialize temporary settings from current settings
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final currentSettings = Provider.of<SettingsProvider>(context, listen: false).settings;
+      setState(() {
+        _tempThemeMode = currentSettings.themeMode;
+        _tempTtsEnabled = currentSettings.ttsEnabled;
+        _tempNudgeEnabled = currentSettings.nudgeEnabled;
+        _tempAudioFeedback = currentSettings.audioFeedbackEnabled;
+        _tempHapticFeedback = currentSettings.hapticFeedbackEnabled;
+        _tempReducedAnimations = currentSettings.reducedAnimations;
+        _tempFocusMode = currentSettings.focusMode;
+        _tempSimplifiedUI = currentSettings.simplifiedUI;
+      });
+    });
   }
 
   @override
@@ -69,8 +86,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Future<void> _completeOnboarding() async {
     final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
+    final routineProvider = Provider.of<RoutineProvider>(context, listen: false);
     
-    // Apply all the temporary settings
+    // Apply remaining settings (visual settings were already applied during selection)
     await settingsProvider.updateSettings(
       settingsProvider.settings.copyWith(
         userName: _nameController.text.trim(),
@@ -78,10 +96,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         nudgeEnabled: _tempNudgeEnabled,
         audioFeedbackEnabled: _tempAudioFeedback,
         hapticFeedbackEnabled: _tempHapticFeedback,
-        isDarkMode: _tempDarkMode,
-        reducedAnimations: _tempReducedAnimations,
+        // Visual settings (themeMode, simplifiedUI, reducedAnimations) are applied immediately
         focusMode: _tempFocusMode,
-        simplifiedUI: _tempSimplifiedUI,
         hasCompletedOnboarding: true,
       ),
     );
@@ -94,6 +110,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         if (starterRoutines.isNotEmpty) {
           // Save the starter routines to storage
           await RoutineService.saveStarterRoutines(starterRoutines);
+          // Reload routines in the provider so they appear immediately in the UI
+          await routineProvider.loadRoutines();
         }
       } catch (e) {
         debugPrint('Error loading starter routines: $e');
@@ -604,11 +622,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 24),
           Expanded(
-            child: Column(
-              children: [
-                Card(
-                  child: SwitchListTile(
-                    secondary: const Icon(Icons.record_voice_over),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Card(
+                    child: SwitchListTile(
+                      secondary: const Icon(Icons.record_voice_over),
                     title: const Text('Read Steps Aloud'),
                     subtitle: const Text('Speak step instructions when your hands are busy'),
                     value: _tempTtsEnabled,
@@ -630,6 +649,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       setState(() {
                         _tempReducedAnimations = value;
                       });
+                      // Apply animation setting immediately
+                      Provider.of<SettingsProvider>(context, listen: false)
+                          .updateReducedAnimations(value);
                     },
                   ),
                 ),
@@ -658,6 +680,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       setState(() {
                         _tempSimplifiedUI = value;
                       });
+                      // Apply text size change immediately
+                      Provider.of<SettingsProvider>(context, listen: false)
+                          .updateSimplifiedUI(value);
                     },
                   ),
                 ),
@@ -720,7 +745,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ],
                   ),
                 ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -759,22 +785,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               children: [
                 Wrap(
                   spacing: 12,
+                  runSpacing: 8,
                   children: [
                     ChoiceChip(
                       label: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.dark_mode, size: 20),
+                          const Icon(Icons.brightness_auto, size: 20),
                           const SizedBox(width: 8),
-                          const Text('Dark Mode'),
+                          const Text('System'),
                         ],
                       ),
-                      selected: _tempDarkMode == true,
+                      selected: _tempThemeMode == AppThemeMode.system,
                       onSelected: (selected) {
                         if (selected) {
                           setState(() {
-                            _tempDarkMode = true;
+                            _tempThemeMode = AppThemeMode.system;
                           });
+                          // Apply theme change immediately
+                          Provider.of<SettingsProvider>(context, listen: false)
+                              .updateThemeMode(AppThemeMode.system);
                         }
                       },
                     ),
@@ -784,15 +814,39 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         children: [
                           const Icon(Icons.light_mode, size: 20),
                           const SizedBox(width: 8),
-                          const Text('Light Mode'),
+                          const Text('Light'),
                         ],
                       ),
-                      selected: _tempDarkMode == false,
+                      selected: _tempThemeMode == AppThemeMode.light,
                       onSelected: (selected) {
                         if (selected) {
                           setState(() {
-                            _tempDarkMode = false;
+                            _tempThemeMode = AppThemeMode.light;
                           });
+                          // Apply theme change immediately
+                          Provider.of<SettingsProvider>(context, listen: false)
+                              .updateThemeMode(AppThemeMode.light);
+                        }
+                      },
+                    ),
+                    ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.dark_mode, size: 20),
+                          const SizedBox(width: 8),
+                          const Text('Dark'),
+                        ],
+                      ),
+                      selected: _tempThemeMode == AppThemeMode.dark,
+                      onSelected: (selected) {
+                        if (selected) {
+                          setState(() {
+                            _tempThemeMode = AppThemeMode.dark;
+                          });
+                          // Apply theme change immediately
+                          Provider.of<SettingsProvider>(context, listen: false)
+                              .updateThemeMode(AppThemeMode.dark);
                         }
                       },
                     ),
@@ -800,7 +854,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Easier on the eyes, better for focus (Dark) vs Bright and energetic (Light)',
+                  'System follows your device settings, Dark is easier on the eyes, Light is bright and energetic',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),

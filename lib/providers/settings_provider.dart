@@ -18,14 +18,16 @@ class SettingsProvider with ChangeNotifier {
 
   Future<void> _initializeSettings() async {
     debugPrint('Settings: Starting initialization, loading = true');
-    _setLoading(true);
+    _isLoading = true;
+    // Don't notify listeners yet to avoid initial flashing
+    
     try {
       final settingsData = await StorageService.loadSettings();
       debugPrint('Settings: Loaded data: ${settingsData.toString()}');
       _settings = settingsData.isNotEmpty 
           ? AppSettings.fromJson(settingsData)
           : const AppSettings();
-      debugPrint('Settings: Final settings - hasCompletedOnboarding: ${_settings.hasCompletedOnboarding}, isDarkMode: ${_settings.isDarkMode}');
+      debugPrint('Settings: Final settings - hasCompletedOnboarding: ${_settings.hasCompletedOnboarding}, themeMode: ${_settings.themeMode}');
       _error = null;
       
       // Initialize TTS with current settings
@@ -35,7 +37,9 @@ class SettingsProvider with ChangeNotifier {
       _error = 'Failed to load settings: $e';
     } finally {
       debugPrint('Settings: Finished initialization, loading = false');
-      _setLoading(false);
+      _isLoading = false;
+      // Only notify listeners once at the end
+      notifyListeners();
     }
   }
 
@@ -120,8 +124,8 @@ class SettingsProvider with ChangeNotifier {
     await updateSettings(_settings.copyWith(hapticFeedbackEnabled: enabled));
   }
 
-  Future<void> updateThemeMode(bool isDarkMode) async {
-    await updateSettings(_settings.copyWith(isDarkMode: isDarkMode));
+  Future<void> updateThemeMode(AppThemeMode themeMode) async {
+    await updateSettings(_settings.copyWith(themeMode: themeMode));
   }
 
   Future<void> updateReducedAnimations(bool enabled) async {
@@ -146,6 +150,50 @@ class SettingsProvider with ChangeNotifier {
 
   Future<void> resetOnboarding() async {
     await updateSettings(_settings.copyWith(hasCompletedOnboarding: false));
+  }
+
+  // Tutorial state methods
+  Future<void> markBasicStepTutorialSeen() async {
+    await updateSettings(_settings.copyWith(hasSeenBasicStepTutorial: true));
+  }
+
+  Future<void> markTimerStepTutorialSeen() async {
+    await updateSettings(_settings.copyWith(hasSeenTimerStepTutorial: true));
+  }
+
+  Future<void> markRepsStepTutorialSeen() async {
+    await updateSettings(_settings.copyWith(hasSeenRepsStepTutorial: true));
+  }
+
+  Future<void> markRandomRepsStepTutorialSeen() async {
+    await updateSettings(_settings.copyWith(hasSeenRandomRepsStepTutorial: true));
+  }
+
+  Future<void> markRandomChoiceStepTutorialSeen() async {
+    await updateSettings(_settings.copyWith(hasSeenRandomChoiceStepTutorial: true));
+  }
+
+  Future<void> resetAllTutorials() async {
+    await updateSettings(_settings.copyWith(
+      hasSeenBasicStepTutorial: false,
+      hasSeenTimerStepTutorial: false,
+      hasSeenRepsStepTutorial: false,
+      hasSeenRandomRepsStepTutorial: false,
+      hasSeenRandomChoiceStepTutorial: false,
+    ));
+  }
+
+  // Shake detection settings
+  Future<void> updateShakeToRollEnabled(bool enabled) async {
+    await updateSettings(_settings.copyWith(shakeToRollEnabled: enabled));
+  }
+
+  Future<void> updateShakeInitialSensitivity(double sensitivity) async {
+    await updateSettings(_settings.copyWith(shakeInitialSensitivity: sensitivity));
+  }
+
+  Future<void> updateShakeRerollSensitivity(double sensitivity) async {
+    await updateSettings(_settings.copyWith(shakeRerollSensitivity: sensitivity));
   }
 
   void clearError() {
