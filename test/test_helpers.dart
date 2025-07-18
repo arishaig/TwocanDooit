@@ -284,6 +284,8 @@ class TestHelpers {
     bool hapticEnabled = false, // Disabled for tests
     bool ttsEnabled = false, // Disabled for tests
     bool nudgeEnabled = false, // Disabled for tests
+    AppThemeMode themeMode = AppThemeMode.light,
+    bool hasCompletedOnboarding = false,
   }) {
     return AppSettings(
       audioFeedbackEnabled: audioEnabled,
@@ -291,6 +293,8 @@ class TestHelpers {
       ttsEnabled: ttsEnabled,
       nudgeEnabled: nudgeEnabled,
       nudgeIntervalMinutes: 5,
+      themeMode: themeMode,
+      hasCompletedOnboarding: hasCompletedOnboarding,
     );
   }
 

@@ -51,6 +51,9 @@ dependencies:
   # Haptic feedback for dice interactions
   vibration: ^3.1.3
   
+  # Sensor data for shake detection
+  sensors_plus: ^6.1.1
+  
   # Text-to-speech functionality
   flutter_tts: ^4.2.0
   

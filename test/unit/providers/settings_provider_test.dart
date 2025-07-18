@@ -37,7 +37,7 @@ void main() {
 
       test('should initialize with default settings when no stored data', () async {
         expect(provider.settings.hasCompletedOnboarding, isFalse);
-        expect(provider.settings.isDarkMode, isTrue); // Default is true
+        expect(provider.settings.themeMode, equals(AppThemeMode.system)); // Default is system
         expect(provider.settings.ttsEnabled, isFalse); // Default is false
         expect(provider.settings.nudgeEnabled, isTrue);
         expect(provider.settings.audioFeedbackEnabled, isTrue);
@@ -52,7 +52,7 @@ void main() {
         await Future.delayed(Duration(milliseconds: 100));
         
         expect(newProvider.settings.hasCompletedOnboarding, equals(testSettings.hasCompletedOnboarding));
-        expect(newProvider.settings.isDarkMode, equals(testSettings.isDarkMode));
+        expect(newProvider.settings.themeMode, equals(testSettings.themeMode));
         expect(newProvider.settings.ttsEnabled, equals(testSettings.ttsEnabled));
         
         newProvider.dispose();
@@ -67,7 +67,7 @@ void main() {
         await provider.loadSettings();
         
         expect(provider.settings.hasCompletedOnboarding, equals(testSettings.hasCompletedOnboarding));
-        expect(provider.settings.isDarkMode, equals(testSettings.isDarkMode));
+        expect(provider.settings.themeMode, equals(testSettings.themeMode));
         expect(provider.isLoading, isFalse);
         expect(provider.error, isNull);
       });
@@ -100,14 +100,14 @@ void main() {
       test('should update settings successfully', () async {
         final newSettings = provider.settings.copyWith(
           hasCompletedOnboarding: true,
-          isDarkMode: true,
+          themeMode: AppThemeMode.dark,
           userName: 'Test User',
         );
         
         await provider.updateSettings(newSettings);
         
         expect(provider.settings.hasCompletedOnboarding, isTrue);
-        expect(provider.settings.isDarkMode, isTrue);
+        expect(provider.settings.themeMode, equals(AppThemeMode.dark));
         expect(provider.settings.userName, equals('Test User'));
         expect(provider.error, isNull);
       });
@@ -133,7 +133,7 @@ void main() {
           notificationCount++;
         });
         
-        final newSettings = provider.settings.copyWith(isDarkMode: true);
+        final newSettings = provider.settings.copyWith(themeMode: AppThemeMode.dark);
         await provider.updateSettings(newSettings);
         
         expect(notificationCount, greaterThan(0));
@@ -215,9 +215,9 @@ void main() {
 
     group('Theme Settings', () {
       test('should update theme mode setting', () async {
-        await provider.updateThemeMode(true);
+        await provider.updateThemeMode(AppThemeMode.dark);
         
-        expect(provider.settings.isDarkMode, isTrue);
+        expect(provider.settings.themeMode, equals(AppThemeMode.dark));
       });
     });
 
@@ -284,7 +284,7 @@ void main() {
         await provider.updateTTSEnabled(false);
         await provider.updateTTSRate(0.5);
         await provider.updateNudgeEnabled(false);
-        await provider.updateThemeMode(true);
+        await provider.updateThemeMode(AppThemeMode.dark);
         await provider.updateUserName('Test');
         await provider.completeOnboarding();
         
@@ -313,7 +313,7 @@ void main() {
         await provider.updateTTSRate(0.75);
         await provider.updateTTSPitch(1.2);
         await provider.updateNudgeEnabled(false);
-        await provider.updateThemeMode(true);
+        await provider.updateThemeMode(AppThemeMode.dark);
         await provider.updateUserName('Consistent User');
         await provider.completeOnboarding();
         
@@ -321,7 +321,7 @@ void main() {
         expect(provider.settings.ttsRate, equals(0.75));
         expect(provider.settings.ttsPitch, equals(1.2));
         expect(provider.settings.nudgeEnabled, isFalse);
-        expect(provider.settings.isDarkMode, isTrue);
+        expect(provider.settings.themeMode, equals(AppThemeMode.dark));
         expect(provider.settings.userName, equals('Consistent User'));
         expect(provider.settings.hasCompletedOnboarding, isTrue);
         expect(provider.error, isNull);
@@ -333,7 +333,7 @@ void main() {
         await Future.delayed(Duration(milliseconds: 100));
         
         await testProvider.updateUserName('Persistent User');
-        await testProvider.updateThemeMode(true);
+        await testProvider.updateThemeMode(AppThemeMode.dark);
         await testProvider.completeOnboarding();
         
         testProvider.dispose();
@@ -342,7 +342,7 @@ void main() {
         await Future.delayed(Duration(milliseconds: 100));
         
         expect(newProvider.settings.userName, equals('Persistent User'));
-        expect(newProvider.settings.isDarkMode, isTrue);
+        expect(newProvider.settings.themeMode, equals(AppThemeMode.dark));
         expect(newProvider.settings.hasCompletedOnboarding, isTrue);
         
         newProvider.dispose();

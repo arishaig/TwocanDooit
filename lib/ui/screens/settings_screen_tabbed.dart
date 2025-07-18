@@ -306,6 +306,130 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
             ),
           ),
         ),
+        
+        const SizedBox(height: 16),
+        
+        // Shake Detection Section
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.vibration,
+                      size: 28,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Shake Detection',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Control how the app responds to device shaking',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                
+                SwitchListTile(
+                  title: const Text('Shake to Roll'),
+                  subtitle: const Text('Shake device to roll dice'),
+                  value: settings.shakeToRollEnabled,
+                  onChanged: (value) {
+                    settingsProvider.updateShakeToRollEnabled(value);
+                  },
+                ),
+                
+                if (settings.shakeToRollEnabled) ...[
+                  const SizedBox(height: 16),
+                  
+                  Text(
+                    'Initial Roll Sensitivity',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Text('Firm'),
+                      Expanded(
+                        child: Slider(
+                          value: settings.shakeInitialSensitivity,
+                          min: 10.0,
+                          max: 20.0,
+                          divisions: 10,
+                          label: settings.shakeInitialSensitivity.toStringAsFixed(1),
+                          onChanged: (value) {
+                            settingsProvider.updateShakeInitialSensitivity(value);
+                          },
+                        ),
+                      ),
+                      const Text('Gentle'),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  Text(
+                    'Reroll Sensitivity',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Text('Firm'),
+                      Expanded(
+                        child: Slider(
+                          value: settings.shakeRerollSensitivity,
+                          min: 18.0,
+                          max: 28.0,
+                          divisions: 10,
+                          label: settings.shakeRerollSensitivity.toStringAsFixed(1),
+                          onChanged: (value) {
+                            settingsProvider.updateShakeRerollSensitivity(value);
+                          },
+                        ),
+                      ),
+                      const Text('Gentle'),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Reset to defaults button
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        settingsProvider.updateShakeInitialSensitivity(15.0);
+                        settingsProvider.updateShakeRerollSensitivity(20.0);
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Reset to Defaults'),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 8),
+                  Text(
+                    'Higher sensitivity prevents accidental rerolls',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -549,35 +673,86 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
                 ),
                 const SizedBox(height: 20),
                 
-                SwitchListTile(
-                  title: const Text('Dark Mode'),
-                  subtitle: const Text('Use dark theme colors'),
-                  value: settings.isDarkMode,
-                  onChanged: (value) {
-                    settingsProvider.updateThemeMode(value);
-                  },
-                ),
-                
-                const SizedBox(height: 16),
-                
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const OnboardingScreen(canSkip: false),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Restart Setup Wizard'),
+                // Theme Mode Selection
+                Text(
+                  'Theme',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.brightness_auto, size: 16),
+                          const SizedBox(width: 6),
+                          const Text('System'),
+                        ],
+                      ),
+                      selected: settings.themeMode == AppThemeMode.system,
+                      onSelected: (selected) {
+                        if (selected) {
+                          settingsProvider.updateThemeMode(AppThemeMode.system);
+                        }
+                      },
+                    ),
+                    ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.light_mode, size: 16),
+                          const SizedBox(width: 6),
+                          const Text('Light'),
+                        ],
+                      ),
+                      selected: settings.themeMode == AppThemeMode.light,
+                      onSelected: (selected) {
+                        if (selected) {
+                          settingsProvider.updateThemeMode(AppThemeMode.light);
+                        }
+                      },
+                    ),
+                    ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.dark_mode, size: 16),
+                          const SizedBox(width: 6),
+                          const Text('Dark'),
+                        ],
+                      ),
+                      selected: settings.themeMode == AppThemeMode.dark,
+                      onSelected: (selected) {
+                        if (selected) {
+                          settingsProvider.updateThemeMode(AppThemeMode.dark);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 8),
+                Text(
+                  settings.themeMode == AppThemeMode.system 
+                      ? 'Follows your device\'s system settings'
+                      : settings.themeMode == AppThemeMode.dark
+                          ? 'Easier on the eyes, better for focus'
+                          : 'Bright and energetic',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                
               ],
             ),
           ),
         ),
+        
         
         const SizedBox(height: 16),
         
@@ -731,6 +906,69 @@ class _SettingsScreenTabbedState extends State<SettingsScreenTabbed> with Single
                     onPressed: _showFormatInfo,
                     icon: const Icon(Icons.info_outline, size: 16),
                     label: const Text('Format Documentation'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        
+        const SizedBox(height: 16),
+        
+        // App Settings Card
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.settings,
+                      size: 28,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'App Settings',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Manage app configuration and initial setup',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                
+                // Restart Setup Wizard Button
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const OnboardingScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.replay),
+                    label: const Text('Restart Setup Wizard'),
+                  ),
+                ),
+                
+                const SizedBox(height: 8),
+                
+                Text(
+                  'This will take you through the initial setup process again.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],

@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import '../../models/routine.dart';
 import '../../models/step_type.dart';
 import '../../models/app_settings.dart';
@@ -26,6 +28,8 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
   Timer? _rollResultTimer;
   bool _tutorialShowing = false;
   bool _showChoicesDetails = false;
+  StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
+  DateTime? _lastShakeTime;
   
   // Helper method to get current settings
   AppSettings get _currentSettings => context.read<SettingsProvider>().settings;
@@ -33,11 +37,16 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
   @override
   void initState() {
     super.initState();
+    
+    // Initialize accelerometer listener for shake detection
+    _accelerometerSubscription = accelerometerEventStream().listen((AccelerometerEvent event) {
+      _handleAccelerometerData(event);
+    });
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = context.read<SettingsProvider>().settings;
       context.read<ExecutionProvider>().startRoutine(widget.routine, settings: settings);
     });
-    
   }
 
   void _showTutorialIfNeeded(BuildContext context, currentStep) {
@@ -115,9 +124,98 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
     }
   }
 
+  void _handleAccelerometerData(AccelerometerEvent event) {
+    if (!mounted) return;
+    
+    // Check if shake detection is enabled
+    final settings = _currentSettings;
+    if (!settings.shakeToRollEnabled) {
+      return;
+    }
+    
+    // Calculate the magnitude of acceleration
+    final double magnitude = sqrt(event.x * event.x + event.y * event.y + event.z * event.z);
+    
+    // Determine appropriate shake threshold based on whether it's an initial roll or reroll
+    final executionProvider = context.read<ExecutionProvider>();
+    final session = executionProvider.currentSession;
+    final currentStep = session?.currentStep;
+    
+    // Convert sensitivity to threshold (higher sensitivity = lower threshold = easier to trigger)
+    double shakeThreshold = 30.0 - settings.shakeInitialSensitivity; // Invert: higher sensitivity = lower threshold
+    
+    if (currentStep != null) {
+      // Check if this would be a reroll (less sensitive threshold needed)
+      final isReroll = (currentStep.type == StepType.randomChoice && currentStep.selectedChoice != null) ||
+                       (currentStep.type == StepType.reps && currentStep.randomizeReps && currentStep.repsTarget != currentStep.repsMin);
+      
+      if (isReroll) {
+        shakeThreshold = 46.0 - settings.shakeRerollSensitivity; // Invert: higher sensitivity = lower threshold
+      }
+    }
+    
+    // Check if shake is strong enough and enough time has passed since last shake
+    final now = DateTime.now();
+    if (magnitude > shakeThreshold && 
+        (_lastShakeTime == null || now.difference(_lastShakeTime!).inMilliseconds > 1000)) {
+      
+      debugPrint('Shake detected! Magnitude: $magnitude (threshold: $shakeThreshold)');
+      _lastShakeTime = now;
+      _handleShakeDetected();
+    }
+  }
+
+  void _handleShakeDetected() {
+    if (!mounted) return;
+    
+    final executionProvider = context.read<ExecutionProvider>();
+    final session = executionProvider.currentSession;
+    
+    if (session == null) {
+      debugPrint('Shake ignored: No active session');
+      return;
+    }
+    
+    final currentStep = session.currentStep;
+    if (currentStep == null) {
+      debugPrint('Shake ignored: No current step');
+      return;
+    }
+    
+    // Check if we should respond to shake for random choice steps
+    final shouldRollForRandomChoice = currentStep.type == StepType.randomChoice && 
+                                     !executionProvider.isRolling;
+    
+    // Check if we should respond to shake for random reps steps
+    final shouldRollForRandomReps = currentStep.type == StepType.reps &&
+                                   currentStep.randomizeReps &&
+                                   !executionProvider.isRolling;
+    
+    if (shouldRollForRandomChoice) {
+      if (currentStep.selectedChoice == null) {
+        debugPrint('Shake triggered random choice roll');
+        _rollForChoice(context, currentStep, executionProvider);
+      } else {
+        debugPrint('Shake triggered random choice reroll');
+        _reroll(context, currentStep, executionProvider);
+      }
+    } else if (shouldRollForRandomReps) {
+      if (currentStep.repsTarget == currentStep.repsMin) {
+        debugPrint('Shake triggered random reps roll');
+        _rollForReps(context, currentStep, executionProvider);
+      } else {
+        debugPrint('Shake triggered random reps reroll');
+        _rerollReps(context, currentStep, executionProvider);
+      }
+    } else {
+      debugPrint('Shake ignored: Not on rollable step or already rolling');
+    }
+  }
+
   @override
   void dispose() {
     _rollResultTimer?.cancel();
+    _accelerometerSubscription?.cancel();
     super.dispose();
   }
 
@@ -407,7 +505,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Tap the dice to roll',
+                    'Tap the dice or shake device to roll',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -481,6 +579,31 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                     minimumSize: const Size(200, 56),
                   ),
                 ),
+                // Add reroll option for random reps steps
+                if (currentStep.randomizeReps) ...[
+                  const SizedBox(height: 16),
+                  GestureDetector(
+                    onTap: () => _rerollReps(context, currentStep, executionProvider),
+                    child: Consumer<SettingsProvider>(
+                      builder: (context, settingsProvider, child) {
+                        return DiceWidget(
+                          isRolling: false,
+                          result: currentStep.repsTarget - currentStep.repsMin + 1,
+                          optionCount: currentStep.repsMax - currentStep.repsMin + 1,
+                          reducedAnimations: settingsProvider.settings.reducedAnimations,
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Tap the dice to reroll or shake device',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
             ],
             ),
           );
@@ -537,6 +660,15 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                                     fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'or shake device',
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                    fontStyle: FontStyle.italic,
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
@@ -626,7 +758,7 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Tap the dice to reroll',
+                      'Tap the dice to reroll or shake device',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -885,6 +1017,39 @@ class _ExecutionScreenState extends State<ExecutionScreen> {
     
     // Force UI update
     setState(() {});
+  }
+
+  Future<void> _rerollReps(BuildContext context, currentStep, ExecutionProvider executionProvider) async {
+    // Play dice roll sound
+    await AudioService.playDiceRoll(_currentSettings);
+    
+    // Set rolling state
+    executionProvider.setRolling(true);
+    
+    // Add delay for animation
+    await Future.delayed(const Duration(milliseconds: 1500));
+    
+    // Roll new reps value
+    final reps = await executionProvider.selectRandomReps(currentStep.repsMin, currentStep.repsMax);
+    currentStep.repsTarget = reps;
+    currentStep.repsCompleted = 0; // Reset completed count
+    
+    executionProvider.setRolling(false);
+    
+    // Show the roll result animation
+    setState(() {
+      _showRollResult = true;
+    });
+    
+    // Hide the roll result after 2.5 seconds and transition to rep counting
+    _rollResultTimer?.cancel();
+    _rollResultTimer = Timer(const Duration(milliseconds: 2500), () {
+      if (mounted) {
+        setState(() {
+          _showRollResult = false;
+        });
+      }
+    });
   }
 
   void _showExitDialog(BuildContext context) {

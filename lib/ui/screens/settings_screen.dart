@@ -430,6 +430,123 @@ class _SettingsScreenState extends State<SettingsScreen> {
               
               const SizedBox(height: 20),
               
+              // Shake Detection Section
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.vibration,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Shake Detection',
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      // Enable shake to roll
+                      SwitchListTile(
+                        title: const Text('Shake to Roll'),
+                        subtitle: const Text('Shake device to roll dice'),
+                        value: settingsProvider.settings.shakeToRollEnabled,
+                        onChanged: (value) {
+                          settingsProvider.updateShakeToRollEnabled(value);
+                        },
+                      ),
+                      
+                      if (settingsProvider.settings.shakeToRollEnabled) ...[
+                        const SizedBox(height: 16),
+                        
+                        // Initial roll sensitivity
+                        Text(
+                          'Initial Roll Sensitivity',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Text('Firm'),
+                            Expanded(
+                              child: Slider(
+                                value: settingsProvider.settings.shakeInitialSensitivity,
+                                min: 10.0,
+                                max: 25.0,
+                                divisions: 15,
+                                label: settingsProvider.settings.shakeInitialSensitivity.toStringAsFixed(1),
+                                onChanged: (value) {
+                                  settingsProvider.updateShakeInitialSensitivity(value);
+                                },
+                              ),
+                            ),
+                            const Text('Gentle'),
+                          ],
+                        ),
+                        
+                        const SizedBox(height: 16),
+                        
+                        // Reroll sensitivity
+                        Text(
+                          'Reroll Sensitivity',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Text('Firm'),
+                            Expanded(
+                              child: Slider(
+                                value: settingsProvider.settings.shakeRerollSensitivity,
+                                min: 15.0,
+                                max: 30.0,
+                                divisions: 15,
+                                label: settingsProvider.settings.shakeRerollSensitivity.toStringAsFixed(1),
+                                onChanged: (value) {
+                                  settingsProvider.updateShakeRerollSensitivity(value);
+                                },
+                              ),
+                            ),
+                            const Text('Gentle'),
+                          ],
+                        ),
+                        
+                        const SizedBox(height: 16),
+                        
+                        // Reset to defaults button
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              settingsProvider.updateShakeInitialSensitivity(15.0);
+                              settingsProvider.updateShakeRerollSensitivity(20.0);
+                            },
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('Reset to Defaults'),
+                          ),
+                        ),
+                        
+                        const SizedBox(height: 8),
+                        Text(
+                          'Higher sensitivity prevents accidental rerolls',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 20),
+              
               // Appearance Section
               Card(
                 child: Padding(
@@ -462,14 +579,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       const SizedBox(height: 20),
                       
-                      // Dark Mode Toggle
-                      SwitchListTile(
-                        title: const Text('Dark Mode'),
-                        subtitle: const Text('Use dark theme colors'),
-                        value: settings.isDarkMode,
-                        onChanged: (value) {
-                          settingsProvider.updateThemeMode(value);
-                        },
+                      // Theme Mode Selection
+                      ListTile(
+                        title: const Text('Theme'),
+                        subtitle: Text(
+                          settings.themeMode == AppThemeMode.system 
+                              ? 'System (follows device settings)'
+                              : settings.themeMode == AppThemeMode.dark
+                                  ? 'Dark mode'
+                                  : 'Light mode'
+                        ),
+                        trailing: DropdownButton<AppThemeMode>(
+                          value: settings.themeMode,
+                          onChanged: (AppThemeMode? newMode) {
+                            if (newMode != null) {
+                              settingsProvider.updateThemeMode(newMode);
+                            }
+                          },
+                          items: const [
+                            DropdownMenuItem(
+                              value: AppThemeMode.system,
+                              child: Text('System'),
+                            ),
+                            DropdownMenuItem(
+                              value: AppThemeMode.light,
+                              child: Text('Light'),
+                            ),
+                            DropdownMenuItem(
+                              value: AppThemeMode.dark,
+                              child: Text('Dark'),
+                            ),
+                          ],
+                        ),
                       ),
                       
                       const SizedBox(height: 16),
